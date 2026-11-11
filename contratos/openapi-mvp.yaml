@@ -1,0 +1,385 @@
+openapi: 3.0.3
+info:
+  title: Ponto Falante · API pública do MVP (Spring Boot)
+  version: "1.0.0"
+  description: |
+    Única API que o Angular consome. Todas as rotas ficam sob /api. O Angular compilado é
+    servido pelo próprio Spring Boot (mesma origem, sem CORS).
+
+    Regras de honestidade dos dados (valem para toda resposta):
+    - `fonte` diz de onde veio o dado: OLHO_VIVO (API real da SPTrans) ou SIMULADO (modo demonstrativo).
+    - `tipo` = PREVISAO para horários estimados pela SPTrans. Uma previsão NUNCA é apresentada
+      como chegada. Passagens registradas no histórico têm `tipo_registro`.
+    - Modo demonstrativo: ligado quando não há SPTRANS_TOKEN ou quando o cliente pede `modo=demo`.
+      Toda tela que mostra dado SIMULADO exibe o selo "Dados de demonstração".
+
+    Segredos (variáveis de ambiente, nunca no código): SPTRANS_TOKEN, GENAI_URL, GENAI_API_KEY,
+    RPA_API_KEY, VISAO_API_KEY, DISPOSITIVO_API_KEY, DADOS_API_KEY, DATABASE_URL.
+servers:
+  - url: http://localhost:8080
+    description: Desenvolvimento
+
+tags:
+  - name: transporte
+  - name: assistente
+  - name: rpa
+  - name: integracoes
+  - name: sistema
+
+paths:
+  /api/status:
+    get:
+      tags: [sistema]
+      summary: Estado dos serviços para a tela (SPTrans real ou demo, assistente on/off)
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Status'}
+          description: ok
+
+  /api/pontos:
+    get:
+      tags: [transporte]
+      summary: Busca pontos de ônibus por nome, rua ou código
+      parameters:
+        - {name: busca, in: query, required: true, schema: {type: string, minLength: 2, maxLength: 80}}
+        - {name: modo, in: query, required: false, schema: {type: string, enum: [auto, demo], default: auto}}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [fonte, pontos]
+                properties:
+                  fonte: {$ref: '#/components/schemas/Fonte'}
+                  pontos: {type: array, items: {$ref: '#/components/schemas/Ponto'}}
+          description: Lista (pode ser vazia)
+        "400": {description: Busca vazia ou curta demais, content: {application/json: {schema: {$ref: '#/components/schemas/Erro'}}}}
+        "503": {description: SPTrans indisponível e modo demo não pedido, content: {application/json: {schema: {$ref: '#/components/schemas/Erro'}}}}
+
+  /api/pontos/{codigo}/previsoes:
+    get:
+      tags: [transporte]
+      summary: Próximos ônibus previstos para um ponto
+      parameters:
+        - {name: codigo, in: path, required: true, schema: {type: integer, format: int64}}
+        - {name: modo, in: query, required: false, schema: {type: string, enum: [auto, demo], default: auto}}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PrevisoesPonto'}
+          description: Previsões ordenadas por minutos
+        "404": {description: Ponto inexistente, content: {application/json: {schema: {$ref: '#/components/schemas/Erro'}}}}
+        "503": {description: SPTrans indisponível, content: {application/json: {schema: {$ref: '#/components/schemas/Erro'}}}}
+
+  /api/linhas:
+    get:
+      tags: [transporte]
+      summary: Busca linhas por número ou nome
+      parameters:
+        - {name: busca, in: query, required: true, schema: {type: string, minLength: 1, maxLength: 80}}
+        - {name: modo, in: query, required: false, schema: {type: string, enum: [auto, demo], default: auto}}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [fonte, linhas]
+                properties:
+                  fonte: {$ref: '#/components/schemas/Fonte'}
+                  linhas: {type: array, items: {$ref: '#/components/schemas/Linha'}}
+          description: ok
+
+  /api/chat:
+    post:
+      tags: [assistente]
+      summary: Pergunta ao assistente (o Spring repassa ao serviço GenAI com X-API-Key e timeout)
+      description: |
+        Se o serviço GenAI estiver fora (PC desligado, túnel caído, timeout), responde 200 com
+        `disponivel=false` e uma mensagem amigável. Nunca 500 para o passageiro.
+        A pergunta não é gravada em banco nem em log (LGPD).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PerguntaChat'}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RespostaChat'}
+          description: Resposta, recusa ou indisponibilidade
+        "400": {description: Pergunta vazia ou com mais de 500 caracteres, content: {application/json: {schema: {$ref: '#/components/schemas/Erro'}}}}
+        "429": {description: Muitas perguntas seguidas do mesmo cliente}
+
+  /api/historico:
+    get:
+      tags: [rpa]
+      summary: Passagens registradas no dia (consumido pelo robô RPA e pelo Big Data)
+      parameters:
+        - {name: data, in: query, required: true, schema: {type: string, format: date}}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/Passagem'}}
+          description: Lista no formato do contrato openapi-integracao.yaml (campos em snake_case)
+
+  /api/boletim:
+    get:
+      tags: [rpa]
+      summary: Último boletim publicado pelo robô
+      responses:
+        "200": {description: Conteúdo do boletim (schema Boletim de openapi-integracao.yaml) + recebido_em}
+        "404": {description: Nenhum boletim ainda}
+    post:
+      tags: [rpa]
+      summary: Robô publica o boletim do dia (upsert por data_referencia)
+      parameters:
+        - {name: X-API-Key, in: header, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, description: "Boletim (openapi-integracao.yaml)", required: [data_referencia, gerado_em, desatualizado, linhas, resumo_falado]}
+      responses:
+        "201": {description: Gravado}
+        "400": {description: JSON inválido ou campos obrigatórios ausentes}
+        "401": {description: Chave ausente ou inválida}
+
+  /api/boletim/{data}:
+    get:
+      tags: [rpa]
+      summary: Boletim de uma data
+      parameters:
+        - {name: data, in: path, required: true, schema: {type: string, format: date}}
+      responses:
+        "200": {description: Boletim}
+        "404": {description: Não há boletim para a data}
+
+  /api/boletins:
+    get:
+      tags: [rpa]
+      summary: Lista resumida dos últimos 30 boletins (data, desatualizado, contagem por status)
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    data_referencia: {type: string, format: date}
+                    desatualizado: {type: boolean}
+                    dados_simulados: {type: boolean}
+                    criticas: {type: integer}
+                    atencao: {type: integer}
+                    recebido_em: {type: string, format: date-time}
+          description: ok
+
+  # ---------- Contratos para as outras disciplinas ----------
+  /api/integracoes/visao/deteccoes:
+    post:
+      tags: [integracoes]
+      summary: Visão computacional informa a linha reconhecida no letreiro de um ônibus chegando
+      parameters:
+        - {name: X-API-Key, in: header, required: true, schema: {type: string}, description: VISAO_API_KEY}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DeteccaoVisao'}
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: {type: integer}
+                  frase_falada: {type: string, example: "Ônibus 8000-10, Lapa, chegando."}
+          description: Aceito; a frase pode ser lida pelo totem/app
+        "400": {description: Payload inválido}
+        "401": {description: Chave inválida}
+    get:
+      tags: [integracoes]
+      summary: Últimas 50 detecções de um ponto
+      parameters:
+        - {name: ponto, in: query, required: true, schema: {type: integer, format: int64}}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/DeteccaoVisao'}}
+          description: ok
+
+  /api/integracoes/dispositivos/eventos:
+    post:
+      tags: [integracoes]
+      summary: ESP32 do ponto envia evento (botão pressionado pelo passageiro ou heartbeat)
+      description: Em BOTAO_PRESSIONADO, a resposta traz a frase com os próximos ônibus para o totem falar.
+      parameters:
+        - {name: X-Device-Key, in: header, required: true, schema: {type: string}, description: DISPOSITIVO_API_KEY}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/EventoDispositivo'}
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  frase_falada: {type: string, nullable: true}
+                  fonte: {$ref: '#/components/schemas/Fonte'}
+          description: Aceito
+        "400": {description: Payload inválido}
+        "401": {description: Chave inválida}
+
+  /api/integracoes/dados/passagens:
+    get:
+      tags: [integracoes]
+      summary: Exportação para Big Data (CSV), período de no máximo 31 dias
+      parameters:
+        - {name: X-API-Key, in: header, required: true, schema: {type: string}, description: DADOS_API_KEY}
+        - {name: de, in: query, required: true, schema: {type: string, format: date}}
+        - {name: ate, in: query, required: true, schema: {type: string, format: date}}
+      responses:
+        "200":
+          content:
+            text/csv:
+              schema: {type: string, example: "data,ponto,linha,sentido,veiculo,programado_em,previsto_em,acessivel,fonte,tipo_registro"}
+          description: CSV com cabeçalho; veículo já anonimizado
+        "400": {description: Período inválido}
+        "401": {description: Chave inválida}
+
+components:
+  schemas:
+    Fonte: {type: string, enum: [OLHO_VIVO, SIMULADO]}
+
+    Erro:
+      type: object
+      required: [mensagem]
+      properties:
+        mensagem: {type: string, description: "Frase simples para a pessoa"}
+        codigo: {type: string}
+
+    Status:
+      type: object
+      properties:
+        versao: {type: string}
+        sptrans: {type: string, enum: [REAL, DEMO, INDISPONIVEL], description: "REAL = token configurado e autenticado"}
+        assistente: {type: string, enum: [DISPONIVEL, INDISPONIVEL]}
+        ultimo_boletim: {type: string, format: date, nullable: true}
+        horario_servidor: {type: string, format: date-time}
+
+    Ponto:
+      type: object
+      required: [codigo, nome, fonte]
+      properties:
+        codigo: {type: integer, format: int64}
+        nome: {type: string}
+        endereco: {type: string, nullable: true}
+        latitude: {type: number, nullable: true}
+        longitude: {type: number, nullable: true}
+        fonte: {$ref: '#/components/schemas/Fonte'}
+
+    Linha:
+      type: object
+      properties:
+        codigo: {type: integer, format: int64, description: "código interno da SPTrans (cl)"}
+        letreiro: {type: string, example: "8000-10"}
+        sentido: {type: integer, enum: [1, 2]}
+        terminal_principal: {type: string}
+        terminal_secundario: {type: string}
+        destino: {type: string}
+        circular: {type: boolean}
+
+    OnibusPrevisto:
+      type: object
+      required: [letreiro, destino, previsto_em, minutos, acessivel]
+      properties:
+        letreiro: {type: string, example: "8000-10"}
+        destino: {type: string}
+        sentido: {type: integer}
+        previsto_em: {type: string, pattern: '^\d{2}:\d{2}$', description: "horário PREVISTO pela SPTrans"}
+        minutos: {type: integer, description: "minutos até a previsão (0 = chegando)"}
+        acessivel: {type: boolean}
+        veiculo: {type: string, description: "hash curto do prefixo; nunca o prefixo bruto"}
+
+    PrevisoesPonto:
+      type: object
+      required: [ponto, fonte, tipo, consultado_em, onibus, frase_falada]
+      properties:
+        ponto: {$ref: '#/components/schemas/Ponto'}
+        fonte: {$ref: '#/components/schemas/Fonte'}
+        tipo: {type: string, enum: [PREVISAO]}
+        horario_referencia: {type: string, description: "hora da SPTrans (hr) ou do simulador"}
+        consultado_em: {type: string, format: date-time}
+        onibus: {type: array, items: {$ref: '#/components/schemas/OnibusPrevisto'}}
+        frase_falada: {type: string, example: "Ponto Paulista. Ônibus 8000-10, Lapa, previsto em 3 minutos, acessível."}
+
+    PerguntaChat:
+      type: object
+      required: [pergunta]
+      properties:
+        pergunta: {type: string, minLength: 1, maxLength: 500}
+
+    RespostaChat:
+      type: object
+      required: [resposta, fontes, confianca, nao_consta, disponivel]
+      properties:
+        resposta: {type: string}
+        fontes:
+          type: array
+          items:
+            type: object
+            properties:
+              documento: {type: string}
+              trecho_id: {type: string}
+        confianca: {type: string, enum: [alta, media, baixa]}
+        nao_consta: {type: boolean}
+        disponivel: {type: boolean, description: "false = serviço GenAI fora do ar; resposta é aviso"}
+        latencia_ms: {type: integer}
+
+    Passagem:
+      type: object
+      description: Igual ao schema Passagem de openapi-integracao.yaml, mais tipo_registro
+      properties:
+        ponto: {type: string}
+        linha: {type: string}
+        sentido: {type: string}
+        veiculo: {type: string}
+        programado_em: {type: string}
+        previsto_em: {type: string}
+        acessivel: {type: boolean}
+        fonte: {type: string, enum: [olhovivo, simulador]}
+        tipo_registro: {type: string, enum: [SIMULADA, INFERIDA_DA_PREVISAO], description: "INFERIDA = veículo com previsão de 0-1 min que sumiu da previsão seguinte; não é chegada medida por sensor"}
+        atualizado_em: {type: string, format: date-time}
+
+    DeteccaoVisao:
+      type: object
+      required: [ponto, linha_reconhecida, confianca, capturado_em, dispositivo]
+      properties:
+        ponto: {type: integer, format: int64}
+        linha_reconhecida: {type: string, maxLength: 20, example: "8000-10"}
+        confianca: {type: number, minimum: 0, maximum: 1}
+        capturado_em: {type: string, format: date-time}
+        dispositivo: {type: string, maxLength: 64}
+
+    EventoDispositivo:
+      type: object
+      required: [dispositivo_id, ponto, tipo, ocorrido_em]
+      properties:
+        dispositivo_id: {type: string, maxLength: 64, example: "esp32-ponto-0042"}
+        ponto: {type: integer, format: int64}
+        tipo: {type: string, enum: [BOTAO_PRESSIONADO, HEARTBEAT]}
+        ocorrido_em: {type: string, format: date-time}
+        bateria_pct: {type: integer, minimum: 0, maximum: 100, nullable: true}
