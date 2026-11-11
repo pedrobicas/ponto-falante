@@ -1,0 +1,6 @@
+# Spring Framework 6.2.x (Spring Boot 3.5): a correção só existe na linha 7.0.x (Spring Boot 4), fora do escopo
+# "Spring Boot 3" do projeto. Revisado em 11/11/2026: o MVP não usa as funcionalidades afetadas.
+# XsltView (RCE por caminho em views XSLT): nenhum XsltView/XSLT no código.
+CVE-2026-47884
+# SSE com views (corrupção de stream): nenhum SseEmitter/ServerSentEvent/text/event-stream no código.
+CVE-2026-47890

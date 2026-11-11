@@ -139,7 +139,7 @@ def test_chave_nunca_aparece_no_log(cfg, monkeypatch):
     monkeypatch.setenv("RPA_API_KEY", "segredo-xyz")
     arquivo = registro.configurar(cfg.pasta_logs, DATA)
     import logging
-    logging.getLogger("pf_rpa.teste").error("token=%s", "segredo-xyz")
+    logging.getLogger("pf_rpa.teste").error("token=%s", "segredo-xyz")  # nosemgrep -- valor falso: o teste prova que o log mascara segredos
     assert "segredo-xyz" not in arquivo.read_text(encoding="utf-8")
 
 
