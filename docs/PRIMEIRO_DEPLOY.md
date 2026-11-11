@@ -1,6 +1,6 @@
 # Primeiro deploy público
 
-O código completo está em `integracao/mvp`; os originais não commitados da `main` e o worktree GenAI foram preservados. O Blueprint aponta explicitamente para essa branch, usa apenas planos **Free**, inicia SPTrans em demonstração e deixa GenAI opcional/desligado no primeiro deploy.
+Atualização (11/11): a branch `integracao/mvp` foi integrada à `main` (merge 0340e03) e o Blueprint agora aponta para `main`. O Blueprint, usa apenas planos **Free**, inicia SPTrans em demonstração e deixa GenAI opcional/desligado no primeiro deploy.
 
 ## O que falta autorizar/conectar
 
@@ -19,7 +19,7 @@ git push -u origin integracao/mvp
 
 Não enviar `.env`, `.validation`, caches ou arquivos de túnel. A CI deve passar: Python, Spring/PostgreSQL, Angular/acessibilidade, Gitleaks, Semgrep, build Docker, Trivy e teste HTTP da imagem. Não ignorar checks que falhem; examinar e corrigir antes de publicar.
 
-No Render: **New → Blueprint → conectar GitHub → escolher repositório → branch `integracao/mvp` → revisar `render.yaml` → Apply**. Conferir serviço e banco com plano **Free**. O Render gera `PF_SALT`, `RPA_API_KEY` e as chaves das integrações; `DATABASE_URL` vem do banco. Não há token SPTrans ou endpoint GenAI obrigatório para publicar o MVP demonstrativo.
+No Render: **New → Blueprint → conectar GitHub → escolher repositório → branch `main` → revisar `render.yaml` → Apply**. Conferir serviço e banco com plano **Free**. O Render gera `PF_SALT`, `RPA_API_KEY` e as chaves das integrações; `DATABASE_URL` vem do banco. Não há token SPTrans ou endpoint GenAI obrigatório para publicar o MVP demonstrativo.
 
 ## Aceite na URL publicada
 
