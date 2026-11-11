@@ -42,3 +42,6 @@ cloudflared/*.json
 *.iml
 .DS_Store
 Thumbs.db
+
+# Worktrees de trabalho paralelo
+.worktrees/
