@@ -28,11 +28,13 @@ class OlhoVivoProviderContractTest {
     boolean falharConsulta;
     int loginStatus = 200;
     int consultaStatus = 200;
+    volatile String userAgentLogin;
 
     @BeforeEach void iniciar() throws Exception {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/v2.1/Login/Autenticar", ex -> {
             logins.incrementAndGet();
+            userAgentLogin = ex.getRequestHeaders().getFirst("User-Agent");
             if (!semCookie) ex.getResponseHeaders().add("Set-Cookie", "apiCredentials=local; Path=/; HttpOnly");
             byte[] body = (recusar ? "false" : "true").getBytes(StandardCharsets.UTF_8);
             ex.sendResponseHeaders(loginStatus, body.length);
@@ -65,6 +67,11 @@ class OlhoVivoProviderContractTest {
         provider.buscarLinhas("8000");
         assertThat(logins.get()).isEqualTo(1);
         assertThat(consultas.get()).isEqualTo(1);
+    }
+
+    @Test void enviaUserAgentProprioParaNaoSerBarradoPeloCloudflare() {
+        provider.buscarLinhas("8000");
+        assertThat(userAgentLogin).isEqualTo(OlhoVivoProvider.USER_AGENT);
     }
 
     @Test void renovaSessaoUmaVezApos401() {
