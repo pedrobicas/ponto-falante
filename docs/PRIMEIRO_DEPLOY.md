@@ -29,7 +29,7 @@ python scripts/integracao/testar_mvp.py --url https://SERVICO.onrender.com
 
 Verificar no navegador busca `paulista`, abertura do ponto, selo de dados simulados, previsões, ajustes de contraste/letra, botão de voz, chat indisponível de forma amigável e navegação direta em `/sobre`. Publicar um boletim com o RPA e confirmar após reiniciar o serviço. Nunca publicar um sucesso de GenAI se o serviço não estiver ligado.
 
-Para agendar o RPA: **GitHub → Settings → Secrets and variables → Actions**, cadastrar `MVP_URL=https://SERVICO.onrender.com/api` e `RPA_API_KEY` com o valor seguro exibido no Environment do Render. Executar manualmente `rpa-diario` antes de depender do cron. O workflow agendado só roda a partir da branch padrão do GitHub: definir `integracao/mvp` como padrão no primeiro deploy, ou integrar em `main` e atualizar `branch` no Blueprint quando a equipe voltar.
+Para agendar o RPA: **GitHub → Settings → Secrets and variables → Actions**, cadastrar `MVP_URL=https://SERVICO.onrender.com/api` e `RPA_API_KEY` com o valor seguro exibido no Environment do Render. Executar manualmente `rpa-diario` antes de depender do cron. O workflow agendado só roda a partir da branch padrão do GitHub: definir `integracao/mvp` como padrão no primeiro deploy, ou integrar em `main` e atualizar `branch` no Blueprint quanda equipe voltar.
 
 ## GenAI e limites do plano gratuito
 

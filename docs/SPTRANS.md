@@ -61,7 +61,7 @@ Spring Boot, executado normalmente pelo Maven/IDE, não carrega esse `.env` auto
   --backend-dir D:\GLOBALSOLUTION_2\.validation\backend
 ```
 
-A preparação inclui as configurações adicionais de repositórios JPA e SPTrans, sem editar as fontes em andamento, e recria apenas `.validation/backend`; espere qualquer teste nessa pasta terminar antes de executá-la. Depois de integrar a branch e os componentes, o launcher pode apontar para `D:\GLOBALSOLUTION_2\backend` ou usar seu caminho padrão. `ConfigSptrans` normaliza token e URL antes de vincular `PfProps`, corrige o default HTTP legado em memória e impede HTTP externo; não segue um redirecionamento HTTP para HTTPS.
+A preparação inclui as configurações adicionais de repositórios JPA e SPTrans, sem editar as fontes em andamento da equipe, e recria apenas `.validation/backend`; espere qualquer teste nessa pasta terminar antes de executá-la. Depois de integrar a branch e os componentes, o launcher pode apontar para `D:\GLOBALSOLUTION_2\backend` ou usar seu caminho padrão. `ConfigSptrans` normaliza token e URL antes de vincular `PfProps`, corrige o default HTTP legado em memória e impede HTTP externo; não segue um redirecionamento HTTP para HTTPS.
 
 É necessário Java 21 e PostgreSQL acessível em `localhost:5432`, ou configurar `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` e `SPRING_DATASOURCE_PASSWORD` no ambiente/arquivo. A ferramenta mapeia `POSTGRES_PASSWORD` para a senha JDBC quando não existe configuração explícita. Para IDE, configure as mesmas variáveis na execução.
 
