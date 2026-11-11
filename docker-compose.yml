@@ -1,0 +1,60 @@
+# Desenvolvimento local: aplicação (Angular + Spring Boot) + PostgreSQL.
+#   cp .env.example .env    (preencha os segredos; .env não é versionado)
+#   docker compose up --build
+# Robô RPA contra a aplicação (perfil opcional):
+#   docker compose --profile rpa run --rm rpa
+# O GenAI (Ollama + FastAPI) roda fora do Compose, no PC com GPU (scripts/genai/iniciar.ps1).
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: pontofalante
+      POSTGRES_USER: pontofalante
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
+    volumes:
+      - dados_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pontofalante -d pontofalante"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    # Sem porta publicada: só a aplicação acessa o banco.
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/pontofalante
+      SPRING_DATASOURCE_USERNAME: pontofalante
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPTRANS_TOKEN: ${SPTRANS_TOKEN:-}
+      GENAI_URL: ${GENAI_URL:-http://host.docker.internal:8001}
+      GENAI_API_KEY: ${GENAI_API_KEY:-}
+      RPA_API_KEY: ${RPA_API_KEY:?defina RPA_API_KEY no .env}
+      VISAO_API_KEY: ${VISAO_API_KEY:-}
+      DISPOSITIVO_API_KEY: ${DISPOSITIVO_API_KEY:-}
+      DADOS_API_KEY: ${DADOS_API_KEY:-}
+      PF_SALT: ${PF_SALT:?defina PF_SALT no .env}
+    ports:
+      - "8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    mem_limit: 512m          # mesmo limite do plano gratuito do Render
+
+  rpa:
+    profiles: ["rpa"]
+    image: python:3.11-slim
+    working_dir: /rpa
+    volumes:
+      - ./rpa:/rpa
+    environment:
+      MVP_URL: http://app:8080/api
+      RPA_API_KEY: ${RPA_API_KEY}
+      PYTHONPATH: src
+    command: sh -c "pip install -q -r requirements.txt && python -m pf_rpa.robo"
+    depends_on: [app]
+
+volumes:
+  dados_pg:
