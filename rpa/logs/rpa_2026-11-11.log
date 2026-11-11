@@ -1,0 +1,33 @@
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | === Início da execução | data de referência 2026-11-11 | MVP http://127.0.0.1:8080 ===
+2026-11-11 10:31:54 | WARNING | pf_rpa.gtfs | GTFS real indisponível (arquivo ausente: routes.txt); usando rede fictícia documentada
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Histórico recebido: 349 registros
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Validação: 330 válidos, 9 inválidos {'campo_vazio': 1, 'horario_incoerente': 2, 'linha_inexistente': 6}, 10 duplicados, 0 fora do escopo
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Linha 1001-10 -> CRITICA (atraso médio 14.1 min > 10)
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Linha 1002-10 -> ATENCAO (atraso médio 7.0 min > 5)
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Linha 1005-10 -> ATENCAO (intervalo de 26 min > 20)
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Linha 1003-10 -> OK (dentro dos limites)
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Linha 1004-10 -> OK (dentro dos limites)
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Boletim salvo em saida\boletim_2026-11-11.json
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Boletim publicado no MVP (POST /boletim)
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | === Fim da execução | status=sucesso | código=0 ===
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | === Início da execução | data de referência 2026-11-12 | MVP http://127.0.0.1:8080 ===
+2026-11-11 10:31:54 | WARNING | pf_rpa.gtfs | GTFS real indisponível (arquivo ausente: routes.txt); usando rede fictícia documentada
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Histórico recebido: 349 registros
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Validação: 330 válidos, 9 inválidos {'campo_vazio': 2, 'horario_incoerente': 3, 'linha_inexistente': 4}, 10 duplicados, 0 fora do escopo
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Linha 1001-10 -> CRITICA (atraso médio 14.7 min > 10)
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Linha 1002-10 -> ATENCAO (atraso médio 6.8 min > 5)
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Linha 1005-10 -> ATENCAO (intervalo de 28 min > 20)
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Linha 1003-10 -> OK (dentro dos limites)
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Linha 1004-10 -> OK (dentro dos limites)
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Boletim salvo em saida\boletim_2026-11-12.json
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | Boletim publicado no MVP (POST /boletim)
+2026-11-11 10:31:54 | INFO    | pf_rpa.robo | === Fim da execução | status=sucesso | código=0 ===
+2026-11-11 10:31:55 | INFO    | pf_rpa.robo | === Início da execução | data de referência 2026-11-13 | MVP http://127.0.0.1:8080 ===
+2026-11-11 10:31:55 | WARNING | pf_rpa.gtfs | GTFS real indisponível (arquivo ausente: routes.txt); usando rede fictícia documentada
+2026-11-11 10:31:55 | WARNING | pf_rpa.mvp | GET /historico?data=2026-11-13 falhou (tentativa 1/3): HTTP 503
+2026-11-11 10:31:56 | WARNING | pf_rpa.mvp | GET /historico?data=2026-11-13 falhou (tentativa 2/3): HTTP 503
+2026-11-11 10:31:58 | WARNING | pf_rpa.mvp | GET /historico?data=2026-11-13 falhou (tentativa 3/3): HTTP 503
+2026-11-11 10:31:58 | ERROR   | pf_rpa.robo | MVP indisponível para leitura do histórico: GET /historico?data=2026-11-13: sem resposta após 3 tentativas (HTTP 503)
+2026-11-11 10:31:58 | WARNING | pf_rpa.robo | Republicando o boletim de 2026-11-12 marcado como desatualizado
+2026-11-11 10:31:58 | INFO    | pf_rpa.robo | Boletim desatualizado publicado no MVP
+2026-11-11 10:31:58 | ERROR   | pf_rpa.robo | === Fim da execução | status=mvp_indisponivel | código=2 ===

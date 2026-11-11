@@ -1,0 +1,34 @@
+﻿
+agente: 1/30
+agente: 2/30
+agente: 3/30
+agente: 4/30
+agente: 5/30
+agente: 6/30
+agente: 7/30
+agente: 8/30
+agente: 9/30
+agente: 10/30
+agente: 11/30
+agente: 12/30
+agente: 13/30
+agente: 14/30
+agente: 15/30
+agente: 16/30
+agente: 17/30
+agente: 18/30
+agente: 19/30
+agente: 20/30
+agente: 21/30
+agente: 22/30
+agente: 23/30
+agente: 24/30
+agente: 25/30
+agente: 26/30
+agente: 27/30
+agente: 28/30
+agente: 29/30
+agente: 30/30
+{'configuracao': 'sem_contexto', 'acerto_total_%': 6.7, 'acerto_respondiveis_%': 5.0, 'recusa_correta_nao_consta_%': 10.0, 'alucinacao_%': 90.0, 'recusa_indevida_%': 5.0, 'citacao_correta_%': 0.0, 'sem_fundamentacao_%': 100.0, 'citacoes_validas_%': 0.0, 'precisao_citacoes_%': 0.0, 'json_valido_%': 96.7, 'nao_consta_incoerente_%': 90.0, 'latencia_media_s': 0.84, 'n': 30}
+{'configuracao': 'rag', 'acerto_total_%': 63.3, 'acerto_respondiveis_%': 60.0, 'recusa_correta_nao_consta_%': 70.0, 'alucinacao_%': 36.7, 'recusa_indevida_%': 0.0, 'citacao_correta_%': 85.0, 'sem_fundamentacao_%': 13.0, 'citacoes_validas_%': 95.7, 'precisao_citacoes_%': 81.0, 'json_valido_%': 100.0, 'nao_consta_incoerente_%': 3.3, 'latencia_media_s': 1.85, 'n': 30}
+{'configuracao': 'agente', 'acerto_total_%': 70.0, 'acerto_respondiveis_%': 55.0, 'recusa_correta_nao_consta_%': 100.0, 'alucinacao_%': 0.0, 'recusa_indevida_%': 45.0, 'citacao_correta_%': 100.0, 'sem_fundamentacao_%': 0.0, 'citacoes_validas_%': 100.0, 'precisao_citacoes_%': 84.6, 'json_valido_%': 100.0, 'nao_consta_incoerente_%': 0.0, 'latencia_media_s': 3.4, 'n': 30}

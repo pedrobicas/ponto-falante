@@ -1,0 +1,108 @@
+{
+  "data_referencia": "2026-11-12",
+  "gerado_em": "2026-11-11T10:31:54-03:00",
+  "desatualizado": false,
+  "motivo_desatualizado": null,
+  "fonte_dados": {
+    "olhovivo": 0,
+    "simulador": 330
+  },
+  "dados_simulados": true,
+  "rede": "rede_ficticia",
+  "parametros": {
+    "atraso_critico_min": 10,
+    "atraso_atencao_min": 5,
+    "intervalo_critico_min": 30,
+    "intervalo_atencao_min": 20
+  },
+  "estatisticas": {
+    "recebidos": 349,
+    "validos": 330,
+    "invalidos": 9,
+    "duplicados": 10,
+    "fora_escopo": 0
+  },
+  "invalidos_por_motivo": {
+    "campo_vazio": 2,
+    "horario_incoerente": 3,
+    "linha_inexistente": 4
+  },
+  "linhas": [
+    {
+      "linha": "1001-10",
+      "status": "CRITICA",
+      "rotulo": "Atraso forte",
+      "atraso_medio_min": 14.7,
+      "intervalo_max_min": 26,
+      "passagens": 60,
+      "acessiveis_pct": 63.3,
+      "fontes": [
+        "simulador"
+      ],
+      "motivo": "atraso médio 14.7 min > 10",
+      "frase": "Linha 1001-10: atrasos fortes, em média 15 minutos; maior espera entre ônibus de 26 minutos."
+    },
+    {
+      "linha": "1002-10",
+      "status": "ATENCAO",
+      "rotulo": "Atenção",
+      "atraso_medio_min": 6.8,
+      "intervalo_max_min": 23,
+      "passagens": 60,
+      "acessiveis_pct": 60.0,
+      "fontes": [
+        "simulador"
+      ],
+      "motivo": "atraso médio 6.8 min > 5",
+      "frase": "Linha 1002-10: alguns atrasos, em média 7 minutos; maior espera de 23 minutos."
+    },
+    {
+      "linha": "1005-10",
+      "status": "ATENCAO",
+      "rotulo": "Atenção",
+      "atraso_medio_min": 3.2,
+      "intervalo_max_min": 28,
+      "passagens": 45,
+      "acessiveis_pct": 57.8,
+      "fontes": [
+        "simulador"
+      ],
+      "motivo": "intervalo de 28 min > 20",
+      "frase": "Linha 1005-10: esperas mais longas que o normal entre um ônibus e outro, de até 28 minutos."
+    },
+    {
+      "linha": "1003-10",
+      "status": "OK",
+      "rotulo": "Normal",
+      "atraso_medio_min": 2.0,
+      "intervalo_max_min": 18,
+      "passagens": 75,
+      "acessiveis_pct": 62.7,
+      "fontes": [
+        "simulador"
+      ],
+      "motivo": "dentro dos limites",
+      "frase": "Linha 1003-10: funcionando normalmente."
+    },
+    {
+      "linha": "1004-10",
+      "status": "OK",
+      "rotulo": "Normal",
+      "atraso_medio_min": 1.6,
+      "intervalo_max_min": 17,
+      "passagens": 90,
+      "acessiveis_pct": 55.6,
+      "fontes": [
+        "simulador"
+      ],
+      "motivo": "dentro dos limites",
+      "frase": "Linha 1004-10: funcionando normalmente."
+    }
+  ],
+  "avisos": [
+    "GTFS real indisponível (arquivo ausente: routes.txt); usando rede fictícia documentada"
+  ],
+  "revisao_humana": "Linhas marcadas como atraso forte devem ser conferidas pela equipe da gestora antes de qualquer ação.",
+  "resumo_falado": "Boletim de 12 de novembro. 1 linha com atraso forte. 2 linhas pedindo atenção. Linha 1001-10: atrasos fortes, em média 15 minutos; maior espera entre ônibus de 26 minutos. Linha 1002-10: alguns atrasos, em média 7 minutos; maior espera de 23 minutos. Linha 1005-10: esperas mais longas que o normal entre um ônibus e outro, de até 28 minutos.",
+  "html": "<section class=\"boletim\" lang=\"pt-BR\" aria-labelledby=\"titulo-boletim\">\n  <h2 id=\"titulo-boletim\">Boletim de atrasos: 12 de novembro</h2>\n  <p class=\"resumo\">Boletim de 12 de novembro. 1 linha com atraso forte. 2 linhas pedindo atenção. Linha 1001-10: atrasos fortes, em média 15 minutos; maior espera entre ônibus de 26 minutos. Linha 1002-10: alguns atrasos, em média 7 minutos; maior espera de 23 minutos. Linha 1005-10: esperas mais longas que o normal entre um ônibus e outro, de até 28 minutos.</p>\n  <ul class=\"linhas\">\n    <li class=\"status-critica\"><strong>Atraso forte</strong>: Linha 1001-10: atrasos fortes, em média 15 minutos; maior espera entre ônibus de 26 minutos.</li>\n    <li class=\"status-atencao\"><strong>Atenção</strong>: Linha 1002-10: alguns atrasos, em média 7 minutos; maior espera de 23 minutos.</li>\n    <li class=\"status-atencao\"><strong>Atenção</strong>: Linha 1005-10: esperas mais longas que o normal entre um ônibus e outro, de até 28 minutos.</li>\n    <li class=\"status-ok\"><strong>Normal</strong>: Linha 1003-10: funcionando normalmente.</li>\n    <li class=\"status-ok\"><strong>Normal</strong>: Linha 1004-10: funcionando normalmente.</li>\n  </ul>\n  <p class=\"origem\">Origem dos dados:\n330 registros simulados.\n  </p>\n  <p class=\"geracao\">Gerado automaticamente em 2026-11-11T10:31:54-03:00. Linhas marcadas como atraso forte devem ser conferidas pela equipe da gestora antes de qualquer ação.</p>\n</section>"
+}

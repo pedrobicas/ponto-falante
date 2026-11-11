@@ -1,0 +1,162 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Fluxo BPMN · Robô de boletim</title>
+<link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.11.1/dist/assets/bpmn-js.css">
+<link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.11.1/dist/assets/diagram-js.css">
+<link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.11.1/dist/assets/bpmn-font/css/bpmn.css">
+<style>body{margin:0;background:#fff}#c{width:100vw;height:100vh}</style></head><body><div id="c"></div>
+<script src="https://unpkg.com/bpmn-js@17.11.1/dist/bpmn-viewer.production.min.js"></script>
+<script type="text/plain" id="xml"><?xml version="1.0" encoding="UTF-8"?>
+<!-- Fluxo do robô de boletim de atrasos do Ponto Falante.
+     Abra em https://demo.bpmn.io (File > Open) para ver e exportar como PNG/SVG. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  id="Defs_PontoFalanteRPA" targetNamespace="http://pontofalante/rpa">
+  <bpmn:process id="Processo_Boletim" name="Robô de boletim de atrasos" isExecutable="false">
+    <bpmn:startEvent id="Inicio" name="Todo dia 06:00">
+      <bpmn:outgoing>f1</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="Timer1"/>
+    </bpmn:startEvent>
+    <bpmn:task id="CarregarConfig" name="Carregar configuração e rede GTFS">
+      <bpmn:incoming>f1</bpmn:incoming><bpmn:outgoing>f2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="GwGTFS" name="GTFS real válido?">
+      <bpmn:incoming>f2</bpmn:incoming><bpmn:outgoing>f3</bpmn:outgoing><bpmn:outgoing>f4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="RedeFicticia" name="Usar rede fictícia e registrar aviso">
+      <bpmn:incoming>f4</bpmn:incoming><bpmn:outgoing>f5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="JoinGTFS">
+      <bpmn:incoming>f3</bpmn:incoming><bpmn:incoming>f5</bpmn:incoming><bpmn:outgoing>f6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="BuscarHistorico" name="GET /historico do MVP (3 tentativas, backoff)">
+      <bpmn:incoming>f6</bpmn:incoming><bpmn:outgoing>f7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="GwMVP" name="MVP respondeu?">
+      <bpmn:incoming>f7</bpmn:incoming><bpmn:outgoing>f8</bpmn:outgoing><bpmn:outgoing>f9</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Desatualizado" name="Marcar boletim anterior como desatualizado">
+      <bpmn:incoming>f9</bpmn:incoming><bpmn:outgoing>f10</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Validar" name="Para cada registro: validar e remover duplicados">
+      <bpmn:incoming>f8</bpmn:incoming><bpmn:outgoing>f11</bpmn:outgoing>
+      <bpmn:standardLoopCharacteristics/>
+    </bpmn:task>
+    <bpmn:task id="Decidir" name="Para cada linha: calcular atraso e intervalo">
+      <bpmn:incoming>f11</bpmn:incoming><bpmn:outgoing>f12</bpmn:outgoing>
+      <bpmn:standardLoopCharacteristics/>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="GwStatus" name="Atraso > X ou intervalo > Y?">
+      <bpmn:incoming>f12</bpmn:incoming><bpmn:outgoing>f13</bpmn:outgoing><bpmn:outgoing>f14</bpmn:outgoing><bpmn:outgoing>f15</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Critica" name="CRÍTICA"><bpmn:incoming>f13</bpmn:incoming><bpmn:outgoing>f16</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Atencao" name="ATENÇÃO"><bpmn:incoming>f14</bpmn:incoming><bpmn:outgoing>f17</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="Ok" name="OK"><bpmn:incoming>f15</bpmn:incoming><bpmn:outgoing>f18</bpmn:outgoing></bpmn:task>
+    <bpmn:exclusiveGateway id="JoinStatus">
+      <bpmn:incoming>f16</bpmn:incoming><bpmn:incoming>f17</bpmn:incoming><bpmn:incoming>f18</bpmn:incoming><bpmn:outgoing>f19</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Gerar" name="Gerar boletim JSON + HTML e salvar cópia local">
+      <bpmn:incoming>f19</bpmn:incoming><bpmn:outgoing>f20</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="JoinPublicar">
+      <bpmn:incoming>f20</bpmn:incoming><bpmn:incoming>f10</bpmn:incoming><bpmn:outgoing>f21</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Publicar" name="POST /boletim no MVP">
+      <bpmn:incoming>f21</bpmn:incoming><bpmn:outgoing>f22</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="GwPublicou" name="Publicou?">
+      <bpmn:incoming>f22</bpmn:incoming><bpmn:outgoing>f23</bpmn:outgoing><bpmn:outgoing>f24</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="LogFalha" name="Registrar falha (cópia local mantida)">
+      <bpmn:incoming>f24</bpmn:incoming><bpmn:outgoing>f25</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Auditar" name="Gravar log e auditoria">
+      <bpmn:incoming>f23</bpmn:incoming><bpmn:incoming>f25</bpmn:incoming><bpmn:outgoing>f26</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="Fim" name="Boletim disponível em GET /boletim"><bpmn:incoming>f26</bpmn:incoming></bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="f1" sourceRef="Inicio" targetRef="CarregarConfig"/>
+    <bpmn:sequenceFlow id="f2" sourceRef="CarregarConfig" targetRef="GwGTFS"/>
+    <bpmn:sequenceFlow id="f3" name="sim" sourceRef="GwGTFS" targetRef="JoinGTFS"/>
+    <bpmn:sequenceFlow id="f4" name="não" sourceRef="GwGTFS" targetRef="RedeFicticia"/>
+    <bpmn:sequenceFlow id="f5" sourceRef="RedeFicticia" targetRef="JoinGTFS"/>
+    <bpmn:sequenceFlow id="f6" sourceRef="JoinGTFS" targetRef="BuscarHistorico"/>
+    <bpmn:sequenceFlow id="f7" sourceRef="BuscarHistorico" targetRef="GwMVP"/>
+    <bpmn:sequenceFlow id="f8" name="sim" sourceRef="GwMVP" targetRef="Validar"/>
+    <bpmn:sequenceFlow id="f9" name="não" sourceRef="GwMVP" targetRef="Desatualizado"/>
+    <bpmn:sequenceFlow id="f10" sourceRef="Desatualizado" targetRef="JoinPublicar"/>
+    <bpmn:sequenceFlow id="f11" sourceRef="Validar" targetRef="Decidir"/>
+    <bpmn:sequenceFlow id="f12" sourceRef="Decidir" targetRef="GwStatus"/>
+    <bpmn:sequenceFlow id="f13" name="acima do crítico" sourceRef="GwStatus" targetRef="Critica"/>
+    <bpmn:sequenceFlow id="f14" name="entre limites" sourceRef="GwStatus" targetRef="Atencao"/>
+    <bpmn:sequenceFlow id="f15" name="abaixo" sourceRef="GwStatus" targetRef="Ok"/>
+    <bpmn:sequenceFlow id="f16" sourceRef="Critica" targetRef="JoinStatus"/>
+    <bpmn:sequenceFlow id="f17" sourceRef="Atencao" targetRef="JoinStatus"/>
+    <bpmn:sequenceFlow id="f18" sourceRef="Ok" targetRef="JoinStatus"/>
+    <bpmn:sequenceFlow id="f19" sourceRef="JoinStatus" targetRef="Gerar"/>
+    <bpmn:sequenceFlow id="f20" sourceRef="Gerar" targetRef="JoinPublicar"/>
+    <bpmn:sequenceFlow id="f21" sourceRef="JoinPublicar" targetRef="Publicar"/>
+    <bpmn:sequenceFlow id="f22" sourceRef="Publicar" targetRef="GwPublicou"/>
+    <bpmn:sequenceFlow id="f23" name="sim" sourceRef="GwPublicou" targetRef="Auditar"/>
+    <bpmn:sequenceFlow id="f24" name="não" sourceRef="GwPublicou" targetRef="LogFalha"/>
+    <bpmn:sequenceFlow id="f25" sourceRef="LogFalha" targetRef="Auditar"/>
+    <bpmn:sequenceFlow id="f26" sourceRef="Auditar" targetRef="Fim"/>
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="Diagrama">
+    <bpmndi:BPMNPlane id="Plano" bpmnElement="Processo_Boletim">
+      <bpmndi:BPMNShape id="s_Inicio" bpmnElement="Inicio"><dc:Bounds x="20" y="182" width="36" height="36"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_CarregarConfig" bpmnElement="CarregarConfig"><dc:Bounds x="90" y="160" width="120" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_GwGTFS" bpmnElement="GwGTFS" isMarkerVisible="true"><dc:Bounds x="240" y="175" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_RedeFicticia" bpmnElement="RedeFicticia"><dc:Bounds x="320" y="290" width="120" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_JoinGTFS" bpmnElement="JoinGTFS" isMarkerVisible="true"><dc:Bounds x="470" y="175" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_BuscarHistorico" bpmnElement="BuscarHistorico"><dc:Bounds x="550" y="160" width="130" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_GwMVP" bpmnElement="GwMVP" isMarkerVisible="true"><dc:Bounds x="710" y="175" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_Desatualizado" bpmnElement="Desatualizado"><dc:Bounds x="790" y="0" width="140" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_Validar" bpmnElement="Validar"><dc:Bounds x="790" y="160" width="140" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_Decidir" bpmnElement="Decidir"><dc:Bounds x="960" y="160" width="140" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_GwStatus" bpmnElement="GwStatus" isMarkerVisible="true"><dc:Bounds x="1130" y="175" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_Critica" bpmnElement="Critica"><dc:Bounds x="1210" y="60" width="100" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_Atencao" bpmnElement="Atencao"><dc:Bounds x="1210" y="170" width="100" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_Ok" bpmnElement="Ok"><dc:Bounds x="1210" y="280" width="100" height="60"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_JoinStatus" bpmnElement="JoinStatus" isMarkerVisible="true"><dc:Bounds x="1340" y="175" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_Gerar" bpmnElement="Gerar"><dc:Bounds x="1420" y="160" width="140" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_JoinPublicar" bpmnElement="JoinPublicar" isMarkerVisible="true"><dc:Bounds x="1590" y="175" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_Publicar" bpmnElement="Publicar"><dc:Bounds x="1670" y="160" width="120" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_GwPublicou" bpmnElement="GwPublicou" isMarkerVisible="true"><dc:Bounds x="1820" y="175" width="50" height="50"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_LogFalha" bpmnElement="LogFalha"><dc:Bounds x="1900" y="290" width="130" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_Auditar" bpmnElement="Auditar"><dc:Bounds x="2060" y="160" width="120" height="80"/></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="s_Fim" bpmnElement="Fim"><dc:Bounds x="2210" y="182" width="36" height="36"/></bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="e1" bpmnElement="f1"><di:waypoint x="56" y="200"/><di:waypoint x="90" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e2" bpmnElement="f2"><di:waypoint x="210" y="200"/><di:waypoint x="240" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e3" bpmnElement="f3"><di:waypoint x="290" y="200"/><di:waypoint x="470" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e4" bpmnElement="f4"><di:waypoint x="265" y="225"/><di:waypoint x="265" y="330"/><di:waypoint x="320" y="330"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e5" bpmnElement="f5"><di:waypoint x="440" y="330"/><di:waypoint x="495" y="330"/><di:waypoint x="495" y="225"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e6" bpmnElement="f6"><di:waypoint x="520" y="200"/><di:waypoint x="550" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e7" bpmnElement="f7"><di:waypoint x="680" y="200"/><di:waypoint x="710" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e8" bpmnElement="f8"><di:waypoint x="760" y="200"/><di:waypoint x="790" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e9" bpmnElement="f9"><di:waypoint x="735" y="175"/><di:waypoint x="735" y="40"/><di:waypoint x="790" y="40"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e10" bpmnElement="f10"><di:waypoint x="930" y="40"/><di:waypoint x="1615" y="40"/><di:waypoint x="1615" y="175"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e11" bpmnElement="f11"><di:waypoint x="930" y="200"/><di:waypoint x="960" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e12" bpmnElement="f12"><di:waypoint x="1100" y="200"/><di:waypoint x="1130" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e13" bpmnElement="f13"><di:waypoint x="1155" y="175"/><di:waypoint x="1155" y="90"/><di:waypoint x="1210" y="90"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e14" bpmnElement="f14"><di:waypoint x="1180" y="200"/><di:waypoint x="1210" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e15" bpmnElement="f15"><di:waypoint x="1155" y="225"/><di:waypoint x="1155" y="310"/><di:waypoint x="1210" y="310"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e16" bpmnElement="f16"><di:waypoint x="1310" y="90"/><di:waypoint x="1365" y="90"/><di:waypoint x="1365" y="175"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e17" bpmnElement="f17"><di:waypoint x="1310" y="200"/><di:waypoint x="1340" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e18" bpmnElement="f18"><di:waypoint x="1310" y="310"/><di:waypoint x="1365" y="310"/><di:waypoint x="1365" y="225"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e19" bpmnElement="f19"><di:waypoint x="1390" y="200"/><di:waypoint x="1420" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e20" bpmnElement="f20"><di:waypoint x="1560" y="200"/><di:waypoint x="1590" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e21" bpmnElement="f21"><di:waypoint x="1640" y="200"/><di:waypoint x="1670" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e22" bpmnElement="f22"><di:waypoint x="1790" y="200"/><di:waypoint x="1820" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e23" bpmnElement="f23"><di:waypoint x="1870" y="200"/><di:waypoint x="2060" y="200"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e24" bpmnElement="f24"><di:waypoint x="1845" y="225"/><di:waypoint x="1845" y="330"/><di:waypoint x="1900" y="330"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e25" bpmnElement="f25"><di:waypoint x="2030" y="330"/><di:waypoint x="2120" y="330"/><di:waypoint x="2120" y="240"/></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="e26" bpmnElement="f26"><di:waypoint x="2180" y="200"/><di:waypoint x="2210" y="200"/></bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
+</script>
+<script>window.viewer=new BpmnJS({container:'#c'});viewer.importXML(document.getElementById('xml').textContent).then(()=>viewer.get('canvas').zoom('fit-viewport'));</script>
+</body></html>

@@ -1,0 +1,6 @@
+route_id,agency_id,route_short_name,route_long_name,route_type
+1001-10,PF,1001-10,Terminal Aurora - Centro (FICTÍCIA),3
+1002-10,PF,1002-10,Vila Esperança - Metrô Norte (FICTÍCIA),3
+1003-10,PF,1003-10,Jardim Primavera - Hospital Central (FICTÍCIA),3
+1004-10,PF,1004-10,Parque das Árvores - Terminal Sul (FICTÍCIA),3
+1005-10,PF,1005-10,Circular Universidade (FICTÍCIA),3
