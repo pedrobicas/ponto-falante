@@ -1,0 +1,38 @@
+# Configuração do robô de boletim de atrasos do Ponto Falante.
+# Nada sensível aqui: a chave de publicação (RPA_API_KEY) e a URL do MVP
+# podem ser sobrescritas por variáveis de ambiente (ver README).
+
+mvp:
+  url: "http://127.0.0.1:8080"      # sobrescrito por MVP_URL
+  timeout_segundos: 10
+  tentativas: 3                     # tentativas por chamada antes de desistir
+  backoff_inicial_segundos: 2       # espera 2s, 4s, 8s...
+
+gtfs:
+  # Pasta com o GTFS real da SPTrans (routes.txt, stops.txt). Se não existir
+  # ou estiver inválida, o robô usa a rede fictícia e avisa no boletim.
+  pasta: "data/gtfs_sptrans"
+  pasta_ficticia: "data/gtfs_ficticio"
+
+# Escopo monitorado. Listas vazias = monitorar tudo o que vier do histórico.
+monitoramento:
+  linhas: ["1001-10", "1002-10", "1003-10", "1004-10", "1005-10"]
+  pontos: []
+
+# Regras de decisão (hipóteses iniciais, documentadas no README).
+# Uma pessoa da gestora pode ajustar estes limites sem mexer no código.
+regras:
+  atraso_critico_min: 10      # atraso médio acima disso => CRÍTICA
+  atraso_atencao_min: 5       # atraso médio acima disso => ATENÇÃO
+  intervalo_critico_min: 30   # maior intervalo entre ônibus acima disso => CRÍTICA
+  intervalo_atencao_min: 20   # maior intervalo acima disso => ATENÇÃO
+  antecipacao_maxima_min: 60  # previsto antes do programado além disso => inválido
+  atraso_maximo_min: 180      # atraso acima disso => inválido (dado incoerente)
+  minimo_passagens: 3         # menos que isso => SEM_DADOS (não decide no escuro)
+
+saida:
+  pasta: "saida"
+  pasta_logs: "logs"
+
+agendamento:
+  horario: "06:00"            # roda todo dia e gera o boletim do dia anterior

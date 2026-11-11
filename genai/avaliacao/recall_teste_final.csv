@@ -1,0 +1,2 @@
+conjunto,recall@1,recall@3,recall@5,limiar,respondiveis_passam,nao_consta_barradas,acuracia_balanceada
+teste (final),0.733,0.967,1.0,0.86,0.933,0.8,0.867

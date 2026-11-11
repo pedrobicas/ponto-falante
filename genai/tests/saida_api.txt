@@ -1,0 +1,61 @@
+﻿### GET /health
+HTTP 200
+{
+  "status": "ok",
+  "llm": "qwen2.5:3b",
+  "llm_ok": true,
+  "indice_ok": true
+}
+
+### POST /chat Quanto custa a passagem de ônibus em São Paulo?
+HTTP 200
+{
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes": [],
+  "confianca": "media",
+  "nao_consta": true,
+  "modo": "rag_agente",
+  "latencia_ms": 4026
+}
+
+### POST /chat Pessoa com deficiência tem direito a acompanhante de graça no ônibus?
+HTTP 200
+{
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes": [],
+  "confianca": "baixa",
+  "nao_consta": true,
+  "modo": "rag_agente",
+  "latencia_ms": 5497
+}
+
+### POST /chat Qual o horário do último ônibus da linha 875C-10?
+HTTP 200
+{
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes": [],
+  "confianca": "alta",
+  "nao_consta": true,
+  "modo": "rag_agente",
+  "latencia_ms": 731
+}
+
+### POST /chat (pergunta vazia)
+HTTP 422
+{
+  "detail": [
+    {
+      "type": "string_too_short",
+      "loc": [
+        "body",
+        "pergunta"
+      ],
+      "msg": "String should have at least 1 character",
+      "input": "",
+      "ctx": {
+        "min_length": 1
+      }
+    }
+  ]
+}
+

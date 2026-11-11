@@ -1,0 +1,9 @@
+[project]
+name = "pf-rpa"
+version = "1.0.0"
+description = "Robô de boletim de atrasos do Ponto Falante (FIAP GS 2026.2)"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["tests"]

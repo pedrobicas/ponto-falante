@@ -1,0 +1,158 @@
+openapi: 3.0.3
+info:
+  title: Ponto Falante · contratos de integração GenAI e RPA com o backend Spring Boot
+  version: "1.0.0"
+  description: |
+    Contratos entre o backend (Spring Boot) e os módulos Python de GenAI e RPA.
+    Segue o "Prompt 0" do grupo; acréscimos marcados como NOVO.
+    Segredos (RPA_API_KEY, LLM_URL) só em variável de ambiente.
+servers:
+  - url: http://localhost:8080
+    description: Spring Boot (MVP)
+  - url: http://localhost:8001
+    description: Serviço GenAI (FastAPI + Ollama)
+
+paths:
+  /chat:
+    post:
+      summary: Pergunta do cidadão ao assistente (Spring repassa para ${LLM_URL}/chat)
+      description: |
+        O Angular chama o Spring; o Spring chama o serviço GenAI com timeout de 30 s.
+        Se o GenAI falhar, o Spring devolve 200 com RespostaChat de indisponibilidade
+        (confianca=baixa, nao_consta=true). Nenhum dado do usuário é guardado.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PerguntaChat'}
+      responses:
+        "200":
+          description: Resposta fundamentada ou recusa
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RespostaChat'}
+        "422": {description: Pergunta vazia ou longa demais}
+
+  /historico:
+    get:
+      summary: Passagens registradas no dia, de qualquer fonte (RPA e Big Data consomem)
+      parameters:
+        - {name: data, in: query, required: true, schema: {type: string, format: date}, example: "2026-11-12"}
+      responses:
+        "200":
+          description: Lista de passagens
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/Passagem'}
+
+  /boletim:
+    get:
+      summary: Último boletim de atrasos publicado pelo robô (Angular consome)
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Boletim'}
+          description: Boletim mais recente (verifique o campo desatualizado)
+        "404": {description: Nenhum boletim publicado ainda}
+    post:
+      summary: NOVO · Robô RPA publica o boletim do dia (upsert por data_referencia)
+      parameters:
+        - {name: X-API-Key, in: header, required: true, schema: {type: string}, description: "Igual à variável RPA_API_KEY do backend"}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Boletim'}
+      responses:
+        "201": {description: Gravado}
+        "401": {description: Chave ausente ou inválida}
+
+components:
+  schemas:
+    PerguntaChat:
+      type: object
+      required: [pergunta]
+      properties:
+        pergunta: {type: string, minLength: 1, maxLength: 500, example: "Tenho 65 anos, preciso pagar o ônibus?"}
+
+    RespostaChat:
+      type: object
+      required: [resposta, fontes, confianca, nao_consta]
+      properties:
+        resposta: {type: string, description: "Curta, linguagem simples, pronta para leitura em voz"}
+        fontes:
+          type: array
+          items:
+            type: object
+            required: [documento, trecho_id]
+            properties:
+              documento: {type: string}
+              trecho_id: {type: string}
+        confianca: {type: string, enum: [alta, media, baixa]}
+        nao_consta: {type: boolean, description: "true = a base não tem a resposta (recusa)"}
+        modo: {type: string, description: "opcional: configuração usada (rag_agente)"}
+        latencia_ms: {type: integer, description: opcional}
+
+    Passagem:
+      description: Objeto "previsao" do contrato comum + veiculo (NOVO, já anonimizado)
+      type: object
+      required: [ponto, linha, programado_em, previsto_em, fonte]
+      properties:
+        ponto: {type: string}
+        linha: {type: string, example: "8000-10"}
+        sentido: {type: string}
+        veiculo: {type: string, description: "NOVO · hash do prefixo do veículo; usado para deduplicar"}
+        programado_em: {type: string, pattern: '^\d{2}:\d{2}$'}
+        previsto_em: {type: string, pattern: '^\d{2}:\d{2}$', description: "horário em que passou/está previsto"}
+        minutos: {type: integer}
+        acessivel: {type: boolean}
+        fonte: {type: string, enum: [olhovivo, simulador]}
+        atualizado_em: {type: string, format: date-time}
+
+    Boletim:
+      type: object
+      required: [data_referencia, gerado_em, desatualizado, linhas, resumo_falado]
+      properties:
+        data_referencia: {type: string, format: date}
+        gerado_em: {type: string, format: date-time}
+        desatualizado: {type: boolean}
+        motivo_desatualizado: {type: string, nullable: true}
+        fonte_dados:
+          type: object
+          properties:
+            olhovivo: {type: integer}
+            simulador: {type: integer}
+        dados_simulados: {type: boolean}
+        rede: {type: string, nullable: true, enum: [gtfs_sptrans, rede_ficticia]}
+        parametros: {type: object, additionalProperties: {type: number}}
+        estatisticas:
+          type: object
+          properties:
+            recebidos: {type: integer}
+            validos: {type: integer}
+            invalidos: {type: integer}
+            duplicados: {type: integer}
+            fora_escopo: {type: integer}
+        invalidos_por_motivo: {type: object, additionalProperties: {type: integer}}
+        linhas:
+          type: array
+          items:
+            type: object
+            properties:
+              linha: {type: string}
+              status: {type: string, enum: [CRITICA, ATENCAO, OK, SEM_DADOS]}
+              rotulo: {type: string}
+              atraso_medio_min: {type: number, nullable: true}
+              intervalo_max_min: {type: integer, nullable: true}
+              passagens: {type: integer}
+              acessiveis_pct: {type: number, nullable: true}
+              fontes: {type: array, items: {type: string}}
+              motivo: {type: string}
+              frase: {type: string, description: "frase pronta para leitura em voz"}
+        avisos: {type: array, items: {type: string}}
+        resumo_falado: {type: string}
+        html: {type: string, description: "fragmento HTML acessível (já escapado)"}
+        revisao_humana: {type: string}

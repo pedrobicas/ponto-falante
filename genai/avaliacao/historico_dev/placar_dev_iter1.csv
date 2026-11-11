@@ -1,0 +1,4 @@
+configuracao,acerto_total_%,acerto_respondiveis_%,recusa_correta_nao_consta_%,alucinacao_%,recusa_indevida_%,citacao_correta_%,sem_fundamentacao_%,citacoes_validas_%,precisao_citacoes_%,json_valido_%,nao_consta_incoerente_%,latencia_media_s,n
+sem_contexto,6.7,5.0,10.0,90.0,5.0,0.0,100.0,0.0,0.0,96.7,90.0,0.83,30
+rag,63.3,60.0,70.0,36.7,0.0,0.0,95.7,8.7,0.0,100.0,3.3,1.89,30
+agente,66.7,50.0,100.0,3.3,45.0,100.0,0.0,100.0,84.6,100.0,0.0,2.5,30

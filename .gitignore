@@ -1,0 +1,44 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Modelos e caches pesados
+.cache_embeddings/
+**/.cache_embeddings/
+*.gguf
+*.safetensors
+*.onnx
+
+# Node / Angular
+node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Java
+target/
+*.class
+.mvn/wrapper/maven-wrapper.jar
+
+# Saídas locais
+rpa/saida/
+rpa/data/gtfs_sptrans/
+
+# Segredos (nunca versionar)
+.env
+*.env
+!*.env.example
+**/secrets/
+*.pem
+*.key
+cloudflared/*.json
+
+# IDE / SO
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
