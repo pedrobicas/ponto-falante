@@ -22,7 +22,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = {"pf.sptrans-token=", "pf.genai-url=", "pf.rpa-api-key=chave-local"})
+        properties = {"PF_SPTRANS_MODO=demo", "pf.sptrans-token=token-local-nao-enviar",
+                "pf.sptrans-base-url=http://127.0.0.1:1/v2.1", "pf.genai-url=", "pf.rpa-api-key=chave-local"})
 @AutoConfigureMockMvc
 class MvpPostgresIntegracaoTest {
     static final EmbeddedPostgres POSTGRES = iniciarPostgres();

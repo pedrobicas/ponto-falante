@@ -6,13 +6,18 @@ import sys
 from pathlib import Path
 from urllib.parse import urlsplit
 
-from ambiente import carregar
+from ambiente import carregar, normalizar_sptrans_token
 
 RAIZ = Path(__file__).resolve().parents[2]
 
 
 def preparar_ambiente(arquivo: Path) -> dict[str, str]:
     env = carregar(arquivo)
+    modo = env.get("PF_SPTRANS_MODO", "auto").strip().lower()
+    if modo not in {"auto", "demo"}:
+        raise ValueError("PF_SPTRANS_MODO deve ser auto ou demo.")
+    env["PF_SPTRANS_MODO"] = modo
+    env["SPTRANS_TOKEN"] = "" if modo == "demo" else normalizar_sptrans_token(env.get("SPTRANS_TOKEN", ""))
     base = env.get("SPTRANS_BASE_URL") or "https://api.olhovivo.sptrans.com.br/v2.1"
     url = urlsplit(base)
     if url.scheme != "https" and not (url.scheme == "http" and url.hostname in {"127.0.0.1", "localhost", "::1"}):
