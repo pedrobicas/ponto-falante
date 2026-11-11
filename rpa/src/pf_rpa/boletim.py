@@ -138,7 +138,9 @@ def boletim_vazio_desatualizado(data_ref: str, motivo: str, agora: datetime) -> 
     return b
 
 
-_env = Environment(autoescape=select_autoescape(default=True), trim_blocks=True, lstrip_blocks=True)
+# autoescape ativo para todo template (default=True); a regra abaixo não se aplica.
+_env = Environment(  # nosemgrep: python.flask.security.xss.audit.direct-use-of-jinja2.direct-use-of-jinja2
+    autoescape=select_autoescape(default=True), trim_blocks=True, lstrip_blocks=True)
 _TEMPLATE = _env.from_string("""<section class="boletim" lang="pt-BR" aria-labelledby="titulo-boletim">
   <h2 id="titulo-boletim">Boletim de atrasos: {{ data_extenso }}</h2>
   {% if b.desatualizado %}

@@ -13,7 +13,7 @@ public final class DemoLocal {
                 .setServerConfig("listen_addresses", "127.0.0.1")
                 .setServerConfig("max_connections", "20").start()) {
             String java = Path.of(System.getProperty("java.home"), "bin", "java").toString();
-            ProcessBuilder builder = new ProcessBuilder(java, "-Xmx320m", "-XX:+UseSerialGC",
+            ProcessBuilder builder = new ProcessBuilder(java, "-Xmx320m", "-XX:+UseSerialGC", // nosemgrep -- demo local, argumentos fixos
                     "-XX:TieredStopAtLevel=1", "-Xss512k", "-jar",
                     raiz.resolve("backend/target/pontofalante.jar").toString()).inheritIO();
             var env = builder.environment();

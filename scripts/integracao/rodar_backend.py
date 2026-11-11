@@ -40,7 +40,7 @@ def main() -> int:
         if not wrapper.is_file() or not (backend / "pom.xml").is_file():
             raise ValueError("Backend incompleto; informe --backend-dir com pom.xml e Maven Wrapper.")
         print("Iniciando Spring Boot com configuracao local; segredos omitidos.", flush=True)
-        return subprocess.call([str(wrapper), "spring-boot:run"], cwd=backend, env=env)
+        return subprocess.call([str(wrapper), "spring-boot:run"], cwd=backend, env=env)  # nosemgrep -- ferramenta local; argumentos fixos, env do próprio operador
     except ValueError as erro:
         print(f"Backend: {erro}", file=sys.stderr)
     except OSError:

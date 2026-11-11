@@ -17,7 +17,6 @@ from contextlib import asynccontextmanager
 from threading import Lock
 
 from fastapi import Depends, FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from pf_genai import agente, gerador, llm
@@ -50,7 +49,7 @@ async def ciclo_de_vida(_app):
 
 app = FastAPI(title="Ponto Falante · Assistente (LLM local + RAG + agente)", version="1.0.0",
               lifespan=ciclo_de_vida)
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET", "POST"], allow_headers=["*"])
+# Sem CORS: só o Spring Boot (servidor) chama esta API; navegadores nunca falam com ela.
 
 INDISPONIVEL = {"resposta": "O assistente está indisponível agora. Tente de novo em instantes.",
                 "fontes": [], "confianca": "baixa", "nao_consta": True, "modo": "indisponivel"}
