@@ -48,3 +48,5 @@ Thumbs.db
 
 # Copias descartaveis para validar componentes de outros agentes
 .validation/
+.playwright-cli/
+output/playwright/

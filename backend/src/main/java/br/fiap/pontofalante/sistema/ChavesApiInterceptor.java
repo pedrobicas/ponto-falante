@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.HandlerMapping;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -28,7 +29,8 @@ public class ChavesApiInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
         String metodo = req.getMethod();
-        String caminho = req.getRequestURI();
+        // Usa o mapping resolvido pelo Spring, incluindo URLs codificadas e parametros de matriz.
+        String caminho = String.valueOf(req.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE));
         String cabecalho;
         String esperada;
         if ("POST".equals(metodo) && caminho.equals("/api/boletim")) {

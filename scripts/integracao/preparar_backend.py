@@ -29,7 +29,9 @@ def preparar(origem: Path, destino: Path) -> None:
             shutil.copytree(origem / nome, destino / nome, dirs_exist_ok=True)
     testes = destino / "src/test/java"
     testes.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(RAIZ / "tests/backend", testes, dirs_exist_ok=True)
+    legados = RAIZ / "tests/backend"
+    if legados.is_dir():
+        shutil.copytree(legados, testes, dirs_exist_ok=True)
     overlay = RAIZ / "backend/src/main"
     if overlay.is_dir() and not origem.is_relative_to(RAIZ / "backend"):
         shutil.copytree(overlay, destino / "src/main", dirs_exist_ok=True)

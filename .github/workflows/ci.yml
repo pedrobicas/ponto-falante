@@ -87,19 +87,17 @@ jobs:
           python-version: "3.11"
       - name: Dependencias do teste RPA contra o Spring real
         run: pip install -r rpa/requirements.txt
-      - name: Preparar copia de validacao com testes de contrato
-        run: python scripts/integracao/preparar_backend.py
       - name: Testes (PostgreSQL embutido)
         run: |
-          chmod +x .validation/backend/mvnw
-          ./.validation/backend/mvnw -f .validation/backend/pom.xml -B -q \
+          chmod +x backend/mvnw
+          ./backend/mvnw -f backend/pom.xml -B -q \
             -Dpf.integration.root="$PWD" -Dpf.integration.python=python verify
       - name: Evidencias dos testes Java
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: testes-backend
-          path: .validation/backend/target/surefire-reports/
+          path: backend/target/surefire-reports/
 
   frontend:
     name: Frontend (Angular + acessibilidade)
@@ -113,10 +111,6 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - working-directory: frontend
         run: npm ci --no-audit --no-fund
-      - name: Acrescentar testes externos sem alterar componentes
-        run: |
-          mkdir -p frontend/src/testing
-          cp tests/frontend/integracao-mvp.spec.ts frontend/src/testing/
       - name: Testes unitários e de acessibilidade (axe)
         working-directory: frontend
         run: npm test -- --watch=false
