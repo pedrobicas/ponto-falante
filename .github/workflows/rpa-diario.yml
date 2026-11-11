@@ -41,9 +41,10 @@ jobs:
           MVP_URL: ${{ secrets.MVP_URL }}
           RPA_API_KEY: ${{ secrets.RPA_API_KEY }}
           PYTHONPATH: src
+          DATA_REFERENCIA: ${{ inputs.data }}
         run: |
           pip install -q -r requirements.txt
-          if [ -n "${{ inputs.data }}" ]; then python -m pf_rpa.robo --data "${{ inputs.data }}"; else python -m pf_rpa.robo; fi
+          if [ -n "$DATA_REFERENCIA" ]; then python -m pf_rpa.robo --data "$DATA_REFERENCIA"; else python -m pf_rpa.robo; fi
       - name: Guardar logs e boletim como evidência
         if: always()
         uses: actions/upload-artifact@v4
