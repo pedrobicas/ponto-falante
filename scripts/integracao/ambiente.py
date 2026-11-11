@@ -4,6 +4,15 @@ import re
 from pathlib import Path
 
 
+def normalizar_sptrans_token(valor: str) -> str:
+    token = valor.strip()
+    if any(c.isspace() for c in token):
+        raise ValueError("SPTRANS_TOKEN contem espacos internos ou quebras de linha; revise o arquivo local.")
+    if any(ord(c) < 32 or ord(c) == 127 or c == "\ufeff" for c in token):
+        raise ValueError("SPTRANS_TOKEN contem caracteres de controle ou BOM; revise o arquivo local.")
+    return token
+
+
 def carregar(caminho: Path) -> dict[str, str]:
     valores = {}
     if caminho.exists():
