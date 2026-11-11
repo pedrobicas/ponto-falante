@@ -1,0 +1,8 @@
+# Regras padrão do Gitleaks + exceção revisada: as páginas públicas da SPTrans salvas como fonte bruta
+# da base GenAI embutem o token público do widget de acessibilidade Hand Talk. Não é credencial do projeto.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Páginas públicas salvas como fonte bruta da base de conhecimento"
+paths = ['''genai/base/brutos/.*\.html''']

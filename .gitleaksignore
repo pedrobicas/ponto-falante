@@ -1,8 +1,0 @@
-# Falsos positivos revisados: token público do widget de acessibilidade (Hand Talk) embutido nas
-# páginas públicas da SPTrans salvas como fonte bruta da base GenAI. Não é credencial do projeto.
-ebc396b534a414051434d2bdca95db85d414441d:genai/base/brutos/sptrans-bilhete-unico.html:generic-api-key:2294
-ebc396b534a414051434d2bdca95db85d414441d:genai/base/brutos/sptrans-bilhete-pcd.html:generic-api-key:2289
-ebc396b534a414051434d2bdca95db85d414441d:genai/base/brutos/sptrans-gratuidade-60-64.html:generic-api-key:1831
-ebc396b534a414051434d2bdca95db85d414441d:genai/base/brutos/sptrans-bilhete-estudante.html:generic-api-key:2119
-ebc396b534a414051434d2bdca95db85d414441d:genai/base/brutos/sptrans-gratuidade-65-mais.html:generic-api-key:1663
-ebc396b534a414051434d2bdca95db85d414441d:genai/base/brutos/sptrans-tarifas.html:generic-api-key:1895
