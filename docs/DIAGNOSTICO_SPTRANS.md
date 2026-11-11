@@ -20,7 +20,7 @@ Referência oficial: [SPTrans — documentação API, HTTPS e autenticação](ht
 
 - `testar_sptrans.py`: identifica a etapa, status e metadados reduzidos a categorias fixas; limita leitura de erro; não imprime corpo, URL, valores de headers, cookies ou identificadores remotos. Mantém cookie em memória e não repete nem redireciona um 403.
 - `ambiente.py` e launcher: mesma normalização do token; rejeitam espaços internos e controles sem expor o valor. O teste informa se removeu espaços externos, sem alterar o arquivo.
-- `ConfigSptrans.java`: configuração nova, executada antes do binding de `PfProps`. Corrige o default HTTP legado para HTTPS em memória, rejeita HTTP externo e normaliza o token. O cliente original foi inspecionado e preservado: já usa POST, query token, cookie e renovação única após 401. Testes confirmaram que 403 no login ou consulta não dispara repetição.
+- `ConfigSptrans.java`: configuração nova, executada antes do binding de `PfProps`. Corrige o default HTTP legado para HTTPS em memória, rejeita HTTP externo e normaliza o token. O cliente original da equipe foi inspecionado e preservado: já usa POST, query token, cookie e renovação única após 401. Testes confirmaram que 403 no login ou consulta não dispara repetição.
 - `PF_SPTRANS_MODO=demo|auto`: demonstração explícita, independente da chave armazenada. Em demo a aplicação recebe configuração sem token e não consulta a SPTrans. Em auto, falhas externas continuam sendo indisponibilidade, sem esconder dados simulados como reais.
 - `.env` **local e ignorado** recebeu somente `PF_SPTRANS_MODO=demo`; a chave existente foi preservada. Compose/Render têm suporte à variável. Para voltar ao real, validar primeiro o teste direto, trocar o modo para `auto` e reiniciar.
 

@@ -46,7 +46,7 @@ Essa verificação somente lê dados: saúde, status, pontos/previsões de demon
 | RPA → Spring | `MVP_URL=http://localhost:8080/api`; `GET /historico?data=...`; `POST /boletim` com `X-API-Key=${RPA_API_KEY}`; mesmo valor nos dois processos. |
 | Render → PostgreSQL | `DATABASE_URL` é convertido pelo `ConversorDatabaseUrl`; URL JDBC explícita tem prioridade. |
 
-`contratos/openapi-mvp.yaml` é a referência pública atual. O guia antigo `contratos/GUIA_BACKEND_SPRING.md` e partes de `docs/ANALISE_E_ARQUITETURA.md` ainda usam `LLM_URL`, timeout 30 s e rotas sem `/api`: use o mapeamento acima e atualize esses textos ao consolidar. O contrato do microsserviço GenAI continua em `/chat`; o navegador usa `/api/chat` do Spring.
+`contratos/openapi-mvp.yaml` é a referência pública atual. O guia antigo `contratos/GUIA_BACKEND_SPRING.md` e partes de `docs/ANALISE_E_ARQUITETURA.md` ainda usam `LLM_URL`, timeout 30 s e rotas sem `/api`: use o mapeamento acima e atualize esses textos pela equipe ao consolidar. O contrato do microsserviço GenAI continua em `/chat`; o navegador usa `/api/chat` do Spring.
 
 ## Antes do primeiro deploy
 
@@ -57,4 +57,4 @@ Essa verificação somente lê dados: saúde, status, pontos/previsões de demon
 5. Criar serviço/Blueprint no Render e preencher variáveis seguras conforme [SPTRANS.md](SPTRANS.md). Publicação/push não foram feitos.
 6. Configurar secrets Actions `MVP_URL=https://SERVICO.onrender.com/api` e `RPA_API_KEY` para o robô diário. Confirmar a execução manual antes de depender do agendamento.
 
-Para o launcher, Compose e Render desta branch, HTTPS já está configurado. Ao consolidar o backend, trocar também os defaults HTTP em `PfProps.java` e `application.yml` para HTTPS; esses arquivos ativos foram preservados.
+Para o launcher, Compose e Render desta branch, HTTPS já está configurado. Ao consolidar o backend, trocar também os defaults HTTP em `PfProps.java` e `application.yml` para HTTPS; esses arquivos ativos da equipe foram preservados.

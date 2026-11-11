@@ -15,7 +15,7 @@ import java.util.Map;
 public class ConfigSptrans {
     static final String HTTPS = "https://api.olhovivo.sptrans.com.br/v2.1";
 
-    /** Executa antes da vinculacao de PfProps, sem editar o cliente original. */
+    /** Executa antes da vinculacao de PfProps, sem editar o cliente original da equipe. */
     @Bean
     static BeanFactoryPostProcessor configurarSptrans(ConfigurableEnvironment env) {
         return beanFactory -> {
