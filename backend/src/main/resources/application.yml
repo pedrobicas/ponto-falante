@@ -1,0 +1,64 @@
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+  error:
+    include-stacktrace: never
+    include-message: never
+
+spring:
+  application:
+    name: pontofalante
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/pontofalante}
+    username: ${SPRING_DATASOURCE_USERNAME:pontofalante}
+    password: ${SPRING_DATASOURCE_PASSWORD:pontofalante}
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX:5}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    deserialization:
+      fail-on-unknown-properties: false
+    serialization:
+      write-dates-as-timestamps: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    nome: Ponto Falante
+    descricao: Backend do MVP (transporte, assistente, RPA e integrações)
+
+pf:
+  sptrans-token: ${SPTRANS_TOKEN:}
+  sptrans-base-url: ${SPTRANS_BASE_URL:http://api.olhovivo.sptrans.com.br/v2.1}
+  genai-url: ${GENAI_URL:}
+  genai-api-key: ${GENAI_API_KEY:}
+  salt: ${PF_SALT:troque-este-sal-em-producao}
+  rpa-api-key: ${RPA_API_KEY:}
+  visao-api-key: ${VISAO_API_KEY:}
+  dispositivo-api-key: ${DISPOSITIVO_API_KEY:}
+  dados-api-key: ${DADOS_API_KEY:}
+  dev-origin: ${PF_DEV_ORIGIN:http://localhost:4200}
+  chat-limite-por-minuto: ${PF_CHAT_LIMITE_POR_MINUTO:10}

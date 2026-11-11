@@ -6,6 +6,7 @@ services:
   - type: web
     name: ponto-falante
     runtime: docker
+    branch: integracao/mvp
     plan: free
     region: oregon
     dockerfilePath: ./Dockerfile
@@ -27,11 +28,15 @@ services:
       - key: DADOS_API_KEY
         generateValue: true
       - key: SPTRANS_TOKEN
-        sync: false
+        value: ""
+      - key: SPTRANS_BASE_URL
+        value: https://api.olhovivo.sptrans.com.br/v2.1
+      - key: PF_SPTRANS_MODO
+        value: demo
       - key: GENAI_URL
-        sync: false
+        value: ""
       - key: GENAI_API_KEY
-        sync: false
+        generateValue: true
 
 databases:
   - name: ponto-falante-db

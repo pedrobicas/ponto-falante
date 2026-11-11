@@ -1,0 +1,253 @@
+package br.fiap.pontofalante.transporte;
+
+import br.fiap.pontofalante.sistema.ErroApi;
+import br.fiap.pontofalante.sistema.PfProps;
+import br.fiap.pontofalante.transporte.Modelos.DadosPrevisao;
+import br.fiap.pontofalante.transporte.Modelos.Fonte;
+import br.fiap.pontofalante.transporte.Modelos.Linha;
+import br.fiap.pontofalante.transporte.Modelos.OnibusPrevisto;
+import br.fiap.pontofalante.transporte.Modelos.Ponto;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
+
+import java.net.http.HttpClient;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.locks.ReentrantLock;
+
+/** Cliente da API Olho Vivo v2.1 da SPTrans (autenticação por cookie, cache curto, prefixo do veículo anonimizado). */
+@Component
+public class OlhoVivoProvider implements ProvedorTransporte {
+    private static final Logger log = LoggerFactory.getLogger(OlhoVivoProvider.class);
+    static final Duration VALIDADE_SESSAO = Duration.ofMinutes(30);
+
+    private final PfProps props;
+    private final HashVeiculo hasher;
+    private final ObjectMapper mapper;
+    private final RestClient rest;
+    private final ReentrantLock lockAuth = new ReentrantLock();
+
+    private final CacheTtl<List<Ponto>> cachePontos = new CacheTtl<>(Duration.ofMinutes(10), 500);
+    private final CacheTtl<List<Linha>> cacheLinhas = new CacheTtl<>(Duration.ofMinutes(10), 500);
+    private final CacheTtl<DadosPrevisao> cachePrevisoes = new CacheTtl<>(Duration.ofSeconds(20), 500);
+
+    private volatile String cookie;
+    private volatile long autenticadoEmNanos;
+    private volatile boolean ultimaChamadaOk = true;
+    private volatile long verificadoEmNanos;
+
+    public OlhoVivoProvider(PfProps props, HashVeiculo hasher, ObjectMapper mapper) {
+        this.props = props;
+        this.hasher = hasher;
+        this.mapper = mapper;
+        HttpClient http = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(Duration.ofMillis(props.sptransConnectTimeoutMs()))
+                .build();
+        JdkClientHttpRequestFactory fabrica = new JdkClientHttpRequestFactory(http);
+        fabrica.setReadTimeout(Duration.ofMillis(props.sptransReadTimeoutMs()));
+        this.rest = RestClient.builder().baseUrl(props.sptransBaseUrl()).requestFactory(fabrica).build();
+    }
+
+    @Override
+    public Fonte fonte() {
+        return Fonte.OLHO_VIVO;
+    }
+
+    // ---------- autenticação ----------
+
+    private boolean sessaoValida() {
+        return cookie != null && System.nanoTime() - autenticadoEmNanos < VALIDADE_SESSAO.toNanos();
+    }
+
+    private void autenticar() {
+        lockAuth.lock();
+        try {
+            ResponseEntity<String> r = rest.post()
+                    .uri(b -> b.path("/Login/Autenticar").queryParam("token", props.sptransToken()).build())
+                    .retrieve().toEntity(String.class);
+            if (!"true".equalsIgnoreCase(String.valueOf(r.getBody()).trim())) {
+                cookie = null;
+                throw new TransporteIndisponivelException();
+            }
+            List<String> cookies = r.getHeaders().get(HttpHeaders.SET_COOKIE);
+            if (cookies == null || cookies.isEmpty()) {
+                cookie = null;
+                throw new TransporteIndisponivelException();
+            }
+            List<String> pares = new ArrayList<>();
+            for (String c : cookies) {
+                pares.add(c.split(";", 2)[0].trim());
+            }
+            cookie = String.join("; ", pares);
+            autenticadoEmNanos = System.nanoTime();
+        } catch (RestClientException e) {
+            cookie = null;
+            log.warn("Falha ao autenticar na SPTrans: {}", e.getClass().getSimpleName());
+            throw new TransporteIndisponivelException();
+        } finally {
+            lockAuth.unlock();
+        }
+    }
+
+    /** GET autenticado; reautentica uma vez se a sessão expirou (401). */
+    private JsonNode obterJson(String caminho, String parametro, String valor) {
+        try {
+            if (!sessaoValida()) {
+                autenticar();
+            }
+            JsonNode resultado;
+            try {
+                resultado = executarGet(caminho, parametro, valor);
+            } catch (HttpClientErrorException.Unauthorized e) {
+                autenticar();
+                resultado = executarGet(caminho, parametro, valor);
+            }
+            ultimaChamadaOk = true;
+            return resultado;
+        } catch (TransporteIndisponivelException e) {
+            ultimaChamadaOk = false;
+            throw e;
+        } catch (RestClientException e) {
+            ultimaChamadaOk = false;
+            log.warn("Falha ao consultar a SPTrans ({}): {}", caminho, e.getClass().getSimpleName());
+            throw new TransporteIndisponivelException();
+        }
+    }
+
+    private JsonNode executarGet(String caminho, String parametro, String valor) {
+        String corpo = rest.get()
+                .uri(b -> b.path(caminho).queryParam(parametro, valor).build())
+                .header(HttpHeaders.COOKIE, cookie)
+                .retrieve().body(String.class);
+        try {
+            return mapper.readTree(corpo == null || corpo.isBlank() ? "null" : corpo);
+        } catch (Exception e) {
+            throw new RestClientException("JSON inválido da SPTrans");
+        }
+    }
+
+    /** Para o /api/status: true se há token e a SPTrans respondeu/autenticou na última verificação (cache de 60 s). */
+    public boolean disponivel() {
+        long agora = System.nanoTime();
+        if (verificadoEmNanos != 0 && agora - verificadoEmNanos < Duration.ofSeconds(60).toNanos()) {
+            return ultimaChamadaOk && cookie != null;
+        }
+        verificadoEmNanos = agora;
+        try {
+            if (!sessaoValida()) {
+                autenticar();
+            }
+            ultimaChamadaOk = true;
+        } catch (ErroApi e) {
+            ultimaChamadaOk = false;
+        }
+        return ultimaChamadaOk;
+    }
+
+    // ---------- consultas ----------
+
+    @Override
+    public List<Ponto> buscarPontos(String termo) {
+        String chave = termo.trim().toLowerCase(Locale.ROOT);
+        return cachePontos.obter(chave, () -> {
+            JsonNode raiz = obterJson("/Parada/Buscar", "termosBusca", termo.trim());
+            List<Ponto> pontos = new ArrayList<>();
+            if (raiz.isArray()) {
+                for (JsonNode n : raiz) {
+                    pontos.add(new Ponto(n.path("cp").asLong(), n.path("np").asText(""),
+                            textoOuNulo(n, "ed"), numeroOuNulo(n, "py"), numeroOuNulo(n, "px"), Fonte.OLHO_VIVO));
+                }
+            }
+            return pontos;
+        });
+    }
+
+    @Override
+    public List<Linha> buscarLinhas(String termo) {
+        String chave = termo.trim().toLowerCase(Locale.ROOT);
+        return cacheLinhas.obter(chave, () -> {
+            JsonNode raiz = obterJson("/Linha/Buscar", "termosBusca", termo.trim());
+            List<Linha> linhas = new ArrayList<>();
+            if (raiz.isArray()) {
+                for (JsonNode n : raiz) {
+                    int sentido = n.path("sl").asInt(1);
+                    String tp = n.path("tp").asText("");
+                    String ts = n.path("ts").asText("");
+                    linhas.add(new Linha(n.path("cl").asLong(), n.path("lt").asText("") + "-" + n.path("tl").asText(""),
+                            sentido, tp, ts, sentido == 1 ? ts : tp, n.path("lc").asBoolean(false)));
+                }
+            }
+            return linhas;
+        });
+    }
+
+    @Override
+    public DadosPrevisao previsoes(long codigoPonto) {
+        return cachePrevisoes.obter(String.valueOf(codigoPonto), () -> {
+            JsonNode raiz = obterJson("/Previsao/Parada", "codigoParada", String.valueOf(codigoPonto));
+            JsonNode p = raiz.path("p");
+            if (p.isMissingNode() || p.isNull() || !p.isObject()) {
+                throw ErroApi.naoEncontrado("Não encontramos esse ponto de ônibus.");
+            }
+            String hr = raiz.path("hr").asText("");
+            Ponto ponto = new Ponto(p.path("cp").asLong(codigoPonto), p.path("np").asText(""), null,
+                    numeroOuNulo(p, "py"), numeroOuNulo(p, "px"), Fonte.OLHO_VIVO);
+            List<OnibusPrevisto> onibus = new ArrayList<>();
+            for (JsonNode linha : p.path("l")) {
+                int sentido = linha.path("sl").asInt(1);
+                String destino = linha.path(sentido == 1 ? "lt0" : "lt1").asText("");
+                for (JsonNode v : linha.path("vs")) {
+                    String t = v.path("t").asText("");
+                    onibus.add(new OnibusPrevisto(linha.path("c").asText(""), destino, sentido, t,
+                            minutosEntre(hr, t), v.path("a").asBoolean(false),
+                            hasher.hash(v.path("p").asText(""))));
+                }
+            }
+            onibus.sort(Comparator.comparingInt(OnibusPrevisto::minutos));
+            return new DadosPrevisao(ponto, hr, onibus);
+        });
+    }
+
+    // ---------- utilidades ----------
+
+    /** Minutos de hr até t ("HH:MM"), tratando a virada da meia-noite. Valores inválidos viram 0. */
+    static int minutosEntre(String hr, String t) {
+        try {
+            int d = minutosDoDia(t) - minutosDoDia(hr);
+            if (d < -720) {
+                d += 1440;
+            }
+            return Math.max(d, 0);
+        } catch (RuntimeException e) {
+            return 0;
+        }
+    }
+
+    private static int minutosDoDia(String hhmm) {
+        String[] p = hhmm.split(":");
+        return Integer.parseInt(p[0].trim()) * 60 + Integer.parseInt(p[1].trim());
+    }
+
+    private static String textoOuNulo(JsonNode n, String campo) {
+        JsonNode v = n.get(campo);
+        return v == null || v.isNull() || v.asText().isBlank() ? null : v.asText();
+    }
+
+    private static Double numeroOuNulo(JsonNode n, String campo) {
+        JsonNode v = n.get(campo);
+        return v == null || !v.isNumber() ? null : v.asDouble();
+    }
+}

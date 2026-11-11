@@ -2,12 +2,12 @@
 # Estágio 1: frontend (Angular)  →  Estágio 2: backend (Maven, com o Angular em /static)  →  Estágio 3: runtime (JRE, não root)
 
 # ---------- 1. Frontend ----------
-FROM node:22.21-alpine AS frontend
+FROM node:24.16-alpine AS frontend
 WORKDIR /src/frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY frontend/ ./
-RUN npm run build:prod
+RUN npm run build -- --configuration production
 
 # ---------- 2. Backend ----------
 FROM eclipse-temurin:21-jdk-alpine AS backend

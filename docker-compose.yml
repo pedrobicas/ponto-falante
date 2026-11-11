@@ -30,6 +30,8 @@ services:
       SPRING_DATASOURCE_USERNAME: pontofalante
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPTRANS_TOKEN: ${SPTRANS_TOKEN:-}
+      SPTRANS_BASE_URL: ${SPTRANS_BASE_URL:-https://api.olhovivo.sptrans.com.br/v2.1}
+      PF_SPTRANS_MODO: ${PF_SPTRANS_MODO:-auto}
       GENAI_URL: ${GENAI_URL:-http://host.docker.internal:8001}
       GENAI_API_KEY: ${GENAI_API_KEY:-}
       RPA_API_KEY: ${RPA_API_KEY:?defina RPA_API_KEY no .env}
