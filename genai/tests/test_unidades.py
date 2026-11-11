@@ -58,12 +58,15 @@ def test_metricas_de_alucinacao():
 def test_api_chat_contrato(monkeypatch):
     from api import app as modulo
 
+    monkeypatch.setenv("GENAI_API_KEY", "chave-teste-unidades")
+    monkeypatch.delenv("GENAI_AUTH_DESATIVADA", raising=False)
+
     def falso(pergunta, indice):
         return Resultado("agente", RespostaIA(resposta="Sim.", fontes=[{"documento": "Lei", "trecho_id": "lei-1"}],
                                              confianca="alta", nao_consta=False))
     monkeypatch.setattr(modulo.agente, "responder", falso)
     monkeypatch.setattr(modulo, "indice", lambda: None)
-    c = TestClient(modulo.app)
+    c = TestClient(modulo.app, headers={"X-API-Key": "chave-teste-unidades"})
     r = c.post("/chat", json={"pergunta": "Idoso paga ônibus?"})
     assert r.status_code == 200
     corpo = r.json()
@@ -75,9 +78,12 @@ def test_api_chat_contrato(monkeypatch):
 def test_api_degrada_quando_llm_cai(monkeypatch):
     from api import app as modulo
 
+    monkeypatch.setenv("GENAI_API_KEY", "chave-teste-unidades")
+    monkeypatch.delenv("GENAI_AUTH_DESATIVADA", raising=False)
+
     def quebra(pergunta, indice):
         raise ConnectionError("ollama fora")
     monkeypatch.setattr(modulo.agente, "responder", quebra)
     monkeypatch.setattr(modulo, "indice", lambda: None)
-    r = TestClient(modulo.app).post("/chat", json={"pergunta": "oi"})
+    r = TestClient(modulo.app, headers={"X-API-Key": "chave-teste-unidades"}).post("/chat", json={"pergunta": "oi"})
     assert r.status_code == 503 and r.json()["nao_consta"] is True

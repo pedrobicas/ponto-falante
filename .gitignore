@@ -45,3 +45,8 @@ Thumbs.db
 
 # Worktrees de trabalho paralelo
 .worktrees/
+
+# Copias descartaveis para validar componentes de outros agentes
+.validation/
+.playwright-cli/
+output/playwright/
