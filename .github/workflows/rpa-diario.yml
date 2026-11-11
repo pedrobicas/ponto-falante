@@ -1,0 +1,55 @@
+# Robô RPA rodando todo dia às 06:00 (horário de Brasília) contra o MVP publicado.
+# Segredos do repositório (Settings → Secrets → Actions): MVP_URL (ex.: https://<app>.onrender.com/api), RPA_API_KEY.
+name: rpa-diario
+
+on:
+  schedule:
+    - cron: "0 9 * * *"      # 09:00 UTC = 06:00 em São Paulo
+  workflow_dispatch:
+    inputs:
+      data:
+        description: "Data de referência AAAA-MM-DD (vazio = ontem)"
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  robo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verificar segredos
+        env:
+          MVP_URL: ${{ secrets.MVP_URL }}
+          RPA_API_KEY: ${{ secrets.RPA_API_KEY }}
+        run: |
+          if [ -z "$MVP_URL" ] || [ -z "$RPA_API_KEY" ]; then
+            echo "::error::Configure os segredos MVP_URL e RPA_API_KEY"; exit 1; fi
+      - name: Acordar o MVP (plano gratuito dorme após 15 min)
+        env:
+          MVP_URL: ${{ secrets.MVP_URL }}
+        run: |
+          for i in $(seq 1 20); do curl -fsS "${MVP_URL%/api}/actuator/health" && break; sleep 10; done
+      - name: Executar robô
+        working-directory: rpa
+        env:
+          MVP_URL: ${{ secrets.MVP_URL }}
+          RPA_API_KEY: ${{ secrets.RPA_API_KEY }}
+          PYTHONPATH: src
+        run: |
+          pip install -q -r requirements.txt
+          if [ -n "${{ inputs.data }}" ]; then python -m pf_rpa.robo --data "${{ inputs.data }}"; else python -m pf_rpa.robo; fi
+      - name: Guardar logs e boletim como evidência
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpa-${{ github.run_id }}
+          path: |
+            rpa/logs/
+            rpa/saida/
+          retention-days: 30

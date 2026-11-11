@@ -1,0 +1,41 @@
+# Blueprint do Render: uma aplicação Docker (Angular + Spring Boot) + PostgreSQL, plano gratuito.
+# Deploy automático só depois que os checks do GitHub Actions passam.
+# Limites do plano gratuito: dorme após 15 min sem tráfego (~1 min para acordar);
+# PostgreSQL gratuito com 1 GB, sem backup, expira 30 dias após a criação.
+services:
+  - type: web
+    name: ponto-falante
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /actuator/health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ponto-falante-db
+          property: connectionString
+      - key: PF_SALT
+        generateValue: true
+      - key: RPA_API_KEY
+        generateValue: true
+      - key: VISAO_API_KEY
+        generateValue: true
+      - key: DISPOSITIVO_API_KEY
+        generateValue: true
+      - key: DADOS_API_KEY
+        generateValue: true
+      - key: SPTRANS_TOKEN
+        sync: false
+      - key: GENAI_URL
+        sync: false
+      - key: GENAI_API_KEY
+        sync: false
+
+databases:
+  - name: ponto-falante-db
+    plan: free
+    region: oregon
+    databaseName: pontofalante
+    user: pontofalante
