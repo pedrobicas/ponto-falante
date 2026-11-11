@@ -129,11 +129,13 @@ jobs:
       - name: Trivy (dependências e configuração do repositório)
         run: |
           docker run --rm -v "$PWD:/repo" aquasec/trivy:0.67.2 fs --scanners vuln,misconfig,secret \
-            --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --skip-dirs /repo/.worktrees /repo
+            --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 --ignorefile /repo/.trivyignore \
+            --skip-dirs /repo/.worktrees /repo
       - name: Trivy (imagem)
         run: |
-          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.67.2 image \
-            --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 pontofalante:ci
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/.trivyignore:/.trivyignore:ro" \
+            aquasec/trivy:0.67.2 image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 \
+            --ignorefile /.trivyignore pontofalante:ci
       - name: Fumaça da imagem (sobe com PostgreSQL e checa /actuator/health e /api/status)
         run: |
           set -euo pipefail

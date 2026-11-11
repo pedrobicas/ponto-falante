@@ -124,7 +124,8 @@ class MvpPostgresIntegracaoTest {
                 comando.add("--api-only");
             }
             Path log = artefatos.resolve(script + ".log");
-            ProcessBuilder builder = new ProcessBuilder(comando).redirectErrorStream(true).redirectOutput(log.toFile());
+            ProcessBuilder builder = new ProcessBuilder(comando) // nosemgrep -- teste: comando fixo do próprio repositório
+                   .redirectErrorStream(true).redirectOutput(log.toFile());
             builder.environment().put("RPA_API_KEY", "chave-local");
             builder.environment().put("PYTHONUTF8", "1");
             Process processo = builder.start();

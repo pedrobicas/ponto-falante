@@ -19,6 +19,10 @@
         <embedded-postgres.version>2.2.2</embedded-postgres.version>
         <!-- CVE-2026-54291 (scram-client): corrigido no driver 42.7.12 -->
         <postgresql.version>42.7.12</postgresql.version>
+        <!-- CVEs de jackson-core/databind (2026-89407, 89425, 68497, 91776, 91777) -->
+        <jackson-bom.version>2.21.8</jackson-bom.version>
+        <!-- CVEs do Tomcat embutido (2026-55276, 65182, 65637, 65905, 68525, 53404) -->
+        <tomcat.version>10.1.61</tomcat.version>
     </properties>
 
     <dependencies>

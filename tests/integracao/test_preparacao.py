@@ -30,7 +30,8 @@ def test_prepara_copia_sem_alterar_pom_original_ou_copiar_segredos(area):
     assert not (destino / ".env").exists()
     assert (destino / "src/test/java/Contrato.java").is_file()
     ns = {"m": preparar_backend.NS}
-    deps = ET.parse(destino / "pom.xml").findall("m:dependencies/m:dependency", ns)
+    arvore = ET.parse(destino / "pom.xml")  # nosemgrep -- pom.xml do próprio repositório
+    deps = arvore.findall("m:dependencies/m:dependency", ns)
     assert [d.findtext("m:artifactId", namespaces=ns) for d in deps] == ["embedded-postgres"]
 
 
