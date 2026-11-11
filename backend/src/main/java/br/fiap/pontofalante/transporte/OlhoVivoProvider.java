@@ -32,6 +32,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class OlhoVivoProvider implements ProvedorTransporte {
     private static final Logger log = LoggerFactory.getLogger(OlhoVivoProvider.class);
     static final Duration VALIDADE_SESSAO = Duration.ofMinutes(30);
+    static final String USER_AGENT = "PontoFalante/1.0 (+https://github.com/pedrobicas/ponto-falante)";
 
     private final PfProps props;
     private final HashVeiculo hasher;
@@ -58,7 +59,9 @@ public class OlhoVivoProvider implements ProvedorTransporte {
                 .build();
         JdkClientHttpRequestFactory fabrica = new JdkClientHttpRequestFactory(http);
         fabrica.setReadTimeout(Duration.ofMillis(props.sptransReadTimeoutMs()));
-        this.rest = RestClient.builder().baseUrl(props.sptransBaseUrl()).requestFactory(fabrica).build();
+        // User-Agent próprio: o Cloudflare da SPTrans barra clientes genéricos (erro 1010, browser_signature_banned).
+        this.rest = RestClient.builder().baseUrl(props.sptransBaseUrl()).requestFactory(fabrica)
+                .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT).build();
     }
 
     @Override
@@ -80,6 +83,7 @@ public class OlhoVivoProvider implements ProvedorTransporte {
                     .retrieve().toEntity(String.class);
             if (!"true".equalsIgnoreCase(String.valueOf(r.getBody()).trim())) {
                 cookie = null;
+                log.warn("SPTrans recusou a chave no login (resposta false): confira o token no portal do desenvolvedor.");
                 throw new TransporteIndisponivelException();
             }
             List<String> cookies = r.getHeaders().get(HttpHeaders.SET_COOKIE);

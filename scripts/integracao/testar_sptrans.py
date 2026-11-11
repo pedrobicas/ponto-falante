@@ -16,6 +16,8 @@ RAIZ = Path(__file__).resolve().parents[2]
 BASE = "https://api.olhovivo.sptrans.com.br/v2.1"
 LIMITE_ERRO = 8192
 LIMITE_JSON = 2_000_000
+# Identifica a aplicação; clientes HTTP sem User-Agent próprio podem ser barrados por WAF.
+USER_AGENT = "PontoFalante/1.0 (+https://github.com/pedrobicas/ponto-falante)"
 
 
 class FalhaSptrans(Exception):
@@ -49,7 +51,17 @@ def resumo_resposta(status, headers, corpo, classificacao=None):
         categoria = "JSON_ERRO"
     if classificacao is not None:
         categoria = classificacao
-    return (f"categoria={categoria}; tipo={tipo}; servidor={servidor}; "
+    codigo_cf = ""
+    if tipo == "application/json":
+        try:
+            dados = json.loads(corpo[:LIMITE_ERRO])
+            # Campos públicos do erro JSON do Cloudflare (código numérico e nome da regra), nunca o corpo inteiro.
+            if isinstance(dados, dict) and isinstance(dados.get("error_code"), int):
+                nome = str(dados.get("error_name", ""))[:40]
+                codigo_cf = f"cloudflare_erro={dados['error_code']}; cloudflare_nome={nome}; "
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            pass
+    return (f"categoria={categoria}; {codigo_cf}tipo={tipo}; servidor={servidor}; "
             f"bytes_lidos={min(len(corpo), LIMITE_ERRO)}; amostra_limitada={'sim' if len(corpo) > LIMITE_ERRO else 'nao'}; "
             f"redirecionamento={'presente' if headers.get('Location') else 'ausente'}; corpo=omitido")
 
@@ -78,7 +90,7 @@ def obter_json(cliente, requisicao, etapa, timeout):
                            f"{resumo_resposta(status, headers, corpo, 'JSON_INVALIDO')}") from None
 
 
-def testar(token: str, base: str, busca: str, timeout: float) -> int:
+def testar(token: str, base: str, busca: str, timeout: float, user_agent: str = USER_AGENT) -> int:
     token = normalizar_sptrans_token(token)
     url = urlsplit(base)
     local = url.hostname in {"127.0.0.1", "localhost", "::1"}
@@ -90,7 +102,7 @@ def testar(token: str, base: str, busca: str, timeout: float) -> int:
     cliente = build_opener(HTTPCookieProcessor(cookies), SemRedirecionamento())
     base = base.rstrip("/")
     login = Request(base + "/Login/Autenticar?" + urlencode({"token": token}),
-                    data=b"", method="POST", headers={"Accept": "application/json"})
+                    data=b"", method="POST", headers={"Accept": "application/json", "User-Agent": user_agent})
     autorizado, status, _ = obter_json(cliente, login, "login", timeout)
     if autorizado is not True:
         raise FalhaSptrans(f"etapa=login; HTTP {status}; categoria=AUTENTICACAO_RECUSADA; "
@@ -99,7 +111,7 @@ def testar(token: str, base: str, busca: str, timeout: float) -> int:
         raise FalhaSptrans(f"etapa=login; HTTP {status}; categoria=SESSAO_AUSENTE; corpo=omitido")
     print(f"SPTrans: etapa=login; HTTP {status}; autenticacao=OK; sessao=preservada.", flush=True)
     consulta = Request(base + "/Linha/Buscar?" + urlencode({"termosBusca": busca}),
-                       headers={"Accept": "application/json"})
+                       headers={"Accept": "application/json", "User-Agent": user_agent})
     linhas, status, _ = obter_json(cliente, consulta, "consulta_linhas", timeout)
     if not isinstance(linhas, list):
         raise FalhaSptrans(f"etapa=consulta_linhas; HTTP {status}; categoria=CONTRATO_INVALIDO; corpo=omitido")
@@ -113,6 +125,7 @@ def main() -> int:
     parser.add_argument("--base-url", help="Padrao: SPTRANS_BASE_URL ou HTTPS oficial.")
     parser.add_argument("--busca", default="8000")
     parser.add_argument("--timeout", type=float, default=15)
+    parser.add_argument("--user-agent", default=USER_AGENT, help="Padrao: identificacao da aplicacao.")
     args = parser.parse_args()
     try:
         env = carregar(args.env_file)
@@ -127,7 +140,7 @@ def main() -> int:
               f"ajuste_externo={'sim' if bruto != token else 'nao'}; "
               f"proxy_https={'sim' if getproxies().get('https') else 'nao'}; verificacao_TLS=ativa.", flush=True)
         quantidade = testar(token, args.base_url or env.get("SPTRANS_BASE_URL") or BASE,
-                            args.busca, args.timeout)
+                            args.busca, args.timeout, args.user_agent)
         print(f"SPTrans: autenticacao OK; cookie confirmado; {quantidade} linha(s) recebida(s).")
         return 0
     except FalhaSptrans as erro:

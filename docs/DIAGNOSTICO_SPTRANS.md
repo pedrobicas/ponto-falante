@@ -37,3 +37,23 @@ SPTrans: etapa=login; HTTP 403; categoria=JSON_ERRO; tipo=application/json; serv
 ```
 
 Evidências locais ignoradas: `.validation/sptrans-real-final.json` e `.validation/sptrans-spring-verificacao.log`. Nenhum conteúdo bruto da resposta externa ou chave foi salvo nesses arquivos. O diagnóstico reduzido pode ser informado ao suporte da SPTrans pelo usuário; não há envio automático de mensagem ou credencial.
+
+## Atualização (11/11/2026, 16h): causa do 403 identificada
+
+O 403 vinha do Cloudflare da SPTrans com **erro 1010 (`browser_signature_banned`)**: a regra barra o User-Agent
+genérico do cliente HTTP (`Python-urllib`, e o mesmo vale para o `Java-http-client` padrão). Não é a chave.
+
+Correção: o teste direto e o `OlhoVivoProvider` passam a enviar um User-Agent que identifica a aplicação
+(`PontoFalante/1.0 (+https://github.com/pedrobicas/ponto-falante)`), sem imitar navegador. O diagnóstico agora
+mostra só o código e o nome públicos do erro do Cloudflare. Teste de contrato novo garante o cabeçalho.
+
+Resultado real com o User-Agent da aplicação:
+
+```text
+SPTrans: etapa=login; HTTP 200; categoria=AUTENTICACAO_RECUSADA
+```
+
+Ou seja, a requisição chega à SPTrans, mas o login responde `false`: a API não reconhece a chave configurada.
+O formato da chave local está correto (64 caracteres hexadecimais, sem espaços). Próximo passo é do titular da
+conta: conferir no portal do desenvolvedor da SPTrans se a chave está ativa e é a do aplicativo cadastrado, ou
+gerar outra. Com o login respondendo `true` no `testar_sptrans.py`, trocar `PF_SPTRANS_MODO` para `auto`.
