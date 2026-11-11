@@ -1,0 +1,1 @@
+org.springframework.boot.env.EnvironmentPostProcessor=br.fiap.pontofalante.sistema.ConversorDatabaseUrl
