@@ -26,6 +26,8 @@ class OlhoVivoProviderContractTest {
     boolean semCookie;
     boolean expirar;
     boolean falharConsulta;
+    int loginStatus = 200;
+    int consultaStatus = 200;
 
     @BeforeEach void iniciar() throws Exception {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -33,13 +35,13 @@ class OlhoVivoProviderContractTest {
             logins.incrementAndGet();
             if (!semCookie) ex.getResponseHeaders().add("Set-Cookie", "apiCredentials=local; Path=/; HttpOnly");
             byte[] body = (recusar ? "false" : "true").getBytes(StandardCharsets.UTF_8);
-            ex.sendResponseHeaders(200, body.length);
+            ex.sendResponseHeaders(loginStatus, body.length);
             ex.getResponseBody().write(body);
             ex.close();
         });
         server.createContext("/v2.1/Linha/Buscar", ex -> {
             int chamada = consultas.incrementAndGet();
-            int status = falharConsulta ? 500 : expirar && chamada == 1 ? 401 : 200;
+            int status = falharConsulta ? 500 : expirar && chamada == 1 ? 401 : consultaStatus;
             if (!"apiCredentials=local".equals(ex.getRequestHeaders().getFirst("Cookie"))) status = 401;
             byte[] body = "[{\"cl\":1273,\"lt\":\"8000\",\"tl\":10,\"sl\":1,\"tp\":\"RAMOS\",\"ts\":\"LAPA\",\"lc\":false}]".getBytes(StandardCharsets.UTF_8);
             ex.sendResponseHeaders(status, body.length);
@@ -88,5 +90,19 @@ class OlhoVivoProviderContractTest {
     @Test void falhaDaApiNaoViraListaSimulada() {
         falharConsulta = true;
         assertThatThrownBy(() -> provider.buscarLinhas("8000")).isInstanceOf(TransporteIndisponivelException.class);
+    }
+
+    @Test void login403NaoInsisteNemConsultaLinhas() {
+        loginStatus = 403;
+        assertThatThrownBy(() -> provider.buscarLinhas("8000")).isInstanceOf(TransporteIndisponivelException.class);
+        assertThat(logins.get()).isEqualTo(1);
+        assertThat(consultas.get()).isZero();
+    }
+
+    @Test void consulta403NaoRepeteLogin() {
+        consultaStatus = 403;
+        assertThatThrownBy(() -> provider.buscarLinhas("8000")).isInstanceOf(TransporteIndisponivelException.class);
+        assertThat(logins.get()).isEqualTo(1);
+        assertThat(consultas.get()).isEqualTo(1);
     }
 }

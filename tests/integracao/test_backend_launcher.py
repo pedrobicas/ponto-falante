@@ -37,3 +37,24 @@ def test_configuracao_backend_rejeita_http_externo(tmp_path, monkeypatch):
     monkeypatch.setenv("SPTRANS_BASE_URL", "http://api.olhovivo.sptrans.com.br/v2.1")
     with pytest.raises(ValueError, match="HTTPS"):
         preparar_ambiente(tmp_path / ".env")
+
+
+def test_demo_preserva_arquivo_e_desativa_chave_so_no_processo_filho(tmp_path, monkeypatch):
+    from rodar_backend import preparar_ambiente
+    for key in ("PF_SPTRANS_MODO", "SPTRANS_TOKEN", "SPTRANS_BASE_URL"):
+        monkeypatch.delenv(key, raising=False)
+    caminho = tmp_path / ".env"
+    texto = 'SPTRANS_TOKEN=nao-enviar\nPF_SPTRANS_MODO=demo\n'
+    caminho.write_text(texto, encoding="utf-8")
+    env = preparar_ambiente(caminho)
+    assert env["SPTRANS_TOKEN"] == ""
+    assert caminho.read_text(encoding="utf-8") == texto
+
+
+def test_launcher_normaliza_token_igual_ao_diagnostico(tmp_path, monkeypatch):
+    from rodar_backend import preparar_ambiente
+    for key in ("PF_SPTRANS_MODO", "SPTRANS_TOKEN", "SPTRANS_BASE_URL"):
+        monkeypatch.delenv(key, raising=False)
+    caminho = tmp_path / ".env"
+    caminho.write_text('SPTRANS_TOKEN="  token-local  "\n', encoding="utf-8")
+    assert preparar_ambiente(caminho)["SPTRANS_TOKEN"] == "token-local"
