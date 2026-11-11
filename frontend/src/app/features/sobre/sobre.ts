@@ -23,7 +23,7 @@ import { Component } from '@angular/core';
       <ul>
         <li>Os horários são <strong>previsões</strong> estimadas pela SPTrans. Um ônibus previsto pode atrasar ou não passar.</li>
         <li>Quando aparece “Dados de demonstração”, as informações são <strong>simuladas</strong>, só para mostrar como o app funciona.</li>
-        <li>O boletim é gerado por um robô automático e revisado por uma pessoa. Quando está desatualizado, avisamos.</li>
+        <li>O boletim é gerado e publicado automaticamente por um robô. Quando está desatualizado, avisamos.</li>
         <li>O assistente pode errar. Em decisões importantes, confirme com a SPTrans ou a prefeitura.</li>
       </ul>
     </section>

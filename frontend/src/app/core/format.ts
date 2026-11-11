@@ -1,6 +1,6 @@
 /** Texto de minutos: nunca diz "chegou"; é sempre uma previsão. */
 export function textoMinutos(minutos: number): string {
-  if (minutos <= 0) return 'Chegando';
+  if (minutos <= 0) return 'previsto para agora';
   if (minutos === 1) return 'previsto em 1 minuto';
   return `previsto em ${minutos} minutos`;
 }

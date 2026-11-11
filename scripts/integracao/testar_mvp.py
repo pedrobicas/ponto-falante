@@ -1,5 +1,7 @@
 """Smoke test HTTP do MVP publicado ou local, sem modificar dados."""
 import argparse
+import base64
+import hashlib
 import json
 import re
 import sys
@@ -13,6 +15,21 @@ def verificar(base: str, timeout: float = 20, angular: bool = True) -> None:
     def texto(caminho):
         with urlopen(base + caminho, timeout=timeout) as r:
             return r.read().decode("utf-8")
+
+    def pagina(caminho):
+        with urlopen(base + caminho, timeout=timeout) as r:
+            html = r.read().decode("utf-8")
+            politica = r.headers.get("Content-Security-Policy", "")
+        diretivas = {d.split()[0]: d.split()[1:] for d in politica.split(";") if d.split()}
+        fontes = diretivas.get("script-src-elem", diretivas.get("script-src", diretivas.get("default-src")))
+        if fontes is not None:
+            for atributos, codigo in re.findall(r"<script\b([^>]*)>([\s\S]*?)</script>", html, re.I):
+                if re.search(r"\bsrc\s*=", atributos) or not codigo.strip():
+                    continue
+                digest = base64.b64encode(hashlib.sha256(codigo.encode()).digest()).decode()
+                if "'unsafe-inline'" not in fontes and f"'sha256-{digest}'" not in fontes:
+                    raise ValueError("A CSP bloqueia um script inline do build Angular.")
+        return html
 
     def dado(caminho):
         return json.loads(texto(caminho))
@@ -34,7 +51,7 @@ def verificar(base: str, timeout: float = 20, angular: bool = True) -> None:
         raise ValueError("Contrato das previsoes demonstrativas invalido.")
     if angular:
         for rota in ("/", "/sobre"):
-            html = texto(rota)
+            html = pagina(rota)
             if "<app-root" not in html.lower():
                 raise ValueError("Angular compilado ou fallback de navegacao ausente.")
         scripts = re.findall(r'<script\b[^>]*\bsrc=[\"\']([^\"\']+)[\"\']', html, re.I)
@@ -59,6 +76,9 @@ def main():
         verificar(args.url, args.timeout, not args.api_only)
         print("MVP: saude, contratos e previsoes OK" + ("; Angular e navegacao OK." if not args.api_only else "."))
         return 0
+    except ValueError as erro:
+        print(f"MVP: {erro}", file=sys.stderr)
+        return 1
     except Exception:
         print("MVP: verificacao falhou. Confira saude, contratos, build Angular e conectividade; detalhes omitidos.", file=sys.stderr)
         return 1

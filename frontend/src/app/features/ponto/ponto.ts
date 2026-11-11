@@ -26,7 +26,7 @@ export const INTERVALO_ATUALIZACAO_MS = 30_000;
       }
       <p class="faixa">
         <pf-selo-fonte [fonte]="d.fonte" />
-        <span class="ajuda">Ponto {{ d.ponto.codigo }} · horários previstos pela SPTrans</span>
+        <span class="ajuda">Ponto {{ d.ponto.codigo }} · {{ d.fonte === 'SIMULADO' ? 'horários simulados' : 'horários previstos pela SPTrans' }}</span>
       </p>
     }
 
@@ -81,7 +81,7 @@ export const INTERVALO_ATUALIZACAO_MS = 30_000;
                 <p class="onibus__destino">{{ o.destino }}</p>
                 <p class="onibus__tempo">
                   @if (o.minutos <= 0) {
-                    <span aria-hidden="true">➜</span> Chegando
+                    <span aria-hidden="true">➜</span> Previsto agora
                   } @else {
                     {{ tempo(o) }}
                   }
@@ -179,7 +179,7 @@ export class PontoPage {
     this.chaveUltimo = chave;
     if (this.chaveUltimo === undefined || !primeiro) return;
     const frase = `Próximo ônibus: linha ${primeiro.letreiro}, ${primeiro.destino}, ${
-      primeiro.minutos <= 0 ? 'chegando' : textoMinutos(primeiro.minutos)
+      textoMinutos(primeiro.minutos)
     }.`;
     // Texto da região viva só muda quando o primeiro ônibus muda (evita repetir a cada 30 s).
     if (mudou || !this.anuncio()) {
