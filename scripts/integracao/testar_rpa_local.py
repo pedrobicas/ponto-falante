@@ -39,7 +39,7 @@ def main():
             resultado = executar(cfg, data)
             if resultado.codigo != 0 or not resultado.publicado:
                 raise ValueError("O RPA nao confirmou a publicacao do boletim.")
-            with urlopen(cfg.mvp_url + "/boletim/" + data, timeout=15) as resposta:
+            with urlopen(cfg.mvp_url + "/boletim/" + data, timeout=15) as resposta:  # nosemgrep -- MVP_URL configurada pelo operador
                 boletim = json.load(resposta)
             if boletim.get("data_referencia") != data or not boletim.get("linhas") or not boletim.get("recebido_em"):
                 raise ValueError("O boletim nao foi relido corretamente do PostgreSQL.")

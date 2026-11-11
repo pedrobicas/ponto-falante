@@ -36,7 +36,7 @@ def preparar(origem: Path, destino: Path) -> None:
     if overlay.is_dir() and not origem.is_relative_to(RAIZ / "backend"):
         shutil.copytree(overlay, destino / "src/main", dirs_exist_ok=True)
     ET.register_namespace("", NS)
-    tree = ET.parse(destino / "pom.xml")
+    tree = ET.parse(destino / "pom.xml")  # nosemgrep: python.lang.security.use-defused-xml-parse.use-defused-xml-parse -- pom.xml do próprio repositório
     dependencias = tree.getroot().find(f"{{{NS}}}dependencies")
     if dependencias is None:
         raise ValueError("POM sem dependencies.")

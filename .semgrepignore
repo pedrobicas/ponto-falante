@@ -1,0 +1,8 @@
+# Páginas públicas da SPTrans/leis salvas como fonte bruta da base GenAI (não é código do projeto).
+genai/base/brutos/
+# Dependências e artefatos de build (não versionados, listados por segurança).
+node_modules/
+target/
+dist/
+.worktrees/
+.validation/
