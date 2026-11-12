@@ -100,6 +100,15 @@ class MvpPostgresIntegracaoTest {
             "\"dados_simulados\":false,\"fonte_dados\":{\"olhovivo\":0,\"simulador\":100}",
             "\"dados_simulados\":true,\"fonte_dados\":{\"olhovivo\":10,\"simulador\":0}",
             "\"dados_simulados\":false"})
+    @Test void boletimComLinhaCitandoFonteSemRegistrosERejeitado() throws Exception {
+        String body = "{\"data_referencia\":\"2026-11-09\",\"gerado_em\":\"2026-11-10T06:00:00-03:00\","
+                + "\"desatualizado\":false,\"resumo_falado\":\"x\",\"dados_simulados\":true,"
+                + "\"fonte_dados\":{\"olhovivo\":0,\"simulador\":5},"
+                + "\"linhas\":[{\"linha\":\"875A-10\",\"fontes\":[\"olhovivo\"]}]}";
+        mvc.perform(post("/api/boletim").header("X-API-Key", "chave-local")
+                .contentType("application/json").content(body)).andExpect(status().isBadRequest());
+    }
+
     void boletimSemProvenienciaCoerenteERejeitado(String proveniencia) throws Exception {
         String body = "{\"data_referencia\":\"2026-11-09\",\"gerado_em\":\"2026-11-10T06:00:00-03:00\","
                 + "\"desatualizado\":false,\"linhas\":[],\"resumo_falado\":\"x\"," + proveniencia + "}";
