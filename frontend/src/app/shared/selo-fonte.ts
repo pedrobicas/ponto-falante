@@ -8,9 +8,9 @@ import { Selo } from './selo';
   imports: [Selo],
   template: `
     @if (fonte() === 'SIMULADO') {
-      <pf-selo tom="aviso" icone="⚠">Dados de demonstração</pf-selo>
+      <pf-selo tom="aviso" icone="frasco">Dados de demonstração</pf-selo>
     } @else {
-      <pf-selo tom="ok" icone="✔">Dados da SPTrans</pf-selo>
+      <pf-selo tom="ok" icone="certo-circulo">Dados da SPTrans</pf-selo>
     }
   `,
 })

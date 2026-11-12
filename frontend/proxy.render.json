@@ -1,0 +1,7 @@
+{
+  "/api": {
+    "target": "https://ponto-falante.onrender.com",
+    "secure": true,
+    "changeOrigin": true
+  }
+}

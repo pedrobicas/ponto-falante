@@ -6,6 +6,7 @@ import { ErroApi, RespostaChat } from '../../core/models';
 import { PreferencesService } from '../../core/preferences.service';
 import { ErroVoz, SpeechService } from '../../core/speech.service';
 import { Carregando } from '../../shared/carregando';
+import { Icone } from '../../shared/icone';
 
 export interface Mensagem {
   id: number;
@@ -29,90 +30,126 @@ export function confiancaEmPalavras(c: RespostaChat['confianca']): string {
 
 @Component({
   selector: 'pf-assistente',
-  imports: [FormsModule, Carregando],
+  imports: [FormsModule, Carregando, Icone],
   template: `
-    <h1>Assistente</h1>
-    <p class="lead">Pergunte sobre gratuidade, bilhete único, acessibilidade e como usar o ônibus em São Paulo.</p>
-
-    <section class="conversa" aria-label="Conversa" role="log" aria-live="polite">
-      @if (mensagens().length === 0) {
-        <p class="vazio">Nenhuma pergunta ainda. Escreva abaixo, por exemplo: “Tenho 65 anos, preciso pagar o ônibus?”</p>
-      }
-      @for (m of mensagens(); track m.id) {
-        <article class="mensagem">
-          <p class="mensagem__pergunta"><strong>Você perguntou:</strong> {{ m.pergunta }}</p>
-          @if (m.resposta; as r) {
-            @if (!r.disponivel) {
-              <div class="caixa caixa--calmo">
-                <p class="caixa__titulo"><span aria-hidden="true">ℹ</span> O assistente está descansando agora</p>
-                <p>{{ r.resposta || 'O assistente roda no computador de um voluntário e pode estar desligado.' }}</p>
-                <p>O resto do aplicativo continua funcionando: você ainda pode ver os próximos ônibus e o boletim.</p>
-              </div>
-            } @else {
-              <div class="mensagem__resposta">
-                <p class="mensagem__texto"><strong>Resposta:</strong> {{ r.resposta }}</p>
-                @if (r.nao_consta) {
-                  <p class="aviso-inline"><span aria-hidden="true">⚠</span> Não encontrei essa informação nos documentos.</p>
-                }
-                <p class="ajuda"><span aria-hidden="true">●</span> {{ confianca(r) }}</p>
-                @if (r.fontes.length > 0) {
-                  <details>
-                    <summary>Fontes ({{ r.fontes.length }})</summary>
-                    <ul>
-                      @for (f of r.fontes; track f.documento + f.trecho_id) {
-                        <li>{{ f.documento }} · trecho {{ f.trecho_id }}</li>
-                      }
-                    </ul>
-                  </details>
-                }
-                <button type="button" class="botao" (click)="ouvir(r.resposta)" [disabled]="!fala.suportaSintese">
-                  <span aria-hidden="true">🔊</span> Ouvir resposta
-                </button>
-              </div>
-            }
-          }
-          @if (m.erro) {
-            <p class="erro-campo" role="alert"><span aria-hidden="true">✖</span> {{ m.erro }}</p>
-          }
-        </article>
-      }
-      @if (enviando()) {
-        <pf-carregando texto="O assistente está pensando…" />
-      }
+    <section class="cabecalho-pagina">
+      <div class="miolo">
+        <p class="cabecalho-pagina__chapeu"><pf-icone nome="conversa" /> Tire suas dúvidas</p>
+        <h1>Assistente</h1>
+        <p class="lead">Pergunte sobre gratuidade, bilhete único, acessibilidade e como usar o ônibus em São Paulo.</p>
+      </div>
     </section>
 
-    <form class="cartao" (ngSubmit)="enviar()" novalidate>
-      <label for="pergunta" class="rotulo">Sua pergunta</label>
-      <div class="linha-form">
-        <input
-          #campo
-          id="pergunta"
-          name="pergunta"
-          type="text"
-          autocomplete="off"
-          [attr.maxlength]="limite"
-          [(ngModel)]="texto"
-          [attr.aria-invalid]="erroCampo() ? 'true' : null"
-          [attr.aria-describedby]="erroCampo() ? 'pergunta-erro pergunta-privacidade' : 'pergunta-privacidade'"
-        />
-        <button type="submit" class="botao botao--primario" [disabled]="enviando()">Enviar pergunta</button>
-        @if (fala.suportaReconhecimento) {
-          <button type="button" class="botao" (click)="ditar()" [disabled]="fala.ouvindo() || enviando()">
-            <span aria-hidden="true">🎤</span> {{ fala.ouvindo() ? 'Ouvindo…' : 'Falar a pergunta' }}
-          </button>
+    <div class="miolo chat">
+      <section class="conversa" aria-label="Conversa" role="log" aria-live="polite">
+        @if (mensagens().length === 0) {
+          <div class="chat-vazio">
+            <span class="chat-vazio__icone"><pf-icone nome="brilho" /></span>
+            <p class="chat-vazio__titulo">Nenhuma pergunta ainda</p>
+            <p>Escreva abaixo ou toque em uma sugestão. O assistente responde com base em documentos oficiais e mostra as fontes.</p>
+          </div>
         }
-      </div>
-      @if (erroCampo()) {
-        <p id="pergunta-erro" class="erro-campo"><span aria-hidden="true">✖</span> {{ erroCampo() }}</p>
-      }
-      <p id="pergunta-privacidade" class="ajuda">
-        Suas perguntas não são guardadas. Até {{ limite }} caracteres.
-      </p>
-      <label class="opcao">
-        <input type="checkbox" name="auto" [checked]="lerAuto()" (change)="lerAuto.set($any($event.target).checked)" />
-        <span>Ler as respostas em voz alta automaticamente</span>
-      </label>
-    </form>
+        @for (m of mensagens(); track m.id) {
+          <article class="troca">
+            <div class="balao balao--voce">
+              <p class="balao__autor">Você</p>
+              <p>{{ m.pergunta }}</p>
+            </div>
+            @if (m.resposta; as r) {
+              @if (!r.disponivel) {
+                <div class="balao balao--calmo">
+                  <p class="balao__autor"><pf-icone nome="lua" /> Assistente</p>
+                  <p class="balao__titulo">O assistente está descansando agora</p>
+                  <p>{{ r.resposta || 'O assistente roda no computador de um voluntário e pode estar desligado.' }}</p>
+                  <p>O resto do aplicativo continua funcionando: você ainda pode ver os próximos ônibus e o boletim.</p>
+                </div>
+              } @else {
+                <div class="balao balao--assistente">
+                  <p class="balao__autor"><pf-icone nome="brilho" /> Assistente</p>
+                  <p class="balao__texto">{{ r.resposta }}</p>
+                  @if (r.nao_consta) {
+                    <p class="aviso-inline"><pf-icone nome="alerta" /> Não encontrei essa informação nos documentos.</p>
+                  }
+                  <p class="confianca confianca--{{ r.confianca }}">
+                    <span class="confianca__barras" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span>{{ confianca(r) }}</span>
+                  </p>
+                  @if (r.fontes.length > 0) {
+                    <div class="fontes">
+                      <p class="fontes__titulo">Fontes ({{ r.fontes.length }})</p>
+                      <ul class="fontes__lista">
+                        @for (f of r.fontes; track f.documento + f.trecho_id) {
+                          <li class="fonte-chip">
+                            <pf-icone nome="documento" />
+                            <span>{{ f.documento }} · trecho {{ f.trecho_id }}</span>
+                          </li>
+                        }
+                      </ul>
+                    </div>
+                  }
+                  <button type="button" class="botao botao--discreto" (click)="ouvir(r.resposta)" [disabled]="!fala.suportaSintese">
+                    <pf-icone nome="volume" /> Ouvir resposta
+                  </button>
+                </div>
+              }
+            }
+            @if (m.erro) {
+              <p class="erro-campo" role="alert"><pf-icone nome="erro-circulo" /> {{ m.erro }}</p>
+            }
+          </article>
+        }
+        @if (enviando()) {
+          <pf-carregando texto="O assistente está pensando…" />
+        }
+      </section>
+
+      <form class="compositor" (ngSubmit)="enviar()" novalidate>
+        @if (mensagens().length === 0) {
+          <div class="sugestoes" role="group" aria-label="Sugestões de pergunta">
+            @for (s of sugestoes; track s) {
+              <button type="button" class="chip" (click)="usarSugestao(s)">{{ s }}</button>
+            }
+          </div>
+        }
+        <label for="pergunta" class="rotulo">Sua pergunta</label>
+        <div class="compositor__campo">
+          <input
+            #campo
+            id="pergunta"
+            name="pergunta"
+            type="text"
+            autocomplete="off"
+            [attr.maxlength]="limite"
+            [(ngModel)]="texto"
+            [attr.aria-invalid]="erroCampo() ? 'true' : null"
+            [attr.aria-describedby]="erroCampo() ? 'pergunta-erro pergunta-privacidade' : 'pergunta-privacidade'"
+          />
+          @if (fala.suportaReconhecimento) {
+            <button type="button" class="botao botao--icone" (click)="ditar()" [disabled]="fala.ouvindo() || enviando()">
+              <pf-icone nome="microfone" />
+              <span class="visualmente-oculto">{{ fala.ouvindo() ? 'Ouvindo…' : 'Falar a pergunta' }}</span>
+            </button>
+          }
+          <button type="submit" class="botao botao--primario" [disabled]="enviando()">
+            <pf-icone nome="enviar" /> Enviar<span class="visualmente-oculto"> pergunta</span>
+          </button>
+        </div>
+        @if (fala.ouvindo()) {
+          <p class="ajuda" role="status">Ouvindo… fale a pergunta.</p>
+        }
+        @if (erroCampo()) {
+          <p id="pergunta-erro" class="erro-campo"><pf-icone nome="erro-circulo" /> {{ erroCampo() }}</p>
+        }
+        <p id="pergunta-privacidade" class="ajuda">
+          Suas perguntas não são guardadas. Até {{ limite }} caracteres.
+        </p>
+        <label class="interruptor">
+          <input type="checkbox" name="auto" [checked]="lerAuto()" (change)="lerAuto.set($any($event.target).checked)" />
+          <span class="interruptor__trilho" aria-hidden="true"></span>
+          <span>Ler as respostas em voz alta automaticamente</span>
+        </label>
+      </form>
+    </div>
   `,
 })
 export class Assistente {
@@ -122,6 +159,11 @@ export class Assistente {
   private readonly campo = viewChild<ElementRef<HTMLInputElement>>('campo');
 
   protected readonly limite = LIMITE;
+  protected readonly sugestoes = [
+    'Tenho 65 anos, preciso pagar o ônibus?',
+    'Como funciona o bilhete único?',
+    'Como o ônibus ajuda quem usa cadeira de rodas?',
+  ];
   protected texto = '';
   protected readonly mensagens = signal<Mensagem[]>([]);
   protected readonly enviando = signal(false);
@@ -131,6 +173,11 @@ export class Assistente {
 
   protected confianca(r: RespostaChat): string {
     return confiancaEmPalavras(r.confianca);
+  }
+
+  protected usarSugestao(texto: string): void {
+    this.texto = texto;
+    this.campo()?.nativeElement.focus();
   }
 
   protected ouvir(texto: string): void {
