@@ -117,7 +117,7 @@ def main() -> int:
              ("https api.olhovivo v2", "https://api.olhovivo.sptrans.com.br/v2")]
     for nome, bruto in chaves:
         token = bruto.strip().strip('"').strip("'")
-        print(f"\n{nome}: {formato(bruto)}")
+        print(f"\nvariavel {nome} -> {formato(bruto)}")
         for rotulo_base, base in bases:
             for modo in ("query", "form", "get"):
                 print(tentar(f"{rotulo_base} {modo}", base, token, modo, a.timeout))
