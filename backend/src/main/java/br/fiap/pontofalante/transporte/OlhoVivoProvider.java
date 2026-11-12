@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
@@ -19,16 +20,23 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import java.net.URI;
 import java.net.http.HttpClient;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-/** Cliente da API Olho Vivo v2.1 da SPTrans (autenticação por cookie, cache curto, prefixo do veículo anonimizado). */
+/**
+ * Cliente da API Olho Vivo v2.1 (cache curto, prefixo do veículo anonimizado). Dois modos de acesso:
+ * direto na SPTrans (POST /Login/Autenticar com a chave, sessão por cookie) ou pelo gateway oficial da
+ * Prefeitura (apilib), com token OAuth2 client_credentials enviado como Bearer. Os caminhos e o JSON são os mesmos.
+ */
 @Component
 public class OlhoVivoProvider implements ProvedorTransporte {
     private static final Logger log = LoggerFactory.getLogger(OlhoVivoProvider.class);
@@ -47,8 +55,11 @@ public class OlhoVivoProvider implements ProvedorTransporte {
     private final CacheTtl<List<Linha>> cacheLinhas = new CacheTtl<>(Duration.ofMinutes(10), 500);
     private final CacheTtl<DadosPrevisao> cachePrevisoes = new CacheTtl<>(Duration.ofSeconds(20), 500);
 
+    private final boolean viaGateway;
+    /** Credencial atual: pares de cookie (modo direto) ou "Bearer ..." (gateway). */
     private volatile String cookie;
     private volatile long autenticadoEmNanos;
+    private volatile long validadeNanos = VALIDADE_SESSAO.toNanos();
     private volatile boolean ultimaChamadaOk = true;
     private volatile long verificadoEmNanos;
     private volatile long falhaLoginEmNanos;
@@ -64,7 +75,9 @@ public class OlhoVivoProvider implements ProvedorTransporte {
         JdkClientHttpRequestFactory fabrica = new JdkClientHttpRequestFactory(http);
         fabrica.setReadTimeout(Duration.ofMillis(props.sptransReadTimeoutMs()));
         // User-Agent próprio: o Cloudflare da SPTrans barra clientes genéricos (erro 1010, browser_signature_banned).
-        this.rest = RestClient.builder().baseUrl(props.sptransBaseUrl()).requestFactory(fabrica)
+        this.viaGateway = props.usaGatewaySptrans();
+        this.rest = RestClient.builder().baseUrl(viaGateway ? props.sptransGatewayUrl() : props.sptransBaseUrl())
+                .requestFactory(fabrica)
                 .defaultHeader(HttpHeaders.USER_AGENT, USER_AGENT).build();
     }
 
@@ -76,7 +89,7 @@ public class OlhoVivoProvider implements ProvedorTransporte {
     // ---------- autenticação ----------
 
     private boolean sessaoValida() {
-        return cookie != null && System.nanoTime() - autenticadoEmNanos < VALIDADE_SESSAO.toNanos();
+        return cookie != null && System.nanoTime() - autenticadoEmNanos < validadeNanos;
     }
 
     /**
@@ -105,6 +118,10 @@ public class OlhoVivoProvider implements ProvedorTransporte {
             }
             if (sessaoValida() && (cookieRecusado == null || !cookieRecusado.equals(cookie))) {
                 return; // outra thread já autenticou enquanto esta esperava
+            }
+            if (viaGateway) {
+                autenticarGateway();
+                return;
             }
             ResponseEntity<String> r = rest.post()
                     .uri(b -> b.path("/Login/Autenticar").queryParam("token", props.sptransToken()).build())
@@ -136,6 +153,44 @@ public class OlhoVivoProvider implements ProvedorTransporte {
         } finally {
             lockAuth.unlock();
         }
+    }
+
+    /** client_credentials no /token do gateway; o access_token vale até expires_in (com margem de 60 s). */
+    private void autenticarGateway() {
+        String basic = Base64.getEncoder().encodeToString(
+                (props.sptransGatewayChave() + ":" + props.sptransGatewaySegredo()).getBytes(StandardCharsets.UTF_8));
+        String corpo;
+        try {
+            corpo = rest.post().uri(URI.create(props.sptransGatewayTokenUrl()))
+                    .header(HttpHeaders.AUTHORIZATION, "Basic " + basic)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .body("grant_type=client_credentials")
+                    .retrieve().body(String.class);
+        } catch (HttpClientErrorException e) {
+            cookie = null;
+            falhaLoginEmNanos = System.nanoTime();
+            log.warn("Gateway da Prefeitura recusou as credenciais OAuth (HTTP {}): confira Consumer Key/Secret no apilib.",
+                    e.getStatusCode().value());
+            throw new TransporteIndisponivelException();
+        }
+        JsonNode json;
+        try {
+            json = mapper.readTree(corpo == null ? "" : corpo);
+        } catch (Exception e) {
+            json = null;
+        }
+        String acesso = json == null ? "" : json.path("access_token").asText("");
+        if (acesso.isBlank()) {
+            cookie = null;
+            falhaLoginEmNanos = System.nanoTime();
+            log.warn("Gateway da Prefeitura respondeu sem access_token.");
+            throw new TransporteIndisponivelException();
+        }
+        long expiraSeg = json.path("expires_in").asLong(3600);
+        validadeNanos = Duration.ofSeconds(Math.max(30, expiraSeg - 60)).toNanos();
+        cookie = "Bearer " + acesso;
+        autenticadoEmNanos = System.nanoTime();
+        falhaLoginEmNanos = 0;
     }
 
     private boolean falhaRecente() {
@@ -172,7 +227,7 @@ public class OlhoVivoProvider implements ProvedorTransporte {
     private JsonNode executarGet(String caminho, String parametro, String valor) {
         String corpo = rest.get()
                 .uri(b -> b.path(caminho).queryParam(parametro, valor).build())
-                .header(HttpHeaders.COOKIE, cookie)
+                .header(viaGateway ? HttpHeaders.AUTHORIZATION : HttpHeaders.COOKIE, cookie)
                 .retrieve().body(String.class);
         try {
             return mapper.readTree(corpo == null || corpo.isBlank() ? "null" : corpo);

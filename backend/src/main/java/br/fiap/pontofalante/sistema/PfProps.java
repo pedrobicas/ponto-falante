@@ -21,14 +21,24 @@ public record PfProps(
         @DefaultValue("") String visaoApiKey,
         @DefaultValue("") String dispositivoApiKey,
         @DefaultValue("") String dadosApiKey,
-        @DefaultValue("http://localhost:4200") String devOrigin) {
+        @DefaultValue("http://localhost:4200") String devOrigin,
+        @DefaultValue("") String sptransGatewayChave,
+        @DefaultValue("") String sptransGatewaySegredo,
+        @DefaultValue("https://gateway.apilib.prefeitura.sp.gov.br/sptrans/olhovivo/v2.1") String sptransGatewayUrl,
+        @DefaultValue("https://gateway.apilib.prefeitura.sp.gov.br/token") String sptransGatewayTokenUrl) {
 
     private static boolean preenchido(String s) {
         return s != null && !s.isBlank();
     }
 
+    /** Há credencial para dados reais: chave direta da Olho Vivo ou credenciais OAuth do gateway da Prefeitura. */
     public boolean temTokenSptrans() {
-        return preenchido(sptransToken);
+        return preenchido(sptransToken) || usaGatewaySptrans();
+    }
+
+    /** Gateway oficial (apilib.prefeitura.sp.gov.br): OAuth2 client_credentials, sem /Login/Autenticar. */
+    public boolean usaGatewaySptrans() {
+        return preenchido(sptransGatewayChave) && preenchido(sptransGatewaySegredo);
     }
 
     public boolean temGenai() {

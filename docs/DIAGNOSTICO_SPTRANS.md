@@ -66,3 +66,70 @@ respondeu **`false`**. Como o mesmo resultado aparece fora do projeto, a recusa 
 não do código. O MVP continua em `PF_SPTRANS_MODO=demo`, com os dados identificados como SIMULADO na interface e
 na API. Encaminhamento: contato com a área de desenvolvedores da SPTrans ou criação de um novo aplicativo no portal;
 quando o teste direto (`scripts/integracao/testar_sptrans.py`) responder `autenticacao OK`, trocar para `auto`.
+
+## Investigação aprofundada e gateway da Prefeitura (12/11/2026)
+
+### Login direto: matriz de variações
+
+`scripts/integracao/diagnosticar_sptrans.py` testa a chave do `.env` sem imprimi-la (só comprimento e alfabeto)
+em host, protocolo, versão e forma de envio. Saída completa em
+[evidencias/sptrans_matriz_login.txt](evidencias/sptrans_matriz_login.txt):
+
+| Variação | Resultado |
+|---|---|
+| HTTPS e HTTP, v2.1, `POST ?token=` (forma documentada) | HTTP 200, `false`, sem cookie |
+| Token no corpo (form) | HTTP 404 |
+| `GET` | HTTP 405 |
+| Versão `v2` | HTTP 500 |
+| Chave em maiúsculas | HTTP 200, `false` |
+| **Controle: chave inválida (64 zeros)** | **HTTP 200, `false`** |
+
+A chave tem o formato esperado (64 hexadecimais minúsculos, sem aspas, espaços, BOM ou caracteres invisíveis).
+O ponto decisivo é o controle: a API responde exatamente igual a uma chave válida recém-homologada e a uma chave
+inventada. Somado ao teste do titular (duas aplicações diferentes, PowerShell, Git Bash e navegador, todos com
+`false`), não há variação de requisição do nosso lado que mude a resposta. O código do cliente segue a documentação
+e o fluxo (login, cookie `apiCredentials`, consultas) está coberto por testes de contrato.
+
+### Gateway oficial da Prefeitura: alternativa funcional
+
+`https://gateway.apilib.prefeitura.sp.gov.br/sptrans/olhovivo/v2.1` é um WSO2 API Manager da Prefeitura
+(Secretaria de Inovação e Tecnologia). A loja `https://apilib.prefeitura.sp.gov.br/store/` publica a API
+**OlhoVivo v2.1** (provedor admin, atualizada em 02/10/2026, status PUBLICADO). A especificação OpenAPI pública
+foi salva em [evidencias/olhovivo_gateway_openapi.json](evidencias/olhovivo_gateway_openapi.json). Verificado:
+
+- Os mesmos caminhos da Olho Vivo (`/Linha/Buscar`, `/Parada/Buscar`, `/Previsao/Parada`, `/Posicao` etc.), todos `GET`,
+  com o mesmo JSON. **Não existe `/Login/Autenticar`**: a autenticação com a SPTrans é feita pelo gateway.
+- Segurança OAuth2: sem cabeçalho, o gateway responde 401 `900902 Missing Credentials`; com Bearer inválido,
+  401 `900901 Invalid Credentials`.
+- Emissão de token: `POST https://gateway.apilib.prefeitura.sp.gov.br/token` com `grant_type=client_credentials`
+  e Basic `ConsumerKey:ConsumerSecret`. Com credenciais fictícias responde 401 `invalid_client`, ou seja, o fluxo
+  está ativo.
+
+Credenciais exigidas: uma conta na loja apilib, uma aplicação criada lá, a inscrição dessa aplicação na API OlhoVivo
+v2.1 e o par **Consumer Key / Consumer Secret** gerado em "Chaves de Produção". A chave do portal da SPTrans não é
+usada nesse caminho.
+
+### O que foi implementado
+
+- `OlhoVivoProvider` ganhou o modo gateway: obtém o token por `client_credentials`, guarda até `expires_in` (com
+  margem de 60 s), envia `Authorization: Bearer` e, se receber 401, gera um token novo uma única vez. Falha de
+  credencial entra na mesma espera compartilhada de 30 s do login direto e o site continua respondendo.
+- Variáveis `SPTRANS_GATEWAY_CHAVE` e `SPTRANS_GATEWAY_SEGREDO` (Render com `sync: false`, `.env.example`,
+  `docker-compose.yml`). Quando as duas estão preenchidas, o gateway tem prioridade sobre `SPTRANS_TOKEN`.
+  `PF_SPTRANS_MODO=demo` continua desligando qualquer chamada externa, inclusive ao gateway.
+- URLs do gateway validadas como HTTPS, sem credenciais ou parâmetros.
+- Testes: `OlhoVivoGatewayContractTest` (token único reutilizado, Bearer nas consultas, nenhum login direto,
+  credencial recusada sem consulta, token revogado renovado uma vez) e dois testes de configuração.
+- `diagnosticar_sptrans.py --gateway` testa o fluxo real com as credenciais do `.env`, sem imprimi-las.
+
+### O que depende do titular
+
+1. Criar conta em https://apilib.prefeitura.sp.gov.br/store/ ("Criar Conta").
+2. Em "Aplicações", criar uma aplicação (por exemplo, PontoFalante).
+3. Abrir a API OlhoVivo v2.1, escolher essa aplicação e inscrever (Subscribe).
+4. Na aplicação, em "Chaves de Produção", gerar as chaves e copiar Consumer Key e Consumer Secret.
+5. Colocar no `.env` como `SPTRANS_GATEWAY_CHAVE` e `SPTRANS_GATEWAY_SEGREDO` e rodar
+   `python scripts/integracao/diagnosticar_sptrans.py --gateway`.
+6. Com o teste devolvendo linhas, preencher as mesmas duas variáveis no Render e trocar `PF_SPTRANS_MODO` para `auto`.
+
+Se o gateway também recusar, a reclamação vai ao SP156 (indicado na descrição da API no gateway).
