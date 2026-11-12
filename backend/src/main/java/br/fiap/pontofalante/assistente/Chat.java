@@ -21,7 +21,11 @@ public final class Chat {
     public record FonteCitada(String documento, String trechoId) {
     }
 
+    /**
+     * @param origem TEMPO_REAL (backend consultou a SPTrans ou a demonstração, sem LLM), BASE_OFICIAL (GenAI local com
+     *               fontes oficiais) ou INDISPONIVEL (assistente fora do ar)
+     */
     public record RespostaChat(String resposta, List<FonteCitada> fontes, String confianca, boolean naoConsta,
-                               boolean disponivel, Integer latenciaMs) {
+                               boolean disponivel, Integer latenciaMs, String origem) {
     }
 }

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Repassa a pergunta ao serviço GenAI. Se ele estiver fora (PC desligado, túnel caído, timeout, 4xx/5xx),
+ * Perguntas de tempo real são respondidas pelo backend (AssistenteTempoReal); as demais vão ao serviço GenAI. Se ele estiver fora (PC desligado, túnel caído, timeout, 4xx/5xx),
  * devolve um aviso amigável com disponivel=false e abre um "disjuntor" simples que evita novas tentativas por 30 s.
  * O texto da pergunta nunca é gravado nem registrado em log.
  */
@@ -34,10 +34,12 @@ public class ChatService {
 
     private final PfProps props;
     private final RestClient rest;
+    private final AssistenteTempoReal tempoReal;
     private volatile long circuitoAbertoAteNanos;
 
-    public ChatService(PfProps props) {
+    public ChatService(PfProps props, AssistenteTempoReal tempoReal) {
         this.props = props;
+        this.tempoReal = tempoReal;
         this.rest = ClienteGenai.criar(props, props.genaiConnectTimeoutMs(), props.genaiReadTimeoutMs());
     }
 
@@ -59,6 +61,14 @@ public class ChatService {
     }
 
     public RespostaChat perguntar(String pergunta, String idCliente) {
+        // Horários e previsões vêm só do backend (SPTrans ou demonstração identificada), nunca do modelo.
+        long inicioTempoReal = System.nanoTime();
+        var direta = tempoReal.responder(pergunta);
+        if (direta.isPresent()) {
+            RespostaChat r = direta.get();
+            return new RespostaChat(r.resposta(), r.fontes(), r.confianca(), r.naoConsta(), r.disponivel(),
+                    (int) ((System.nanoTime() - inicioTempoReal) / 1_000_000), r.origem());
+        }
         if (!props.temGenai()) {
             return indisponivel();
         }
@@ -103,10 +113,10 @@ public class ChatService {
         }
         Integer ms = r.hasNonNull("latencia_ms") ? r.get("latencia_ms").asInt() : (int) msTotal;
         return new RespostaChat(r.get("resposta").asText(), fontes, confianca, r.path("nao_consta").asBoolean(false),
-                true, ms);
+                true, ms, "BASE_OFICIAL");
     }
 
     static RespostaChat indisponivel() {
-        return new RespostaChat(MSG_INDISPONIVEL, List.of(), "baixa", true, false, null);
+        return new RespostaChat(MSG_INDISPONIVEL, List.of(), "baixa", true, false, null, "INDISPONIVEL");
     }
 }
