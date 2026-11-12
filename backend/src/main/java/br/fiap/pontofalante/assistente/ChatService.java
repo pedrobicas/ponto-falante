@@ -6,8 +6,16 @@ import br.fiap.pontofalante.sistema.PfProps;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import br.fiap.pontofalante.sistema.ErroApi;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -33,7 +41,24 @@ public class ChatService {
         this.rest = ClienteGenai.criar(props, props.genaiConnectTimeoutMs(), props.genaiReadTimeoutMs());
     }
 
+    /** Identificador pseudônimo do usuário para a cota individual na GenAI: hash salgado do IP, nunca o IP. */
+    public String idCliente(String ip) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(props.salt().getBytes(StandardCharsets.UTF_8));
+            md.update((byte) 0);
+            md.update(String.valueOf(ip).getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(md.digest()).substring(0, 32);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     public RespostaChat perguntar(String pergunta) {
+        return perguntar(pergunta, null);
+    }
+
+    public RespostaChat perguntar(String pergunta, String idCliente) {
         if (!props.temGenai()) {
             return indisponivel();
         }
@@ -44,6 +69,7 @@ public class ChatService {
         try {
             JsonNode r = rest.post().uri("/chat")
                     .header("X-API-Key", props.genaiApiKey() == null ? "" : props.genaiApiKey())
+                    .headers(h -> { if (idCliente != null) h.set("X-PF-Cliente", idCliente); })
                     .body(Map.of("pergunta", pergunta))
                     .retrieve().body(JsonNode.class);
             RespostaChat resposta = converter(r, (System.nanoTime() - inicio) / 1_000_000);
@@ -51,6 +77,10 @@ public class ChatService {
                 throw new IllegalStateException("resposta sem texto");
             }
             return resposta;
+        } catch (HttpClientErrorException.TooManyRequests e) {
+            // Limite da GenAI (individual ou de capacidade): avisa o usuário sem derrubar o assistente para todos.
+            throw new ErroApi(HttpStatus.TOO_MANY_REQUESTS, "MUITAS_PERGUNTAS",
+                    "O assistente está recebendo muitas perguntas agora. Espere um minuto e tente de novo.");
         } catch (Exception e) {
             // Só o tipo da falha vai para o log; nunca a pergunta.
             log.warn("Assistente (GenAI) indisponível: {}", e.getClass().getSimpleName());

@@ -23,6 +23,8 @@ def cliente(monkeypatch):
     monkeypatch.delenv("GENAI_AUTH_DESATIVADA", raising=False)
     monkeypatch.delenv("GENAI_TIMEOUT_S", raising=False)
     monkeypatch.setattr(modulo, "_requisicoes", {}, raising=False)
+    monkeypatch.setattr(modulo, "_global", modulo.deque(), raising=False)
+    monkeypatch.delenv("GENAI_LIMITE_GLOBAL_POR_MINUTO", raising=False)
     monkeypatch.setattr(modulo, "MODO", "agente")
     monkeypatch.setattr(modulo, "indice", lambda: None)
     monkeypatch.setattr(modulo.llm._cliente, "list", lambda: SimpleNamespace(models=[]))
@@ -218,3 +220,26 @@ def test_timeout_nao_acumula_threads_ou_executa_fila_expirada(cliente, monkeypat
             liberar.set()
             assert terminou.wait(2)
     assert chamadas == [PERGUNTA]
+
+
+def test_cota_individual_por_cliente_do_spring(cliente):
+    # Tres usuarios atras do mesmo Spring (mesmo IP do Tunnel) nao dividem a mesma cota.
+    tunel = {"CF-Connecting-IP": "203.0.113.50"}
+    for usuario in ("a1" * 8, "b2" * 8, "c3" * 8):
+        h = {**tunel, "X-PF-Cliente": usuario}
+        assert [enviar(cliente, headers=h).status_code for _ in range(15)] == [200] * 15
+    assert enviar(cliente, headers={**tunel, "X-PF-Cliente": "a1" * 8}).status_code == 200
+
+
+def test_cliente_invalido_cai_no_ip(cliente):
+    h = {"CF-Connecting-IP": "203.0.113.60", "X-PF-Cliente": "nao-e-hex!"}
+    assert [enviar(cliente, headers=h).status_code for _ in range(20)] == [200] * 20
+    assert enviar(cliente, headers=h).status_code == 429
+
+
+def test_limite_global_de_capacidade(cliente, monkeypatch):
+    monkeypatch.setenv("GENAI_LIMITE_GLOBAL_POR_MINUTO", "5")
+    for i in range(5):
+        assert enviar(cliente, headers={"X-PF-Cliente": f"{i:016x}"}).status_code == 200
+    r = enviar(cliente, headers={"X-PF-Cliente": "f" * 16})
+    assert r.status_code == 429 and "Retry-After" in r.headers

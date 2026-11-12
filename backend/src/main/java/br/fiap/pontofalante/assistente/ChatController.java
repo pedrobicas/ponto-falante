@@ -29,15 +29,15 @@ public class ChatController {
             throw new ErroApi(HttpStatus.TOO_MANY_REQUESTS, "MUITAS_PERGUNTAS",
                     "Você fez muitas perguntas seguidas. Espere um minuto e tente de novo.");
         }
-        return service.perguntar(corpo.pergunta());
+        return service.perguntar(corpo.pergunta(), service.idCliente(ipDoCliente(req)));
     }
 
-    /** Atrás do proxy do Render o primeiro IP de X-Forwarded-For é o do cliente. */
+    /**
+     * IP do cliente resolvido pelo Tomcat (server.forward-headers-strategy=native): X-Forwarded-For só é
+     * considerado quando a conexão vem de um proxy confiável (server.tomcat.remoteip.internal-proxies).
+     * Ler o cabeçalho diretamente permitiria trocar de "IP" a cada pergunta e furar o limite.
+     */
     static String ipDoCliente(HttpServletRequest req) {
-        String xff = req.getHeader("X-Forwarded-For");
-        if (xff != null && !xff.isBlank()) {
-            return xff.split(",")[0].trim();
-        }
         return req.getRemoteAddr();
     }
 }

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 /** Cliente da API Olho Vivo v2.1 da SPTrans (autenticação por cookie, cache curto, prefixo do veículo anonimizado). */
@@ -32,6 +33,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class OlhoVivoProvider implements ProvedorTransporte {
     private static final Logger log = LoggerFactory.getLogger(OlhoVivoProvider.class);
     static final Duration VALIDADE_SESSAO = Duration.ofMinutes(30);
+    /** Depois de um login recusado ou com falha, novas tentativas esperam este intervalo (falha compartilhada). */
+    static final Duration ESPERA_APOS_FALHA = Duration.ofSeconds(30);
     static final String USER_AGENT = "PontoFalante/1.0 (+https://github.com/pedrobicas/ponto-falante)";
 
     private final PfProps props;
@@ -48,6 +51,7 @@ public class OlhoVivoProvider implements ProvedorTransporte {
     private volatile long autenticadoEmNanos;
     private volatile boolean ultimaChamadaOk = true;
     private volatile long verificadoEmNanos;
+    private volatile long falhaLoginEmNanos;
 
     public OlhoVivoProvider(PfProps props, HashVeiculo hasher, ObjectMapper mapper) {
         this.props = props;
@@ -75,20 +79,46 @@ public class OlhoVivoProvider implements ProvedorTransporte {
         return cookie != null && System.nanoTime() - autenticadoEmNanos < VALIDADE_SESSAO.toNanos();
     }
 
-    private void autenticar() {
-        lockAuth.lock();
+    /**
+     * Uma única tentativa de login por vez, com espera limitada. Quem esperou reaproveita o resultado:
+     * sessão renovada por outra thread ou falha recente (sem nova chamada à SPTrans durante ESPERA_APOS_FALHA).
+     * @param cookieRecusado cookie que recebeu 401 (null quando a sessão apenas não existe ou expirou)
+     */
+    private void autenticar(String cookieRecusado) {
+        if (falhaRecente()) {
+            throw new TransporteIndisponivelException();
+        }
+        long esperaMs = props.sptransConnectTimeoutMs() + props.sptransReadTimeoutMs() + 1000L;
+        boolean obtido;
         try {
+            obtido = lockAuth.tryLock(esperaMs, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new TransporteIndisponivelException();
+        }
+        if (!obtido) {
+            throw new TransporteIndisponivelException();
+        }
+        try {
+            if (falhaRecente()) {
+                throw new TransporteIndisponivelException();
+            }
+            if (sessaoValida() && (cookieRecusado == null || !cookieRecusado.equals(cookie))) {
+                return; // outra thread já autenticou enquanto esta esperava
+            }
             ResponseEntity<String> r = rest.post()
                     .uri(b -> b.path("/Login/Autenticar").queryParam("token", props.sptransToken()).build())
                     .retrieve().toEntity(String.class);
             if (!"true".equalsIgnoreCase(String.valueOf(r.getBody()).trim())) {
                 cookie = null;
                 log.warn("SPTrans recusou a chave no login (resposta false): confira o token no portal do desenvolvedor.");
+                falhaLoginEmNanos = System.nanoTime();
                 throw new TransporteIndisponivelException();
             }
             List<String> cookies = r.getHeaders().get(HttpHeaders.SET_COOKIE);
             if (cookies == null || cookies.isEmpty()) {
                 cookie = null;
+                falhaLoginEmNanos = System.nanoTime();
                 throw new TransporteIndisponivelException();
             }
             List<String> pares = new ArrayList<>();
@@ -97,8 +127,10 @@ public class OlhoVivoProvider implements ProvedorTransporte {
             }
             cookie = String.join("; ", pares);
             autenticadoEmNanos = System.nanoTime();
+            falhaLoginEmNanos = 0;
         } catch (RestClientException e) {
             cookie = null;
+            falhaLoginEmNanos = System.nanoTime();
             log.warn("Falha ao autenticar na SPTrans: {}", e.getClass().getSimpleName());
             throw new TransporteIndisponivelException();
         } finally {
@@ -106,17 +138,23 @@ public class OlhoVivoProvider implements ProvedorTransporte {
         }
     }
 
+    private boolean falhaRecente() {
+        long falha = falhaLoginEmNanos;
+        return falha != 0 && System.nanoTime() - falha < ESPERA_APOS_FALHA.toNanos();
+    }
+
     /** GET autenticado; reautentica uma vez se a sessão expirou (401). */
     private JsonNode obterJson(String caminho, String parametro, String valor) {
         try {
             if (!sessaoValida()) {
-                autenticar();
+                autenticar(null);
             }
             JsonNode resultado;
+            String cookieUsado = cookie;
             try {
                 resultado = executarGet(caminho, parametro, valor);
             } catch (HttpClientErrorException.Unauthorized e) {
-                autenticar();
+                autenticar(cookieUsado);
                 resultado = executarGet(caminho, parametro, valor);
             }
             ultimaChamadaOk = true;
@@ -152,7 +190,7 @@ public class OlhoVivoProvider implements ProvedorTransporte {
         verificadoEmNanos = agora;
         try {
             if (!sessaoValida()) {
-                autenticar();
+                autenticar(null);
             }
             ultimaChamadaOk = true;
         } catch (ErroApi e) {

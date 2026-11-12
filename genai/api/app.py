@@ -10,6 +10,7 @@ import hmac
 import logging
 import math
 import os
+import re
 import time
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
@@ -30,6 +31,8 @@ _estado: dict = {"indice": None}
 # Preserva a escolha de estratégia do produto (ver RELATORIO.md, seção 7).
 MODO = os.environ.get("PF_MODO", "agente")
 _requisicoes: dict[str, deque[float]] = {}
+_global: deque[float] = deque()
+_CLIENTE_VALIDO = re.compile(r"[0-9a-f]{16,64}")
 _trava_limite = Lock()
 _agora = time.monotonic
 # Mantem no maximo quatro geracoes ativas, inclusive depois de um timeout HTTP.
@@ -72,14 +75,27 @@ async def proteger_chat(request: Request) -> None:
         if not hmac.compare_digest(recebida.encode("utf-8"), esperada.encode("utf-8")):
             raise HTTPException(401, "X-API-Key ausente ou inválida.")
 
-    # O listener deve ficar em loopback, acessível externamente apenas pelo Tunnel.
-    origem = request.headers.get("CF-Connecting-IP") or (request.client.host if request.client else "desconhecido")
+    # Identidade da cota individual. Pelo Tunnel quem conecta é o Spring, então o IP (CF-Connecting-IP) é o
+    # mesmo para todos os usuários: o Spring envia X-PF-Cliente (hash salgado do IP do usuário), aceito só
+    # depois da chave validada acima. Sem ele, cai no IP. A capacidade total é limitada à parte.
+    cliente = request.headers.get("X-PF-Cliente", "")
+    if _CLIENTE_VALIDO.fullmatch(cliente):
+        origem = "cliente:" + cliente
+    else:
+        origem = "ip:" + (request.headers.get("CF-Connecting-IP") or (request.client.host if request.client else "desconhecido"))
+    limite_global = _limite_global()
     agora = _agora()
     with _trava_limite:
-        # Remove também IPs inativos para não acumular memória indefinidamente.
-        for ip, historico in list(_requisicoes.items()):
+        # Remove também identidades inativas para não acumular memória indefinidamente.
+        for chave, historico in list(_requisicoes.items()):
             if historico[-1] <= agora - 60:
-                del _requisicoes[ip]
+                del _requisicoes[chave]
+        while _global and _global[0] <= agora - 60:
+            _global.popleft()
+        if len(_global) >= limite_global:
+            espera = max(1, math.ceil(60 - (agora - _global[0])))
+            raise HTTPException(429, "Assistente com muitas perguntas no momento.",
+                                headers={"Retry-After": str(espera)})
         historico = _requisicoes.setdefault(origem, deque())
         while historico and historico[0] <= agora - 60:
             historico.popleft()
@@ -88,6 +104,14 @@ async def proteger_chat(request: Request) -> None:
             raise HTTPException(429, "Limite de 20 perguntas por minuto excedido.",
                                 headers={"Retry-After": str(espera)})
         historico.append(agora)
+        _global.append(agora)
+
+
+def _limite_global() -> int:
+    try:
+        return max(1, int(os.environ.get("GENAI_LIMITE_GLOBAL_POR_MINUTO", "120")))
+    except ValueError:
+        return 120
 
 
 @app.get("/health")
