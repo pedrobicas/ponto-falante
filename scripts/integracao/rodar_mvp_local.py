@@ -1,4 +1,4 @@
-"""Compila e inicia Angular + JAR Spring + PostgreSQL local, sem Docker e sem SPTrans."""
+"""Compila e inicia Angular + JAR Spring + PostgreSQL local, sem Docker. SPTrans em demo, salvo --sptrans-gateway."""
 import argparse
 import os
 from pathlib import Path
@@ -20,6 +20,8 @@ def main():
     parser.add_argument("--build", action="store_true", help="Recompila frontend e backend.")
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--env-file", type=Path, default=RAIZ / ".env")
+    parser.add_argument("--sptrans-gateway", action="store_true",
+                        help="Dados reais pelo gateway da Prefeitura (SPTRANS_GATEWAY_CHAVE/SEGREDO do .env).")
     args = parser.parse_args()
     pasta = RAIZ / ".validation/local"
     pasta.mkdir(parents=True, exist_ok=True)
@@ -29,8 +31,15 @@ def main():
     for key in ("RPA_API_KEY", "PF_SALT", "GENAI_API_KEY"):
         env[key] = env.get(key) or anterior.get(key) or secrets.token_urlsafe(32)
     seguro.write_text("".join(f"{key}={env[key]}\n" for key in ("RPA_API_KEY", "PF_SALT", "GENAI_API_KEY")), encoding="utf-8")
-    env["PF_SPTRANS_MODO"] = "demo"
     env["SPTRANS_TOKEN"] = ""
+    if args.sptrans_gateway:
+        if not (env.get("SPTRANS_GATEWAY_CHAVE", "").strip() and env.get("SPTRANS_GATEWAY_SEGREDO", "").strip()):
+            print("SPTRANS_GATEWAY_CHAVE/SEGREDO ausentes no .env.", file=sys.stderr)
+            return 2
+        env["PF_SPTRANS_MODO"] = "auto"
+    else:
+        env["PF_SPTRANS_MODO"] = "demo"
+        env["SPTRANS_GATEWAY_CHAVE"] = env["SPTRANS_GATEWAY_SEGREDO"] = ""
     env["GENAI_URL"] = env.get("GENAI_URL", "http://127.0.0.1:8001").replace("host.docker.internal", "127.0.0.1")
     npm = "npm.cmd" if os.name == "nt" else "npm"
     mvn = RAIZ / "backend" / ("mvnw.cmd" if os.name == "nt" else "mvnw")
