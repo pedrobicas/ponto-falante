@@ -45,7 +45,8 @@ public class AssistenteTempoReal {
     private static final Pattern REGRAS = Pattern.compile(
             "\\b(gratuidade|gratuito|gratis|idoso|idosos|idosa|direito|direitos|bilhete|tarifa|deficiencia|deficiente|"
             + "cartao|carteira|custa|preco|pagar|paga|acompanhante|assento|lei|regra|regras|integracao|estudante|"
-            + "recarga|credito|reclamacao|denuncia)\\b");
+            + "recarga|credito|reclamacao|denuncia|descer|desembarque|desembarcar|embarque|embarcar|sinal|"
+            + "parar fora|fora do ponto|motorista|cobrador)\\b");
     private static final Set<String> VAZIAS = Set.of(
             "a", "o", "as", "os", "um", "uma", "de", "da", "do", "das", "dos", "no", "na", "nos", "nas", "em", "para",
             "pra", "pro", "por", "que", "qual", "quais", "e", "eu", "me", "meu", "minha", "esta", "esse", "essa", "este",
@@ -76,7 +77,9 @@ public class AssistenteTempoReal {
         String linha = null;
         while (numLinha.find()) {
             if (numLinha.group(1).length() <= 5) {
-                linha = numLinha.group(1).toUpperCase(Locale.ROOT);
+                // Código completo quando há sufixo ("8000-21"); só o prefixo é ambíguo e mostra as variantes.
+                linha = (numLinha.group(2) == null ? numLinha.group(1) : numLinha.group(1) + "-" + numLinha.group(2))
+                        .toUpperCase(Locale.ROOT);
                 break;
             }
         }
@@ -88,9 +91,14 @@ public class AssistenteTempoReal {
             if (falaDeLinha && LINHA_INFO.matcher(t).find()) {
                 return Optional.of(dadosDaLinha(linha));
             }
+            if (falaDeLinha && falaDeTempo) {
+                return Optional.of(resposta("Para dizer quando a linha " + linha + " passa, preciso do ponto. "
+                        + "Pergunte, por exemplo: quando passa a linha " + linha + " no ponto Paulista?",
+                        transporte.escolher(null).fonte(), false));
+            }
         } catch (TransporteIndisponivelException e) {
-            return Optional.of(resposta("Não consegui consultar a SPTrans agora. Tente de novo em alguns instantes.",
-                    null, true));
+            return Optional.of(new RespostaChat("Não consegui consultar a SPTrans agora, então não sei os horários. "
+                    + "Tente de novo em alguns instantes.", List.of(), "baixa", false, false, null, ORIGEM));
         }
         return Optional.empty();
     }
@@ -119,12 +127,14 @@ public class AssistenteTempoReal {
         PrevisoesPonto p;
         try {
             p = transporte.previsoes(ponto.codigo(), null);
+        } catch (TransporteIndisponivelException e) {
+            throw e;
         } catch (ErroApi e) {
-            return resposta("Não encontrei previsões para esse ponto.", provedor.fonte(), false);
+            return resposta("Não encontrei esse ponto na SPTrans.", provedor.fonte(), false);
         }
         List<OnibusPrevisto> onibus = new ArrayList<>(p.onibus());
         if (filtroLinha != null) {
-            onibus.removeIf(o -> !o.letreiro().toUpperCase(Locale.ROOT).startsWith(filtroLinha));
+            onibus.removeIf(o -> !mesmaLinha(o.letreiro(), filtroLinha));
         }
         boolean simulado = p.fonte() == Fonte.SIMULADO;
         StringBuilder sb = new StringBuilder();
@@ -222,6 +232,9 @@ public class AssistenteTempoReal {
         List<String> vistos = new ArrayList<>();
         for (Linha l : linhas) {
             String chave = l.letreiro();
+            if (!mesmaLinha(chave, linha)) {
+                continue;
+            }
             if (vistos.contains(chave) || vistos.size() >= 3) {
                 continue;
             }
@@ -235,8 +248,17 @@ public class AssistenteTempoReal {
             }
             sb.append(". ");
         }
+        if (vistos.isEmpty()) {
+            return resposta("Não encontrei a linha " + linha + ".", provedor.fonte(), false);
+        }
         sb.append("Para saber quando ela passa, pergunte com o nome do ponto.");
         return resposta(sb.toString(), provedor.fonte(), false);
+    }
+
+    /** Com sufixo ("8000-21") exige igualdade; só o prefixo ("8000") aceita todas as variantes, que aparecem por extenso. */
+    static boolean mesmaLinha(String letreiro, String pedido) {
+        String l = letreiro == null ? "" : letreiro.toUpperCase(Locale.ROOT);
+        return pedido.contains("-") ? l.equals(pedido) : l.startsWith(pedido + "-") || l.equals(pedido);
     }
 
     private static RespostaChat resposta(String texto, Fonte fonte, boolean falha) {

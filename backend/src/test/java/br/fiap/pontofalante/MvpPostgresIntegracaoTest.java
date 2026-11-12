@@ -93,13 +93,6 @@ class MvpPostgresIntegracaoTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "\"fonte_dados\":{\"olhovivo\":0,\"simulador\":100}",
-            "\"dados_simulados\":null,\"fonte_dados\":{\"olhovivo\":0,\"simulador\":100}",
-            "\"dados_simulados\":false,\"fonte_dados\":{\"olhovivo\":0,\"simulador\":100}",
-            "\"dados_simulados\":true,\"fonte_dados\":{\"olhovivo\":10,\"simulador\":0}",
-            "\"dados_simulados\":false"})
     @Test void boletimComLinhaCitandoFonteSemRegistrosERejeitado() throws Exception {
         String body = "{\"data_referencia\":\"2026-11-09\",\"gerado_em\":\"2026-11-10T06:00:00-03:00\","
                 + "\"desatualizado\":false,\"resumo_falado\":\"x\",\"dados_simulados\":true,"
@@ -109,6 +102,13 @@ class MvpPostgresIntegracaoTest {
                 .contentType("application/json").content(body)).andExpect(status().isBadRequest());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "\"fonte_dados\":{\"olhovivo\":0,\"simulador\":100}",
+            "\"dados_simulados\":null,\"fonte_dados\":{\"olhovivo\":0,\"simulador\":100}",
+            "\"dados_simulados\":false,\"fonte_dados\":{\"olhovivo\":0,\"simulador\":100}",
+            "\"dados_simulados\":true,\"fonte_dados\":{\"olhovivo\":10,\"simulador\":0}",
+            "\"dados_simulados\":false"})
     void boletimSemProvenienciaCoerenteERejeitado(String proveniencia) throws Exception {
         String body = "{\"data_referencia\":\"2026-11-09\",\"gerado_em\":\"2026-11-10T06:00:00-03:00\","
                 + "\"desatualizado\":false,\"linhas\":[],\"resumo_falado\":\"x\"," + proveniencia + "}";

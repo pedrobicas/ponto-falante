@@ -66,6 +66,40 @@ class AssistenteTempoRealTest {
         assertThat(assistente.responder(pergunta)).isEmpty();
     }
 
+    @Test void regraDeDesembarqueNaoViraBuscaDePonto() {
+        assertThat(assistente.responder("Quando posso descer fora do ponto à noite?")).isEmpty();
+    }
+
+    @Test void horarioDeLinhaSemPontoPedeOPonto() {
+        RespostaChat r = assistente.responder("Quando passa a linha 8000-10?").orElseThrow();
+        assertThat(r.origem()).isEqualTo("TEMPO_REAL");
+        assertThat(r.resposta()).contains("preciso do ponto").contains("8000-10");
+    }
+
+    @Test void sufixoDaLinhaExigeIgualdade() {
+        assertThat(AssistenteTempoReal.mesmaLinha("8000-10", "8000-21")).isFalse();
+        assertThat(AssistenteTempoReal.mesmaLinha("8000-10", "8000-10")).isTrue();
+        assertThat(AssistenteTempoReal.mesmaLinha("8000-10", "8000")).isTrue();
+        assertThat(AssistenteTempoReal.mesmaLinha("80001-10", "8000")).isFalse();
+    }
+
+    @Test void falhaDaSptransNaoViraAusenciaDePrevisao() {
+        PfProps props = new Binder(new MapConfigurationPropertySource(Map.of("pf.salt", "salt-teste")))
+                .bind("pf", Bindable.of(PfProps.class)).get();
+        Clock relogio = Clock.system(ZoneId.of("America/Sao_Paulo"));
+        DemoProvider demo = new DemoProvider(relogio, new HashVeiculo(props)) {
+            @Override
+            public br.fiap.pontofalante.transporte.Modelos.DadosPrevisao previsoes(long codigo) {
+                throw new br.fiap.pontofalante.transporte.TransporteIndisponivelException();
+            }
+        };
+        var a = new AssistenteTempoReal(new TransporteService(props, null, demo, relogio));
+        RespostaChat r = a.responder("previsão do ponto 990007 agora").orElseThrow();
+        assertThat(r.disponivel()).isFalse();
+        assertThat(r.confianca()).isEqualTo("baixa");
+        assertThat(r.resposta()).contains("Não consegui consultar a SPTrans");
+    }
+
     @Test void termoDeBuscaPreservaAcentosERemovePalavrasDeIntencao() {
         assertThat(AssistenteTempoReal.termoDeBusca("Quando passa o ônibus no ponto Brigadeiro Luís Antônio?", null))
                 .isEqualTo("brigadeiro luís antônio");
