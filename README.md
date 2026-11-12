@@ -98,7 +98,7 @@ Assistente real: [scripts/genai/README.md](scripts/genai/README.md) (Ollama + AP
 ## Testes
 
 ```powershell
-Push-Location backend; .\mvnw.cmd -B verify; Pop-Location                 # 45 testes, PostgreSQL embutido
+Push-Location backend; .\mvnw.cmd -B verify; Pop-Location                 # 53 testes, PostgreSQL embutido
 Push-Location frontend; npm.cmd ci; npm.cmd test -- --watch=false; Pop-Location   # 13 testes (axe)
 Push-Location genai; ..\.venv\Scripts\python.exe -m pytest -q tests; Pop-Location # 51 testes
 Push-Location rpa; ..\.venv\Scripts\python.exe -m pytest -q; Pop-Location         # 14 testes

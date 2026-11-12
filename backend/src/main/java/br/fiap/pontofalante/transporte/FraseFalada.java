@@ -45,6 +45,14 @@ public final class FraseFalada {
         return minutos == 1 ? "previsto em 1 minuto" : "previsto em " + minutos + " minutos";
     }
 
+    private static final java.util.regex.Pattern ROMANO =
+            java.util.regex.Pattern.compile("m{0,3}(cm|cd|d?c{0,3})(xc|xl|l?x{0,3})(ix|iv|v?i{0,3})");
+    private static final java.util.Set<String> NAO_ROMANOS = java.util.Set.of("di", "li", "mi", "vi", "cd", "mix", "dc", "civil");
+
+    static boolean romano(String palavra) {
+        return palavra.length() >= 2 && !NAO_ROMANOS.contains(palavra) && ROMANO.matcher(palavra).matches();
+    }
+
     /** Nomes da SPTrans vêm em CAIXA ALTA; a voz sintética lê melhor em caixa normal. */
     static String legivel(String texto) {
         String t = texto.trim();
@@ -56,10 +64,15 @@ public final class FraseFalada {
             if (palavra.isEmpty()) {
                 continue;
             }
-            boolean pequena = palavra.length() <= 2 && !palavra.matches(".*\\d.*");
             if (sb.length() > 0) {
                 sb.append(' ');
             }
+            if (romano(palavra)) {
+                sb.append(palavra.toUpperCase(Locale.ROOT)); // "João XXIII", "D. Pedro II": a voz lê como número
+                continue;
+            }
+            // Preposições curtas ficam minúsculas; abreviações com ponto ("D.", "Pq.") mantêm a maiúscula.
+            boolean pequena = palavra.length() <= 2 && !palavra.matches(".*\\d.*") && !palavra.endsWith(".");
             sb.append(pequena && sb.length() > 0 ? palavra
                     : Character.toUpperCase(palavra.charAt(0)) + palavra.substring(1));
         }
