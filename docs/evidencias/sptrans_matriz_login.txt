@@ -1,6 +1,6 @@
 .env com BOM: nao
 
-SPTRANS_TOKEN: comprimento=64; alfabeto=hex_minusculo; aspas=nao; espacos_nas_bordas=nao; nao_imprimiveis=0
+variavel SPTRANS_TOKEN -> comprimento=64; alfabeto=hex_minusculo; aspas=nao; espacos_nas_bordas=nao; nao_imprimiveis=0
 https api.olhovivo v2.1 query                  http=200 corpo=false cookie_sessao=nao
 https api.olhovivo v2.1 form                   http=404 corpo=corpo_omitido(129 bytes) cookie_sessao=nao
 https api.olhovivo v2.1 get                    http=405 corpo=corpo_omitido(72 bytes) cookie_sessao=nao
