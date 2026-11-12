@@ -44,7 +44,7 @@ class ChatServiceLimiteTest {
                 "pf.genai-url", "http://127.0.0.1:" + server.getAddress().getPort(),
                 "pf.genai-api-key", "chave-teste",
                 "pf.salt", "salt-teste"))).bind("pf", Bindable.of(PfProps.class)).get();
-        service = new ChatService(props);
+        service = new ChatService(props, new AssistenteTempoReal(null));
     }
 
     @AfterEach void parar() { server.stop(0); }

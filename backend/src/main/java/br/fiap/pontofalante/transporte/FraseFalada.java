@@ -49,6 +49,11 @@ public final class FraseFalada {
             java.util.regex.Pattern.compile("m{0,3}(cm|cd|d?c{0,3})(xc|xl|l?x{0,3})(ix|iv|v?i{0,3})");
     private static final java.util.Set<String> NAO_ROMANOS = java.util.Set.of("di", "li", "mi", "vi", "cd", "mix", "dc", "civil");
 
+    /** Versão pública de legivel, usada pelo assistente de tempo real. */
+    public static String legivelPublico(String texto) {
+        return legivel(texto);
+    }
+
     static boolean romano(String palavra) {
         return palavra.length() >= 2 && !NAO_ROMANOS.contains(palavra) && ROMANO.matcher(palavra).matches();
     }

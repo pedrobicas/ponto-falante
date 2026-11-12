@@ -20,8 +20,9 @@ import java.time.OffsetDateTime;
 public class StatusController {
     private static final Logger log = LoggerFactory.getLogger(StatusController.class);
 
+    /** assistenteTempoReal: o assistente responde perguntas de horário pelo backend mesmo com a GenAI fora. */
     public record Status(String versao, String sptrans, String assistente, LocalDate ultimoBoletim,
-                         OffsetDateTime horarioServidor) {
+                         OffsetDateTime horarioServidor, boolean assistenteTempoReal) {
     }
 
     private final PfProps props;
@@ -52,6 +53,6 @@ public class StatusController {
             log.warn("Status: banco indisponível ao consultar o último boletim");
         }
         return new Status(versao, sptrans, saudeGenai.disponivel() ? "DISPONIVEL" : "INDISPONIVEL", ultimo,
-                OffsetDateTime.now(relogio));
+                OffsetDateTime.now(relogio), !"INDISPONIVEL".equals(sptrans));
     }
 }

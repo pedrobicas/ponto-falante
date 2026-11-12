@@ -279,6 +279,7 @@ components:
         assistente: {type: string, enum: [DISPONIVEL, INDISPONIVEL]}
         ultimo_boletim: {type: string, format: date, nullable: true}
         horario_servidor: {type: string, format: date-time}
+        assistente_tempo_real: {type: boolean, description: "true = o assistente responde horários/linhas pelo backend mesmo com a GenAI fora"}
 
     Ponto:
       type: object
@@ -348,6 +349,10 @@ components:
         nao_consta: {type: boolean}
         disponivel: {type: boolean, description: "false = serviço GenAI fora do ar; resposta é aviso"}
         latencia_ms: {type: integer}
+        origem:
+          type: string
+          enum: [TEMPO_REAL, BASE_OFICIAL, INDISPONIVEL]
+          description: "TEMPO_REAL = backend consultou a SPTrans (ou a demonstração, identificada no texto), sem LLM; BASE_OFICIAL = GenAI local com fontes oficiais"
 
     Passagem:
       type: object
