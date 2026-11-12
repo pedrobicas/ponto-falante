@@ -57,3 +57,12 @@ Ou seja, a requisição chega à SPTrans, mas o login responde `false`: a API n�
 O formato da chave local está correto (64 caracteres hexadecimais, sem espaços). Próximo passo é do titular da
 conta: conferir no portal do desenvolvedor da SPTrans se a chave está ativa e é a do aplicativo cadastrado, ou
 gerar outra. Com o login respondendo `true` no `testar_sptrans.py`, trocar `PF_SPTRANS_MODO` para `auto`.
+
+## Confirmação independente (11/11/2026, 21h15)
+
+O titular da conta testou pelo próprio navegador, direto no domínio da API, com a chave copiada da página
+"Meus Aplicativos" (status "Chave de ativação homologada e em uso"): `POST /v2.1/Login/Autenticar?token=...`
+respondeu **`false`**. Como o mesmo resultado aparece fora do projeto, a recusa é do lado da conta/API da SPTrans,
+não do código. O MVP continua em `PF_SPTRANS_MODO=demo`, com os dados identificados como SIMULADO na interface e
+na API. Encaminhamento: contato com a área de desenvolvedores da SPTrans ou criação de um novo aplicativo no portal;
+quando o teste direto (`scripts/integracao/testar_sptrans.py`) responder `autenticacao OK`, trocar para `auto`.
