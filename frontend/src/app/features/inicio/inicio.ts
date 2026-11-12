@@ -6,105 +6,152 @@ import { ApiService } from '../../core/api.service';
 import { ErroApi, Modo, Ponto, Status } from '../../core/models';
 import { RecentesService } from '../../core/recentes.service';
 import { Carregando } from '../../shared/carregando';
+import { Icone } from '../../shared/icone';
 import { MensagemErro } from '../../shared/mensagem-erro';
 import { Selo } from '../../shared/selo';
 
 @Component({
   selector: 'pf-inicio',
-  imports: [FormsModule, RouterLink, Carregando, MensagemErro, Selo],
+  imports: [FormsModule, RouterLink, Carregando, MensagemErro, Selo, Icone],
   template: `
-    <h1>Qual ônibus você espera?</h1>
-    <p class="lead">Digite o nome, a rua ou o número do ponto para ver os próximos ônibus previstos.</p>
+    <section class="hero">
+      <div class="miolo">
+        <p class="hero__chapeu"><pf-icone nome="ponto" /> São Paulo · ônibus</p>
+        <h1>Qual ônibus você espera?</h1>
+        <p class="hero__texto">
+          Veja os próximos ônibus <strong>previstos</strong> para o seu ponto e ouça tudo em voz alta.
+        </p>
 
-    <section class="faixa" aria-label="Estado dos serviços">
-      @if (demo() || status()?.sptrans === 'DEMO') {
-        <pf-selo tom="aviso" icone="⚠">Modo demonstração: dados simulados</pf-selo>
-      } @else if (status()?.sptrans === 'REAL') {
-        <pf-selo tom="ok" icone="✔">Dados em tempo real da SPTrans</pf-selo>
-      } @else if (status()?.sptrans === 'INDISPONIVEL') {
-        <pf-selo tom="critico" icone="✖">SPTrans fora do ar agora</pf-selo>
-      } @else if (statusFalhou()) {
-        <pf-selo tom="neutro" icone="○">Não foi possível verificar os serviços</pf-selo>
-      } @else {
-        <pf-selo tom="neutro" icone="○">Verificando os serviços…</pf-selo>
-      }
-      @if (status(); as s) {
-        @if (s.assistente === 'DISPONIVEL') {
-          <pf-selo tom="ok" icone="✔">Assistente ligado</pf-selo>
-        } @else {
-          <pf-selo tom="neutro" icone="○">Assistente desligado agora</pf-selo>
-        }
-      }
+        <form class="busca" (ngSubmit)="buscar()" novalidate>
+          <label for="busca" class="busca__rotulo">Nome, rua ou código do ponto</label>
+          <div class="busca__campo">
+            <pf-icone nome="busca" />
+            <input
+              id="busca"
+              name="busca"
+              type="search"
+              autocomplete="off"
+              maxlength="80"
+              placeholder="Ex.: Avenida Paulista"
+              [(ngModel)]="texto"
+              [attr.aria-invalid]="erroCampo() ? 'true' : null"
+              [attr.aria-describedby]="erroCampo() ? 'busca-erro busca-ajuda' : 'busca-ajuda'"
+            />
+            <button type="submit" class="botao botao--sinal" [disabled]="buscando()">Buscar</button>
+          </div>
+          <p id="busca-ajuda" class="busca__ajuda">Você também pode digitar o número do ponto, como 700001234.</p>
+          @if (erroCampo()) {
+            <p id="busca-erro" class="erro-campo"><pf-icone nome="erro-circulo" /> {{ erroCampo() }}</p>
+          }
+        </form>
+
+        <section class="estado" aria-label="Estado dos serviços">
+          @if (demo() || status()?.sptrans === 'DEMO') {
+            <pf-selo tom="aviso" icone="frasco">Modo demonstração: dados simulados</pf-selo>
+          } @else if (status()?.sptrans === 'REAL') {
+            <pf-selo tom="ok" icone="certo-circulo">Dados em tempo real da SPTrans</pf-selo>
+          } @else if (status()?.sptrans === 'INDISPONIVEL') {
+            <pf-selo tom="critico" icone="erro-circulo">SPTrans fora do ar agora</pf-selo>
+          } @else if (statusFalhou()) {
+            <pf-selo tom="neutro" icone="vazio">Não foi possível verificar os serviços</pf-selo>
+          } @else {
+            <pf-selo tom="neutro" icone="relogio">Verificando os serviços…</pf-selo>
+          }
+          @if (status(); as s) {
+            @if (s.assistente === 'DISPONIVEL') {
+              <pf-selo tom="ok" icone="certo-circulo">Assistente ligado</pf-selo>
+            } @else {
+              <pf-selo tom="neutro" icone="lua">Assistente desligado agora</pf-selo>
+            }
+          }
+        </section>
+      </div>
     </section>
 
-    <form class="cartao" (ngSubmit)="buscar()" novalidate>
-      <label for="busca" class="rotulo">Nome, rua ou código do ponto</label>
-      <p id="busca-ajuda" class="ajuda">Exemplo: Avenida Paulista, ou 700001234.</p>
-      <div class="linha-form">
-        <input
-          id="busca"
-          name="busca"
-          type="search"
-          autocomplete="off"
-          maxlength="80"
-          [(ngModel)]="texto"
-          [attr.aria-invalid]="erroCampo() ? 'true' : null"
-          [attr.aria-describedby]="erroCampo() ? 'busca-erro busca-ajuda' : 'busca-ajuda'"
-        />
-        <button type="submit" class="botao botao--primario" [disabled]="buscando()">Buscar ponto</button>
-      </div>
-      @if (erroCampo()) {
-        <p id="busca-erro" class="erro-campo"><span aria-hidden="true">✖</span> {{ erroCampo() }}</p>
-      }
-    </form>
-
-    <div aria-live="polite" class="resultado">
-      @if (buscando()) {
-        <pf-carregando texto="Procurando pontos…" />
-      } @else if (erroBusca(); as e) {
-        <pf-erro titulo="Não foi possível buscar" [mensagem]="e.message" [tentarNovamente]="e.status !== 503" (repetir)="buscar()">
-          @if (e.status === 503) {
-            <button type="button" class="botao botao--primario" (click)="buscarEmDemo()">Ver demonstração</button>
+    <div class="miolo miolo--largo">
+      <div aria-live="polite" class="resultado">
+        @if (buscando()) {
+          <pf-carregando texto="Procurando pontos…" />
+        } @else if (erroBusca(); as e) {
+          <pf-erro titulo="Não foi possível buscar" [mensagem]="e.message" [tentarNovamente]="e.status !== 503" (repetir)="buscar()">
+            @if (e.status === 503) {
+              <button type="button" class="botao botao--primario" (click)="buscarEmDemo()">Ver demonstração</button>
+            }
+          </pf-erro>
+        } @else if (resultados(); as lista) {
+          @if (lista.length === 0) {
+            <p class="vazio">Nenhum ponto encontrado para “{{ ultimaBusca() }}”. Tente outro nome ou parte do endereço.</p>
+          } @else {
+            <h2>{{ lista.length === 1 ? '1 ponto encontrado' : lista.length + ' pontos encontrados' }}</h2>
+            <ul class="lista-pontos">
+              @for (p of lista; track p.codigo) {
+                <li>
+                  <a class="ponto-card" [routerLink]="['/ponto', p.codigo]" [queryParams]="qpModo()">
+                    <span class="ponto-card__marca"><pf-icone nome="ponto" /></span>
+                    <span class="ponto-card__texto">
+                      <span class="ponto-card__nome">{{ p.nome }}</span>
+                      @if (p.endereco) {
+                        <span class="ponto-card__sub">{{ p.endereco }}</span>
+                      }
+                      <span class="ponto-card__sub">Ponto {{ p.codigo }}</span>
+                    </span>
+                    <pf-icone nome="seta-direita" />
+                  </a>
+                </li>
+              }
+            </ul>
           }
-        </pf-erro>
-      } @else if (resultados(); as lista) {
-        @if (lista.length === 0) {
-          <p class="vazio">Nenhum ponto encontrado para “{{ ultimaBusca() }}”. Tente outro nome ou parte do endereço.</p>
-        } @else {
-          <h2>{{ lista.length === 1 ? '1 ponto encontrado' : lista.length + ' pontos encontrados' }}</h2>
-          <ul class="lista-cartoes">
-            @for (p of lista; track p.codigo) {
+        }
+      </div>
+
+      @if (recentes.lista().length > 0) {
+        <section aria-labelledby="recentes-titulo">
+          <h2 id="recentes-titulo">Pontos recentes</h2>
+          <ul class="lista-pontos">
+            @for (p of recentes.lista(); track p.codigo) {
               <li>
-                <a class="cartao cartao--link" [routerLink]="['/ponto', p.codigo]" [queryParams]="qpModo()">
-                  <span class="cartao__titulo">{{ p.nome }}</span>
-                  @if (p.endereco) {
-                    <span class="cartao__sub">{{ p.endereco }}</span>
-                  }
-                  <span class="cartao__sub">Ponto {{ p.codigo }}</span>
+                <a class="ponto-card" [routerLink]="['/ponto', p.codigo]" [queryParams]="qpModo()">
+                  <span class="ponto-card__marca"><pf-icone nome="relogio" /></span>
+                  <span class="ponto-card__texto">
+                    <span class="ponto-card__nome">{{ p.nome }}</span>
+                    <span class="ponto-card__sub">Ponto {{ p.codigo }}</span>
+                  </span>
+                  <pf-icone nome="seta-direita" />
                 </a>
               </li>
             }
           </ul>
-        }
+          <button type="button" class="botao botao--discreto" (click)="recentes.limpar()">Limpar pontos recentes</button>
+        </section>
       }
-    </div>
 
-    @if (recentes.lista().length > 0) {
-      <section aria-labelledby="recentes-titulo">
-        <h2 id="recentes-titulo">Pontos recentes</h2>
-        <ul class="lista-cartoes">
-          @for (p of recentes.lista(); track p.codigo) {
-            <li>
-              <a class="cartao cartao--link" [routerLink]="['/ponto', p.codigo]" [queryParams]="qpModo()">
-                <span class="cartao__titulo">{{ p.nome }}</span>
-                <span class="cartao__sub">Ponto {{ p.codigo }}</span>
-              </a>
-            </li>
-          }
+      <section aria-labelledby="atalhos-titulo">
+        <h2 id="atalhos-titulo">Mais formas de ajudar na viagem</h2>
+        <ul class="atalhos">
+          <li>
+            <a class="atalho" routerLink="/assistente">
+              <span class="atalho__icone"><pf-icone nome="conversa" /></span>
+              <span class="atalho__titulo">Assistente</span>
+              <span class="atalho__texto">Tire dúvidas sobre gratuidade, bilhete e acessibilidade.</span>
+            </a>
+          </li>
+          <li>
+            <a class="atalho" routerLink="/boletim">
+              <span class="atalho__icone"><pf-icone nome="boletim" /></span>
+              <span class="atalho__titulo">Boletim de atrasos</span>
+              <span class="atalho__texto">Veja quais linhas estão atrasadas hoje.</span>
+            </a>
+          </li>
+          <li>
+            <a class="atalho" routerLink="/acessibilidade">
+              <span class="atalho__icone"><pf-icone nome="letras" /></span>
+              <span class="atalho__titulo">Letras, cores e voz</span>
+              <span class="atalho__texto">Aumente o texto, troque as cores e escolha a velocidade da voz.</span>
+            </a>
+          </li>
         </ul>
-        <button type="button" class="botao" (click)="recentes.limpar()">Limpar pontos recentes</button>
       </section>
-    }
+    </div>
   `,
 })
 export class Inicio {
