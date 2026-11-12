@@ -128,8 +128,14 @@ def health():
 
 
 def _gerar(pergunta: str):
-    return (gerador.rag(pergunta, indice()) if MODO == "rag"
-            else agente.responder(pergunta, indice()))
+    if MODO == "rag":
+        return gerador.rag(pergunta, indice())
+    if MODO == "v2":
+        # Agente v2 (busca híbrida, reparo de recusa, verificador por afirmação). Modelos via
+        # PF_MODELO_GERADOR / PF_MODELO_VERIFICADOR; ver avaliacao/v2 e RELATORIO.md, seção 11.
+        from pf_genai import agente_v2
+        return agente_v2.responder(pergunta, indice(), agente_v2.ConfigV2("api_v2"))
+    return agente.responder(pergunta, indice())
 
 
 @app.post("/chat", response_model=RespostaChat, dependencies=[Depends(proteger_chat)])
@@ -149,7 +155,7 @@ async def chat(p: PerguntaChat):
         if r.resposta is None:
             r.resposta = recusa("baixa")
         ms = int((time.perf_counter() - t0) * 1000)
-        resposta = RespostaChat(**r.resposta.model_dump(), modo="rag_agente" if MODO != "rag" else "rag",
+        resposta = RespostaChat(**r.resposta.model_dump(), modo={"rag": "rag", "v2": "rag_agente_v2"}.get(MODO, "rag_agente"),
                                latencia_ms=ms)
     except TimeoutError:
         log.warning("Timeout no /chat | %d ms", int((time.perf_counter() - t0) * 1000))

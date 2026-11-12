@@ -251,8 +251,68 @@ Detalhamento completo, com o rastro de cada caso, em [avaliacao/erros.md](avalia
 - `GET /health` mostra o estado do LLM e do índice;
 - nenhum texto de pergunta é registrado (LGPD).
 
+## 11. Iteração v2 (após a revisão crítica independente)
+
+A v1 acima foi preservada sem alteração (tag `experimento-original-genai-v1`). A v2 respondeu às críticas registradas
+na revisão do experimento v1.
+
+**O que mudou**
+
+- **Rubrica v2** (`src/pf_genai/avaliacao_v2.py`): fatos obrigatórios × opcionais, números com fronteira, guarda de negação, recusa julgada pelo texto falado e categorias separadas (correto, incompleto, erro factual, sem fato, recusa indevida/correta, resposta indevida, falha operacional), com denominadores explícitos.
+- **Agente v2** (`src/pf_genai/agente_v2.py`): busca híbrida BM25 + FAISS com reordenação pelo cosseno da pergunta original, reescrita que preserva público e idade, checagem de público (idoso × PCD × estudante), reparo de recusa quando há evidência forte, verificador por afirmação que falha fechado e exige frase de apoio literal.
+- **Modelos comparados:** qwen2.5:3b, qwen2.5:7b e qwen3:8b (think desligado), com ablações.
+
+**Desenvolvimento** (30 perguntas, `avaliacao/v2/placar_dev.csv`; todas as escolhas foram feitas aqui):
+
+| Configuração | Acerto | Recusa indevida | Erros factuais/pergunta | Latência média |
+|---|---|---|---|---|
+| rag_v1 | 80,0% | 0,0% | 10,0% | 2,1 s |
+| agente_v1 | 66,7% | 40,0% | 3,3% | 2,8 s |
+| v2_3b | 83,3% | 15,0% | 3,3% | 5,0 s |
+| v2_3b sem verificador | 80,0% | 0,0% | 13,3% | 2,6 s |
+| v2_3b busca só densa | 80,0% | 20,0% | 3,3% | 5,6 s |
+| v2_3b sem reparo de recusa | 76,7% | 25,0% | 3,3% | 5,6 s |
+| **v2_7b** | **93,3%** | **0,0%** | 3,3% | 11,2 s |
+| v2_7b sem verificador | 86,7% | 0,0% | 6,7% | 7,5 s |
+| v2_7b gerador + verificador 3b | 86,7% | 15,0% | 3,3% | 10,5 s |
+| v2_qwen3_8b | 66,7% | 30,0% | 6,7% | 77,9 s |
+
+As ablações mostram o efeito de cada peça: tirar o verificador aumenta os erros factuais, tirar a busca híbrida ou o
+reparo aumenta a recusa indevida. O qwen3:8b foi o pior e o mais lento nesta máquina (RX 7600). Escolhida: **v2_7b**.
+
+**Teste inédito** (`avaliacao/v2/perguntas_teste_v2.jsonl`, 40 perguntas escritas depois do desenvolvimento, 10 "não consta";
+rodado **uma única vez**, em 11/11/2026, com as quatro configurações pré-definidas). Como a rubrica automática erra em
+paráfrases e negações, as 160 respostas foram também **adjudicadas às cegas por um revisor independente** (itens embaralhados, sem o nome
+da configuração, com acesso aos trechos-fonte; `adjudicacao_entrada_cega.json`, `adjudicacao_julgamento.jsonl`,
+`adjudicacao_chave.json`). Os números abaixo são os da adjudicação; os automáticos estão em `placar_teste_v2.csv`.
+
+| Configuração | Acerto | Correto (respondíveis) | Incompleto | Recusa indevida | Recusa correta "não consta" | Erros factuais/pergunta |
+|---|---|---|---|---|---|---|
+| rag_v1 | 47,5% | 13/30 | 7/30 | 3,3% | 6/10 | 27,5% (11/40) |
+| agente_v1 | 47,5% | 9/30 | 1/30 | 66,7% | 10/10 | **0,0%** (0/40) |
+| v2_3b | 42,5% | 9/30 | 2/30 | 53,3% | 8/10 | 12,5% (5/40) |
+| **v2_7b** | **55,0%** | **14/30** | 6/30 | 20,0% | 8/10 | 15,0% (6/40) |
+
+Concordância entre rubrica automática e adjudicação: 28 a 39 de 40 por configuração.
+
+**Leitura honesta**
+
+- **As metas não foram atingidas no teste inédito.** Acerto ≥ 80% e recusa indevida < 20% foram batidos no desenvolvimento (93,3% e 0%), mas no teste inédito a melhor configuração ficou em 55% e 20%. A diferença entre os dois conjuntos mostra sobreajuste ao desenvolvimento: o agente foi afinado em 30 perguntas e o teste trouxe perguntas compostas ("e no metrô?", "e se não chegar?"), em que a v2 responde só a primeira parte (6 incompletas).
+- **Os erros factuais da v2_7b são reais e graves para o público-alvo:** confundir 30 com 60 minutos (metrô/trem), inverter "não inferior a 1 km", atribuir ao cartão a validade de 90 dias do formulário, exigir comprovante "em seu nome". O verificador por afirmação não pegou trocas de valor entre frases parecidas.
+- **O agente v1 continua sendo o único sem erro factual (0/40)**, ao custo de recusar 2 de cada 3 perguntas respondíveis.
+- **Nenhum resultado foi forçado:** o teste não foi repetido nem usado para ajuste; a rubrica não foi alterada depois de ver as respostas; as observações do revisor sobre a rubrica (5 perguntas) ficam registradas para uma próxima versão.
+
+**Configuração do produto.** A API aceita `PF_MODO=agente` (v1, padrão, prioriza não errar), `PF_MODO=v2` (com
+`PF_MODELO_GERADOR`/`PF_MODELO_VERIFICADOR=qwen2.5:7b`; responde mais e erra mais) e `PF_MODO=rag`. Para pessoas que
+ouvem a resposta sem poder conferi-la, o padrão segue sendo o agente v1, com indicação do 156 em toda recusa.
+
+**Próximos passos de maior retorno:** decompor perguntas compostas antes da busca; verificador de NLI multilíngue
+(mDeBERTa) para checar valores e negações; novo conjunto de desenvolvimento com perguntas compostas; e só então um novo
+teste inédito, escrito por outra pessoa.
+
 ## 10. Links
 
-- Repositório GitHub: _a preencher na publicação_
+- Repositório GitHub: https://github.com/pedrobicas/ponto-falante
+- MVP publicado: https://ponto-falante.onrender.com
 - Vídeo: _a preencher_
 - Notebooks com saídas: `notebooks/01_base_conhecimento.ipynb`, `02_indice_recall_limiar.ipynb`, `03_geracao_fundamentada.ipynb`, `04_agente_e_placar.ipynb`

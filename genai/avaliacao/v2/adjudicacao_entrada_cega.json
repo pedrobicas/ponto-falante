@@ -1,0 +1,3308 @@
+[
+ {
+  "rid": "R001",
+  "pergunta_id": "t22",
+  "pergunta": "Quanto custa a passagem de ônibus em Campinas pra idoso?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: a base cobre apenas o transporte coletivo da cidade de São Paulo/SPTrans e legislação federal.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R002",
+  "pergunta_id": "t10",
+  "pergunta": "Qual o valor em reais da multa pra quem usa o cartão de idoso de outra pessoa?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base trata de penalidades como suspensão do benefício, retenção e bloqueio do cartão, mas não menciona multa em dinheiro nem valores.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R003",
+  "pergunta_id": "t25",
+  "pergunta": "Minha clínica geral pode assinar o formulário do bilhete de PCD do meu pai? E se o médico assinar de forma digital, vale?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o formulário deve ser assinado por médico especializado na área relacionada ao diagnóstico",
+   "a assinatura digital do médico é aceita"
+  ],
+  "afirmacoes_proibidas": [
+   "qualquer médico de qualquer especialidade pode assinar sem restrição",
+   "assinatura digital não é aceita"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-047"
+   ],
+   [
+    "sptrans-bilhete-pcd-048"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R004",
+  "pergunta_id": "t03",
+  "pergunta": "Que horas o ônibus da linha 8000-10 passa no Terminal Santana amanhã de manhã?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: a base não contém horários de linhas nem itinerários.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R005",
+  "pergunta_id": "t24",
+  "pergunta": "Qual é o telefone do Posto Central da SPTrans na Rua Boa Vista?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base informa endereço e horário do Posto Central, mas não traz telefone dele.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R006",
+  "pergunta_id": "t06",
+  "pergunta": "Minha mãe tem 68 anos e quase não sai de casa. Posso ir eu no posto fazer o cadastro do cartão de idoso dela no lugar dela?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "não é possível fazer o cadastramento por meio de representante"
+  ],
+  "afirmacoes_proibidas": [
+   "o filho ou outro representante pode fazer o cadastro no posto"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-009"
+   ]
+  ],
+  "resposta": "Não é possível fazer o cadastramento por meio de um representante. Recomendamos o Atendimento Digital.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-009"
+  ]
+ },
+ {
+  "rid": "R007",
+  "pergunta_id": "t14",
+  "pergunta": "Pelo Estatuto da Pessoa Idosa, qual a porcentagem das vagas de estacionamento que precisa ser reservada para idosos?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "5% das vagas nos estacionamentos públicos e privados"
+  ],
+  "afirmacoes_proibidas": [
+   "a reserva é de 2%",
+   "a reserva é de 10%"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "lei-10741-transporte-005"
+   ]
+  ],
+  "resposta": "5% das vagas nos estacionamentos públicos e privados devem ser reservadas para idosos.",
+  "fontes_citadas": [
+   "lei-10741-transporte-005"
+  ]
+ },
+ {
+  "rid": "R008",
+  "pergunta_id": "t12",
+  "pergunta": "A conta de luz da casa tá no nome da minha filha, mas eu tenho 72 anos e moro lá. Serve de comprovante de residência pro cartão de idoso?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o comprovante precisa ser do local onde a pessoa idosa reside (não necessariamente em seu nome)"
+  ],
+  "afirmacoes_proibidas": [
+   "o comprovante precisa estar obrigatoriamente no nome da pessoa idosa",
+   "a conta no nome da filha não serve de jeito nenhum"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-010"
+   ]
+  ],
+  "resposta": "Não, a conta de luz no nome da filha não serve como comprovante de residência para o cartão de idoso.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-010"
+  ]
+ },
+ {
+  "rid": "R009",
+  "pergunta_id": "t17",
+  "pergunta": "Como peço a gratuidade de idoso no ônibus intermunicipal da EMTU?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: a base não trata de linhas intermunicipais da EMTU.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R010",
+  "pergunta_id": "t27",
+  "pergunta": "Meu sobrinho tem autismo. O autismo conta como deficiência permanente pro bilhete de PCD?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "sim, o diagnóstico de Transtorno do Espectro Autista (TEA) está entre as deficiências consideradas permanentes"
+  ],
+  "afirmacoes_proibidas": [
+   "o autismo não é considerado deficiência permanente",
+   "o autismo só é considerado deficiência temporária"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-042",
+    "sptrans-bilhete-pcd-043"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R011",
+  "pergunta_id": "t31",
+  "pergunta": "Quem faz o meu cadastro de estudante no sistema? E meu curso é semestral, por que não liberaram minhas cotas do 2º semestre?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o cadastro e o envio dos dados à SPTrans são feitos pela Unidade de Ensino",
+   "nos cursos semestrais a escola precisa reenviar os dados da matrícula a cada semestre; até lá as cotas ficam bloqueadas"
+  ],
+  "afirmacoes_proibidas": [
+   "o próprio aluno envia os dados de matrícula direto à SPTrans",
+   "as cotas do 2º semestre são liberadas automaticamente"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-009"
+   ],
+   [
+    "sptrans-bilhete-estudante-018",
+    "sptrans-bilhete-estudante-046"
+   ]
+  ],
+  "resposta": null,
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R012",
+  "pergunta_id": "t21",
+  "pergunta": "Pela Lei Brasileira de Inclusão, quantas vagas de estacionamento têm que ser reservadas pra pessoa com deficiência? Tem um mínimo?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "as vagas reservadas devem equivaler a 2% do total",
+   "garantida no mínimo 1 vaga sinalizada"
+  ],
+  "afirmacoes_proibidas": [
+   "a reserva é de 5%",
+   "a reserva é de 10%"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "lei-13146-transporte-005"
+   ]
+  ],
+  "resposta": "De acordo com a lei, 2% das vagas de estacionamento devem ser reservadas para pessoas com deficiência. É garantido, no mínimo, 1 vaga.",
+  "fontes_citadas": [
+   "lei-13146-transporte-005"
+  ]
+ },
+ {
+  "rid": "R013",
+  "pergunta_id": "t32",
+  "pergunta": "Perdi o cartão de PCD e faltam só 40 dias pro benefício vencer. Posso pedir a 2ª via?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a 2ª via pode ser impedida quando faltam menos de 60 dias para o vencimento do benefício",
+   "nesse caso é preciso pedir a renovação do benefício, e não a 2ª via"
+  ],
+  "afirmacoes_proibidas": [
+   "a 2ª via pode ser pedida normalmente nesse caso",
+   "o prazo mínimo é de 30 dias"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-026"
+   ]
+  ],
+  "resposta": "Não pode pedir a 2ª via nesse caso. É necessário solicitar a renovação do benefício.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-026"
+  ]
+ },
+ {
+  "rid": "R014",
+  "pergunta_id": "t19",
+  "pergunta": "Posso mandar meu vizinho ao posto da SPTrans resolver coisa do meu Bilhete Único? E minha filha de 15 anos, quem resolve por ela?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "outra pessoa só pode resolver assuntos do cartão se o titular for menor de 18 anos",
+   "para o menor, o pai, a mãe ou o responsável vai com documento original com foto dele(a) e do menor"
+  ],
+  "afirmacoes_proibidas": [
+   "qualquer pessoa, como um vizinho, pode resolver pelo adulto",
+   "para menores basta uma procuração simples"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-032"
+   ]
+  ],
+  "resposta": "Não, não é possível mandar ninguém ao posto da SPTrans. Para a filha de 18 anos, o responsável deve apresentar documento original e oficial com foto.",
+  "fontes_citadas": [
+   "sptrans-bilhete-unico-032"
+  ]
+ },
+ {
+  "rid": "R015",
+  "pergunta_id": "t17",
+  "pergunta": "Como peço a gratuidade de idoso no ônibus intermunicipal da EMTU?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: a base não trata de linhas intermunicipais da EMTU.",
+  "evidencias_esperadas": [],
+  "resposta": "Para obter a gratuidade de idoso no ônibus intermunicipal da EMTU, a pessoa deve apresentar qualquer documento pessoal que comprove a idade de 65 anos ou mais.",
+  "fontes_citadas": [
+   "lei-10741-transporte-002"
+  ]
+ },
+ {
+  "rid": "R016",
+  "pergunta_id": "t01",
+  "pergunta": "Meu Bilhete Único de Estudante foi apreendido por uso indevido. Em quanto tempo posso pedir a 2ª via e onde faço o pedido?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a 2ª via pode ser solicitada após 30 dias da apreensão",
+   "o pedido é feito pelo site de atendimento da SPTrans"
+  ],
+  "afirmacoes_proibidas": [
+   "a 2ª via pode ser pedida imediatamente",
+   "o prazo é de 6 meses"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-023"
+   ]
+  ],
+  "resposta": "Pode solicitar a 2ª via após 30 dias da apreensão no site sptrans.com.br/atendimento. O pedido deve ser feito pelo estudante (maior de 18 anos) ou pelo responsável (quando o estudante for menor de 16 anos).",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-023"
+  ]
+ },
+ {
+  "rid": "R017",
+  "pergunta_id": "t01",
+  "pergunta": "Meu Bilhete Único de Estudante foi apreendido por uso indevido. Em quanto tempo posso pedir a 2ª via e onde faço o pedido?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a 2ª via pode ser solicitada após 30 dias da apreensão",
+   "o pedido é feito pelo site de atendimento da SPTrans"
+  ],
+  "afirmacoes_proibidas": [
+   "a 2ª via pode ser pedida imediatamente",
+   "o prazo é de 6 meses"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-023"
+   ]
+  ],
+  "resposta": "Você pode pedir a 2ª via do seu Bilhete Único de Estudante após 30 dias da apreensão. O pedido deve ser feito no site: sptrans.com.br/atendimento. Faça o cadastro e selecione o serviço: ESTUDANTE - JUSTIFICATIVA DE BLOQUEIO OU APREENSÃO.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-023"
+  ]
+ },
+ {
+  "rid": "R018",
+  "pergunta_id": "t18",
+  "pergunta": "Meu cartão de PCD não chegou e já passaram os 20 dias. O que eu faço?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "informar o não recebimento pelo site de Atendimento da SPTrans ou em um Posto de Atendimento"
+  ],
+  "afirmacoes_proibidas": [
+   "basta esperar mais 20 dias sem fazer nada",
+   "o cartão só pode ser retirado nas subprefeituras"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-017"
+   ]
+  ],
+  "resposta": "Se o seu cartão de PCD não chegou e já passaram os 20 dias, você deve informar o não recebimento acessando o site de Atendimento da SPTrans ou comparecendo ao Posto de Atendimento.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-017"
+  ]
+ },
+ {
+  "rid": "R019",
+  "pergunta_id": "t13",
+  "pergunta": "Sou cadeirante e passei meu cartão duas vezes no mesmo ônibus. Existe um tempo mínimo pra passar de novo? E no metrô e no trem?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "no mesmo coletivo o limite de reapresentação é de 60 minutos",
+   "nos bloqueios do metrô/trem o limite é de 30 minutos"
+  ],
+  "afirmacoes_proibidas": [
+   "o limite no mesmo ônibus é de 30 minutos",
+   "o limite no metrô é de 60 minutos",
+   "não existe limite de reapresentação"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-014"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R020",
+  "pergunta_id": "t03",
+  "pergunta": "Que horas o ônibus da linha 8000-10 passa no Terminal Santana amanhã de manhã?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: a base não contém horários de linhas nem itinerários.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R021",
+  "pergunta_id": "t39",
+  "pergunta": "Quanto custa a tarifa integrada ônibus + metrô/trem com crédito de estudante e como esse valor é calculado?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a tarifa Integrada Ônibus + Metrô/Trem Estudante é de R$ 5,35",
+   "corresponde à metade da tarifa Comum Ônibus mais a metade da tarifa Comum Metrô/Trem"
+  ],
+  "afirmacoes_proibidas": [
+   "a tarifa integrada de estudante é de R$ 11,32",
+   "a tarifa integrada de estudante é de R$ 2,65"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-tarifas-004"
+   ]
+  ],
+  "resposta": "A tarifa Integrada Ônibus + Metrô/Trem Estudante é de R$ 5,35, que considera a metade do valor da tarifa Comum Ônibus + metade do valor da tarifa Comum Metrô/Trem.",
+  "fontes_citadas": [
+   "sptrans-tarifas-004"
+  ]
+ },
+ {
+  "rid": "R022",
+  "pergunta_id": "t33",
+  "pergunta": "As locadoras de carro são obrigadas a ter carro adaptado pra pessoa com deficiência? Quantos?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "sim, 1 veículo adaptado a cada conjunto de 20 veículos da frota"
+  ],
+  "afirmacoes_proibidas": [
+   "a obrigação é de 1 veículo a cada 100",
+   "locadoras não têm essa obrigação"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "lei-13146-transporte-012"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R023",
+  "pergunta_id": "t12",
+  "pergunta": "A conta de luz da casa tá no nome da minha filha, mas eu tenho 72 anos e moro lá. Serve de comprovante de residência pro cartão de idoso?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o comprovante precisa ser do local onde a pessoa idosa reside (não necessariamente em seu nome)"
+  ],
+  "afirmacoes_proibidas": [
+   "o comprovante precisa estar obrigatoriamente no nome da pessoa idosa",
+   "a conta no nome da filha não serve de jeito nenhum"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-010"
+   ]
+  ],
+  "resposta": "Não, o comprovante de residência precisa estar em seu nome, pois o cartão será enviado para o local descrito no comprovante.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-010"
+  ]
+ },
+ {
+  "rid": "R024",
+  "pergunta_id": "t15",
+  "pergunta": "Esqueci meu Bilhete Único de PCD em casa. Consigo usar a gratuidade mesmo assim?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "não; é obrigatório estar com o Bilhete Único da Pessoa com Deficiência em mãos e ativo para usar a gratuidade"
+  ],
+  "afirmacoes_proibidas": [
+   "dá para usar a gratuidade só com documento ou laudo",
+   "a gratuidade vale sem o cartão"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-011"
+   ]
+  ],
+  "resposta": "Não, você não pode usar a gratuidade sem o seu Bilhete Único da Pessoa com Deficiência em mãos. É necessário estar com o cartão em atividade para usar nos validadores.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-011"
+  ]
+ },
+ {
+  "rid": "R025",
+  "pergunta_id": "t03",
+  "pergunta": "Que horas o ônibus da linha 8000-10 passa no Terminal Santana amanhã de manhã?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: a base não contém horários de linhas nem itinerários.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R026",
+  "pergunta_id": "t20",
+  "pergunta": "Tenho 61 anos e uso a gratuidade. Em que época do mês eu consigo fazer a nova recarga?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "as novas recargas são feitas sempre nos primeiros dias de cada mês"
+  ],
+  "afirmacoes_proibidas": [
+   "a recarga só pode ser feita no fim do mês",
+   "a recarga só pode ser feita uma vez por ano"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-014"
+   ]
+  ],
+  "resposta": "A recarga da gratuidade estará disponível em 72 horas após a data de aniversário.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-60-64-025"
+  ]
+ },
+ {
+  "rid": "R027",
+  "pergunta_id": "t37",
+  "pergunta": "Emprestei meu cartão pra minha irmã de 62 anos passar e fui pego. Qual a punição?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "suspensão do benefício por 6 meses na 1ª ocorrência",
+   "suspensão por 12 meses na 2ª ocorrência"
+  ],
+  "afirmacoes_proibidas": [
+   "a punição é multa em dinheiro",
+   "a suspensão é de 3 meses",
+   "o cartão é cancelado definitivamente na primeira ocorrência"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-018"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R028",
+  "pergunta_id": "t04",
+  "pergunta": "Quantas cotas eu posso carregar no máximo no meu Bilhete Único: a mensal e a de 24 horas?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "Crédito Eletrônico Comum mensal: limite de 2 cotas",
+   "Crédito Eletrônico Comum 24h: limite de 15 cotas"
+  ],
+  "afirmacoes_proibidas": [
+   "limite de 5 cotas mensais",
+   "limite de 10 cotas de 24 horas"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-012"
+   ]
+  ],
+  "resposta": "Você pode carregar no máximo 15 cotas de 24 horas e 2 cotas mensais no seu Bilhete Único.",
+  "fontes_citadas": [
+   "sptrans-bilhete-unico-012",
+   "sptrans-bilhete-unico-011"
+  ]
+ },
+ {
+  "rid": "R029",
+  "pergunta_id": "t28",
+  "pergunta": "Tenho direito a ônibus e metrô no bilhete de estudante. Como calculo quanto custa minha cota em dinheiro?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "multiplicar a quantidade de créditos pelo valor da meia-tarifa vigente",
+   "com direito a dois modais, multiplicar o resultado por dois"
+  ],
+  "afirmacoes_proibidas": [
+   "multiplica-se pelo valor da tarifa inteira",
+   "o cálculo não depende da quantidade de modais"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-016"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R030",
+  "pergunta_id": "t37",
+  "pergunta": "Emprestei meu cartão pra minha irmã de 62 anos passar e fui pego. Qual a punição?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "suspensão do benefício por 6 meses na 1ª ocorrência",
+   "suspensão por 12 meses na 2ª ocorrência"
+  ],
+  "afirmacoes_proibidas": [
+   "a punição é multa em dinheiro",
+   "a suspensão é de 3 meses",
+   "o cartão é cancelado definitivamente na primeira ocorrência"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-018"
+   ]
+  ],
+  "resposta": "Você terá a gratuidade suspensa por 6 meses.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-60-64-018"
+  ]
+ },
+ {
+  "rid": "R031",
+  "pergunta_id": "t36",
+  "pergunta": "O acompanhante de uma pessoa idosa de 70 anos também viaja de graça no ônibus?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base só trata de acompanhante cadastrado para estudante PCD e de gratuidade da própria pessoa idosa; nada sobre acompanhante de idoso.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R032",
+  "pergunta_id": "t23",
+  "pergunta": "Tenho 63 anos e recarreguei minha gratuidade no fim do mês. Preciso recarregar de novo quando virar o mês?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a cota é mensal e só vale dentro do mês em que foi carregada, então é preciso recarregar no mês seguinte"
+  ],
+  "afirmacoes_proibidas": [
+   "a cota é acumulada e vale por vários meses",
+   "não precisa recarregar de novo"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-002"
+   ]
+  ],
+  "resposta": "Sim, precisará recarregar novamente no início do mês seguinte.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-60-64-002"
+  ]
+ },
+ {
+  "rid": "R033",
+  "pergunta_id": "t32",
+  "pergunta": "Perdi o cartão de PCD e faltam só 40 dias pro benefício vencer. Posso pedir a 2ª via?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a 2ª via pode ser impedida quando faltam menos de 60 dias para o vencimento do benefício",
+   "nesse caso é preciso pedir a renovação do benefício, e não a 2ª via"
+  ],
+  "afirmacoes_proibidas": [
+   "a 2ª via pode ser pedida normalmente nesse caso",
+   "o prazo mínimo é de 30 dias"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-026"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R034",
+  "pergunta_id": "t04",
+  "pergunta": "Quantas cotas eu posso carregar no máximo no meu Bilhete Único: a mensal e a de 24 horas?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "Crédito Eletrônico Comum mensal: limite de 2 cotas",
+   "Crédito Eletrônico Comum 24h: limite de 15 cotas"
+  ],
+  "afirmacoes_proibidas": [
+   "limite de 5 cotas mensais",
+   "limite de 10 cotas de 24 horas"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-012"
+   ]
+  ],
+  "resposta": "Você pode carregar até 15 cotas mensais e até 10 cotas de 24 horas no seu Bilhete Único.",
+  "fontes_citadas": [
+   "sptrans-bilhete-unico-012",
+   "sptrans-bilhete-unico-011"
+  ]
+ },
+ {
+  "rid": "R035",
+  "pergunta_id": "t22",
+  "pergunta": "Quanto custa a passagem de ônibus em Campinas pra idoso?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: a base cobre apenas o transporte coletivo da cidade de São Paulo/SPTrans e legislação federal.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R036",
+  "pergunta_id": "t15",
+  "pergunta": "Esqueci meu Bilhete Único de PCD em casa. Consigo usar a gratuidade mesmo assim?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "não; é obrigatório estar com o Bilhete Único da Pessoa com Deficiência em mãos e ativo para usar a gratuidade"
+  ],
+  "afirmacoes_proibidas": [
+   "dá para usar a gratuidade só com documento ou laudo",
+   "a gratuidade vale sem o cartão"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-011"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R037",
+  "pergunta_id": "t33",
+  "pergunta": "As locadoras de carro são obrigadas a ter carro adaptado pra pessoa com deficiência? Quantos?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "sim, 1 veículo adaptado a cada conjunto de 20 veículos da frota"
+  ],
+  "afirmacoes_proibidas": [
+   "a obrigação é de 1 veículo a cada 100",
+   "locadoras não têm essa obrigação"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "lei-13146-transporte-012"
+   ]
+  ],
+  "resposta": "As locadoras de veículos são obrigadas a oferecer 1 (um) veículo adaptado para uso de pessoa com deficiência, a cada conjunto de 20 (vinte) veículos de sua frota.",
+  "fontes_citadas": [
+   "[Art. 52]"
+  ]
+ },
+ {
+  "rid": "R038",
+  "pergunta_id": "t36",
+  "pergunta": "O acompanhante de uma pessoa idosa de 70 anos também viaja de graça no ônibus?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base só trata de acompanhante cadastrado para estudante PCD e de gratuidade da própria pessoa idosa; nada sobre acompanhante de idoso.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R039",
+  "pergunta_id": "t15",
+  "pergunta": "Esqueci meu Bilhete Único de PCD em casa. Consigo usar a gratuidade mesmo assim?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "não; é obrigatório estar com o Bilhete Único da Pessoa com Deficiência em mãos e ativo para usar a gratuidade"
+  ],
+  "afirmacoes_proibidas": [
+   "dá para usar a gratuidade só com documento ou laudo",
+   "a gratuidade vale sem o cartão"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-011"
+   ]
+  ],
+  "resposta": "Não, você não pode usar a gratuidade sem o seu Bilhete Único da Pessoa com Deficiência em mãos.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-011"
+  ]
+ },
+ {
+  "rid": "R040",
+  "pergunta_id": "t08",
+  "pergunta": "Tenho 62 anos e guardei meu cartão antigo de idoso. Posso continuar usando ele na catraca?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o cartão antigo de idoso não funciona mais (aparece “cartão bloqueado”)"
+  ],
+  "afirmacoes_proibidas": [
+   "o cartão antigo de idoso continua valendo normalmente para quem tem 60 a 64 anos"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-021"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R041",
+  "pergunta_id": "t14",
+  "pergunta": "Pelo Estatuto da Pessoa Idosa, qual a porcentagem das vagas de estacionamento que precisa ser reservada para idosos?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "5% das vagas nos estacionamentos públicos e privados"
+  ],
+  "afirmacoes_proibidas": [
+   "a reserva é de 2%",
+   "a reserva é de 10%"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "lei-10741-transporte-005"
+   ]
+  ],
+  "resposta": "5%",
+  "fontes_citadas": [
+   "lei-10741-transporte-005"
+  ]
+ },
+ {
+  "rid": "R042",
+  "pergunta_id": "t04",
+  "pergunta": "Quantas cotas eu posso carregar no máximo no meu Bilhete Único: a mensal e a de 24 horas?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "Crédito Eletrônico Comum mensal: limite de 2 cotas",
+   "Crédito Eletrônico Comum 24h: limite de 15 cotas"
+  ],
+  "afirmacoes_proibidas": [
+   "limite de 5 cotas mensais",
+   "limite de 10 cotas de 24 horas"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-012"
+   ]
+  ],
+  "resposta": "A cota mensal pode ser carregada até 2 cotas e a de 24 horas até 15 cotas.",
+  "fontes_citadas": [
+   "sptrans-bilhete-unico-012"
+  ]
+ },
+ {
+  "rid": "R043",
+  "pergunta_id": "t24",
+  "pergunta": "Qual é o telefone do Posto Central da SPTrans na Rua Boa Vista?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base informa endereço e horário do Posto Central, mas não traz telefone dele.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R044",
+  "pergunta_id": "t18",
+  "pergunta": "Meu cartão de PCD não chegou e já passaram os 20 dias. O que eu faço?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "informar o não recebimento pelo site de Atendimento da SPTrans ou em um Posto de Atendimento"
+  ],
+  "afirmacoes_proibidas": [
+   "basta esperar mais 20 dias sem fazer nada",
+   "o cartão só pode ser retirado nas subprefeituras"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-017"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R045",
+  "pergunta_id": "t10",
+  "pergunta": "Qual o valor em reais da multa pra quem usa o cartão de idoso de outra pessoa?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base trata de penalidades como suspensão do benefício, retenção e bloqueio do cartão, mas não menciona multa em dinheiro nem valores.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R046",
+  "pergunta_id": "t26",
+  "pergunta": "Como faço pra pedir minha aposentadoria por idade no INSS?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: assunto previdenciário, sem relação com a base de transporte.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R047",
+  "pergunta_id": "t13",
+  "pergunta": "Sou cadeirante e passei meu cartão duas vezes no mesmo ônibus. Existe um tempo mínimo pra passar de novo? E no metrô e no trem?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "no mesmo coletivo o limite de reapresentação é de 60 minutos",
+   "nos bloqueios do metrô/trem o limite é de 30 minutos"
+  ],
+  "afirmacoes_proibidas": [
+   "o limite no mesmo ônibus é de 30 minutos",
+   "o limite no metrô é de 60 minutos",
+   "não existe limite de reapresentação"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-014"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R048",
+  "pergunta_id": "t19",
+  "pergunta": "Posso mandar meu vizinho ao posto da SPTrans resolver coisa do meu Bilhete Único? E minha filha de 15 anos, quem resolve por ela?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "outra pessoa só pode resolver assuntos do cartão se o titular for menor de 18 anos",
+   "para o menor, o pai, a mãe ou o responsável vai com documento original com foto dele(a) e do menor"
+  ],
+  "afirmacoes_proibidas": [
+   "qualquer pessoa, como um vizinho, pode resolver pelo adulto",
+   "para menores basta uma procuração simples"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-032"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R049",
+  "pergunta_id": "t25",
+  "pergunta": "Minha clínica geral pode assinar o formulário do bilhete de PCD do meu pai? E se o médico assinar de forma digital, vale?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o formulário deve ser assinado por médico especializado na área relacionada ao diagnóstico",
+   "a assinatura digital do médico é aceita"
+  ],
+  "afirmacoes_proibidas": [
+   "qualquer médico de qualquer especialidade pode assinar sem restrição",
+   "assinatura digital não é aceita"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-047"
+   ],
+   [
+    "sptrans-bilhete-pcd-048"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R050",
+  "pergunta_id": "t17",
+  "pergunta": "Como peço a gratuidade de idoso no ônibus intermunicipal da EMTU?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: a base não trata de linhas intermunicipais da EMTU.",
+  "evidencias_esperadas": [],
+  "resposta": "A gratuidade para idosos de 65 anos ou mais é assegurada pela Lei 10.741/2003. Basta apresentar documento pessoal que comprove a idade para ter acesso à gratuidade.",
+  "fontes_citadas": [
+   "Art. 39"
+  ]
+ },
+ {
+  "rid": "R051",
+  "pergunta_id": "t04",
+  "pergunta": "Quantas cotas eu posso carregar no máximo no meu Bilhete Único: a mensal e a de 24 horas?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "Crédito Eletrônico Comum mensal: limite de 2 cotas",
+   "Crédito Eletrônico Comum 24h: limite de 15 cotas"
+  ],
+  "afirmacoes_proibidas": [
+   "limite de 5 cotas mensais",
+   "limite de 10 cotas de 24 horas"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-012"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R052",
+  "pergunta_id": "t30",
+  "pergunta": "Quantos anos de validade tem o Bilhete Único Especial da Pessoa com Deficiência de quem tem autismo?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base diz apenas que o prazo é estabelecido conforme a legislação vigente e o CID apresentado; não informa número de anos para nenhum diagnóstico.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R053",
+  "pergunta_id": "t11",
+  "pergunta": "Só faço 65 anos no mês que vem. Já posso pedir o Bilhete Único Especial da Pessoa Idosa agora?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "só é possível solicitar o cartão especial com 65 anos completos"
+  ],
+  "afirmacoes_proibidas": [
+   "pode solicitar antes de completar 65 anos",
+   "pode solicitar com 64 anos"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-007"
+   ]
+  ],
+  "resposta": "Não, só é possível realizar a solicitação com 65 anos completos.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-007"
+  ]
+ },
+ {
+  "rid": "R054",
+  "pergunta_id": "t26",
+  "pergunta": "Como faço pra pedir minha aposentadoria por idade no INSS?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: assunto previdenciário, sem relação com a base de transporte.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R055",
+  "pergunta_id": "t39",
+  "pergunta": "Quanto custa a tarifa integrada ônibus + metrô/trem com crédito de estudante e como esse valor é calculado?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a tarifa Integrada Ônibus + Metrô/Trem Estudante é de R$ 5,35",
+   "corresponde à metade da tarifa Comum Ônibus mais a metade da tarifa Comum Metrô/Trem"
+  ],
+  "afirmacoes_proibidas": [
+   "a tarifa integrada de estudante é de R$ 11,32",
+   "a tarifa integrada de estudante é de R$ 2,65"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-tarifas-004"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R056",
+  "pergunta_id": "t26",
+  "pergunta": "Como faço pra pedir minha aposentadoria por idade no INSS?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: assunto previdenciário, sem relação com a base de transporte.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R057",
+  "pergunta_id": "t14",
+  "pergunta": "Pelo Estatuto da Pessoa Idosa, qual a porcentagem das vagas de estacionamento que precisa ser reservada para idosos?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "5% das vagas nos estacionamentos públicos e privados"
+  ],
+  "afirmacoes_proibidas": [
+   "a reserva é de 2%",
+   "a reserva é de 10%"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "lei-10741-transporte-005"
+   ]
+  ],
+  "resposta": "5%",
+  "fontes_citadas": [
+   "lei-10741-transporte-005"
+  ]
+ },
+ {
+  "rid": "R058",
+  "pergunta_id": "t40",
+  "pergunta": "O cartão de idoso tem algum custo de entrega? E se passar de 30 dias e meu pai não receber, o que a gente faz?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a entrega do cartão é gratuita",
+   "se não chegar em 30 dias, contatar a Central 156 ou o Atendimento Digital"
+  ],
+  "afirmacoes_proibidas": [
+   "a entrega do cartão de idoso é cobrada",
+   "é preciso ir presencialmente ao Posto Central retirar o cartão"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-028"
+   ],
+   [
+    "sptrans-gratuidade-65-mais-017"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R059",
+  "pergunta_id": "t25",
+  "pergunta": "Minha clínica geral pode assinar o formulário do bilhete de PCD do meu pai? E se o médico assinar de forma digital, vale?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o formulário deve ser assinado por médico especializado na área relacionada ao diagnóstico",
+   "a assinatura digital do médico é aceita"
+  ],
+  "afirmacoes_proibidas": [
+   "qualquer médico de qualquer especialidade pode assinar sem restrição",
+   "assinatura digital não é aceita"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-047"
+   ],
+   [
+    "sptrans-bilhete-pcd-048"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R060",
+  "pergunta_id": "t22",
+  "pergunta": "Quanto custa a passagem de ônibus em Campinas pra idoso?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: a base cobre apenas o transporte coletivo da cidade de São Paulo/SPTrans e legislação federal.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R061",
+  "pergunta_id": "t37",
+  "pergunta": "Emprestei meu cartão pra minha irmã de 62 anos passar e fui pego. Qual a punição?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "suspensão do benefício por 6 meses na 1ª ocorrência",
+   "suspensão por 12 meses na 2ª ocorrência"
+  ],
+  "afirmacoes_proibidas": [
+   "a punição é multa em dinheiro",
+   "a suspensão é de 3 meses",
+   "o cartão é cancelado definitivamente na primeira ocorrência"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-018"
+   ]
+  ],
+  "resposta": "A punição é suspensão do benefício por 12 meses.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-015"
+  ]
+ },
+ {
+  "rid": "R062",
+  "pergunta_id": "t21",
+  "pergunta": "Pela Lei Brasileira de Inclusão, quantas vagas de estacionamento têm que ser reservadas pra pessoa com deficiência? Tem um mínimo?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "as vagas reservadas devem equivaler a 2% do total",
+   "garantida no mínimo 1 vaga sinalizada"
+  ],
+  "afirmacoes_proibidas": [
+   "a reserva é de 5%",
+   "a reserva é de 10%"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "lei-13146-transporte-005"
+   ]
+  ],
+  "resposta": "A Lei Brasileira de Inclusão reserva 2% do total de vagas de estacionamento para pessoas com deficiência, com no mínimo 1 vaga sinalizada.",
+  "fontes_citadas": [
+   "lei-13146-transporte-005"
+  ]
+ },
+ {
+  "rid": "R063",
+  "pergunta_id": "t12",
+  "pergunta": "A conta de luz da casa tá no nome da minha filha, mas eu tenho 72 anos e moro lá. Serve de comprovante de residência pro cartão de idoso?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o comprovante precisa ser do local onde a pessoa idosa reside (não necessariamente em seu nome)"
+  ],
+  "afirmacoes_proibidas": [
+   "o comprovante precisa estar obrigatoriamente no nome da pessoa idosa",
+   "a conta no nome da filha não serve de jeito nenhum"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-010"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R064",
+  "pergunta_id": "t28",
+  "pergunta": "Tenho direito a ônibus e metrô no bilhete de estudante. Como calculo quanto custa minha cota em dinheiro?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "multiplicar a quantidade de créditos pelo valor da meia-tarifa vigente",
+   "com direito a dois modais, multiplicar o resultado por dois"
+  ],
+  "afirmacoes_proibidas": [
+   "multiplica-se pelo valor da tarifa inteira",
+   "o cálculo não depende da quantidade de modais"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-016"
+   ]
+  ],
+  "resposta": "Para calcular o valor de sua cota em dinheiro, multiplique a quantidade de créditos a que tem direito pelo valor da Meia-Tarifa vigente. Se tiver direito a dois modais, multiplique o resultado por dois.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-016"
+  ]
+ },
+ {
+  "rid": "R065",
+  "pergunta_id": "t23",
+  "pergunta": "Tenho 63 anos e recarreguei minha gratuidade no fim do mês. Preciso recarregar de novo quando virar o mês?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a cota é mensal e só vale dentro do mês em que foi carregada, então é preciso recarregar no mês seguinte"
+  ],
+  "afirmacoes_proibidas": [
+   "a cota é acumulada e vale por vários meses",
+   "não precisa recarregar de novo"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-002"
+   ]
+  ],
+  "resposta": "Sim, você precisará recarregar novamente no início do mês seguinte.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-60-64-002"
+  ]
+ },
+ {
+  "rid": "R066",
+  "pergunta_id": "t35",
+  "pergunta": "Quanto custa o metrô do Rio de Janeiro e idoso tem desconto lá?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: outra cidade; a base cobre apenas São Paulo.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R067",
+  "pergunta_id": "t12",
+  "pergunta": "A conta de luz da casa tá no nome da minha filha, mas eu tenho 72 anos e moro lá. Serve de comprovante de residência pro cartão de idoso?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o comprovante precisa ser do local onde a pessoa idosa reside (não necessariamente em seu nome)"
+  ],
+  "afirmacoes_proibidas": [
+   "o comprovante precisa estar obrigatoriamente no nome da pessoa idosa",
+   "a conta no nome da filha não serve de jeito nenhum"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-010"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R068",
+  "pergunta_id": "t16",
+  "pergunta": "Meu filho tem 5 anos. Ele já pode ter Bilhete Único?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o Bilhete Único é para pessoas acima de 6 anos que tenham RG e CPF próprios, então aos 5 anos ainda não"
+  ],
+  "afirmacoes_proibidas": [
+   "crianças de qualquer idade podem ter Bilhete Único",
+   "basta ter CPF dos pais"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-002"
+   ]
+  ],
+  "resposta": "Sim, seu filho já pode ter Bilhete Único, pois ele tem mais de 6 anos.",
+  "fontes_citadas": [
+   "sptrans-bilhete-unico-002"
+  ]
+ },
+ {
+  "rid": "R069",
+  "pergunta_id": "t05",
+  "pergunta": "Tenho vale-transporte, crédito de estudante e crédito comum no mesmo cartão. Qual saldo a catraca desconta primeiro?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "primeiro desconta o crédito do tipo Vale-Transporte",
+   "depois o crédito de Estudante e por último o Comum"
+  ],
+  "afirmacoes_proibidas": [
+   "o crédito comum é descontado primeiro",
+   "a ordem de desconto é escolhida pelo passageiro"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-022"
+   ]
+  ],
+  "resposta": "A catraca desconta primeiro o crédito de Vale-Transporte.",
+  "fontes_citadas": [
+   "sptrans-bilhete-unico-022"
+  ]
+ },
+ {
+  "rid": "R070",
+  "pergunta_id": "t16",
+  "pergunta": "Meu filho tem 5 anos. Ele já pode ter Bilhete Único?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o Bilhete Único é para pessoas acima de 6 anos que tenham RG e CPF próprios, então aos 5 anos ainda não"
+  ],
+  "afirmacoes_proibidas": [
+   "crianças de qualquer idade podem ter Bilhete Único",
+   "basta ter CPF dos pais"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-002"
+   ]
+  ],
+  "resposta": "Sim, seu filho pode ter Bilhete Único, mas só se for menor de 18 anos. Nesse caso, o responsável deve apresentar documento com foto do seu filho e dele(a).",
+  "fontes_citadas": [
+   "sptrans-bilhete-unico-032"
+  ]
+ },
+ {
+  "rid": "R071",
+  "pergunta_id": "t29",
+  "pergunta": "A câmera do ônibus acusou foto diferente e suspenderam minha gratuidade de estudante. Por quanto tempo fico sem? E se acontecer de novo?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "suspensão de 6 meses na primeira ocorrência",
+   "suspensão de 12 meses em caso de reincidência"
+  ],
+  "afirmacoes_proibidas": [
+   "a suspensão é de 30 dias",
+   "a suspensão é definitiva até o fim do ano letivo na primeira ocorrência"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-037"
+   ]
+  ],
+  "resposta": "Vocês ficarão sem o benefício da gratuidade por 6 meses após a primeira ocorrência, e por 12 meses se acontecer de novo.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-037"
+  ]
+ },
+ {
+  "rid": "R072",
+  "pergunta_id": "t02",
+  "pergunta": "Eu sou PCD e também estudante. Posso ficar com os dois benefícios juntos no cartão?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a legislação não permite acumular isenções (PCD e estudante)",
+   "o sistema habilita automaticamente o benefício com as melhores vantagens para o usuário"
+  ],
+  "afirmacoes_proibidas": [
+   "é possível usar os dois benefícios ao mesmo tempo",
+   "é preciso escolher manualmente apenas na catraca"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-036"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R073",
+  "pergunta_id": "t40",
+  "pergunta": "O cartão de idoso tem algum custo de entrega? E se passar de 30 dias e meu pai não receber, o que a gente faz?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a entrega do cartão é gratuita",
+   "se não chegar em 30 dias, contatar a Central 156 ou o Atendimento Digital"
+  ],
+  "afirmacoes_proibidas": [
+   "a entrega do cartão de idoso é cobrada",
+   "é preciso ir presencialmente ao Posto Central retirar o cartão"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-028"
+   ],
+   [
+    "sptrans-gratuidade-65-mais-017"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R074",
+  "pergunta_id": "t13",
+  "pergunta": "Sou cadeirante e passei meu cartão duas vezes no mesmo ônibus. Existe um tempo mínimo pra passar de novo? E no metrô e no trem?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "no mesmo coletivo o limite de reapresentação é de 60 minutos",
+   "nos bloqueios do metrô/trem o limite é de 30 minutos"
+  ],
+  "afirmacoes_proibidas": [
+   "o limite no mesmo ônibus é de 30 minutos",
+   "o limite no metrô é de 60 minutos",
+   "não existe limite de reapresentação"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-014"
+   ]
+  ],
+  "resposta": "Sim, no ônibus, trem e metrô, o limite para reapresentação do cartão é de 60 minutos.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-014"
+  ]
+ },
+ {
+  "rid": "R075",
+  "pergunta_id": "t21",
+  "pergunta": "Pela Lei Brasileira de Inclusão, quantas vagas de estacionamento têm que ser reservadas pra pessoa com deficiência? Tem um mínimo?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "as vagas reservadas devem equivaler a 2% do total",
+   "garantida no mínimo 1 vaga sinalizada"
+  ],
+  "afirmacoes_proibidas": [
+   "a reserva é de 5%",
+   "a reserva é de 10%"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "lei-13146-transporte-005"
+   ]
+  ],
+  "resposta": "Deve ser reservado 2% do total de vagas, com no mínimo 1 vaga sinalizada.",
+  "fontes_citadas": [
+   "lei-13146-transporte-005"
+  ]
+ },
+ {
+  "rid": "R076",
+  "pergunta_id": "t38",
+  "pergunta": "Pedi a gratuidade de estudante por baixa renda usando o CadÚnico. Quanto tempo demora a validação e o que eu posso usar nesse meio-tempo?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a validação pelo CadÚnico leva até 45 dias",
+   "nesse período o estudante pode usar a meia-tarifa"
+  ],
+  "afirmacoes_proibidas": [
+   "a validação leva até 15 dias",
+   "nesse período o estudante não pode usar nenhum benefício"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-030",
+    "sptrans-bilhete-estudante-039"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R077",
+  "pergunta_id": "t26",
+  "pergunta": "Como faço pra pedir minha aposentadoria por idade no INSS?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: assunto previdenciário, sem relação com a base de transporte.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R078",
+  "pergunta_id": "t09",
+  "pergunta": "Qual o horário de funcionamento dos Postos de Atendimento que ficam nas subprefeituras?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base cita os Postos nas Subprefeituras com agendamento pelo Descomplica SP, mas só informa horário dos Postos nos Terminais e do Posto Central.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R079",
+  "pergunta_id": "t32",
+  "pergunta": "Perdi o cartão de PCD e faltam só 40 dias pro benefício vencer. Posso pedir a 2ª via?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a 2ª via pode ser impedida quando faltam menos de 60 dias para o vencimento do benefício",
+   "nesse caso é preciso pedir a renovação do benefício, e não a 2ª via"
+  ],
+  "afirmacoes_proibidas": [
+   "a 2ª via pode ser pedida normalmente nesse caso",
+   "o prazo mínimo é de 30 dias"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-026"
+   ]
+  ],
+  "resposta": "Não, você não pode pedir a 2ª via do cartão de PCD enquanto faltam menos de 60 dias para a data de validade do benefício expirar.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-026"
+  ]
+ },
+ {
+  "rid": "R080",
+  "pergunta_id": "t36",
+  "pergunta": "O acompanhante de uma pessoa idosa de 70 anos também viaja de graça no ônibus?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base só trata de acompanhante cadastrado para estudante PCD e de gratuidade da própria pessoa idosa; nada sobre acompanhante de idoso.",
+  "evidencias_esperadas": [],
+  "resposta": "Sim, o acompanhante de uma pessoa idosa de 70 anos também viaja de graça no ônibus, pois a gratuidade é assegurada para pessoas com 65 anos ou mais.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-008",
+   "lei-10741-transporte-002"
+  ]
+ },
+ {
+  "rid": "R081",
+  "pergunta_id": "t22",
+  "pergunta": "Quanto custa a passagem de ônibus em Campinas pra idoso?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: a base cobre apenas o transporte coletivo da cidade de São Paulo/SPTrans e legislação federal.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R082",
+  "pergunta_id": "t02",
+  "pergunta": "Eu sou PCD e também estudante. Posso ficar com os dois benefícios juntos no cartão?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a legislação não permite acumular isenções (PCD e estudante)",
+   "o sistema habilita automaticamente o benefício com as melhores vantagens para o usuário"
+  ],
+  "afirmacoes_proibidas": [
+   "é possível usar os dois benefícios ao mesmo tempo",
+   "é preciso escolher manualmente apenas na catraca"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-036"
+   ]
+  ],
+  "resposta": "Você pode ter apenas um dos benefícios ativo simultaneamente. O sistema habilitará o benefício que oferece as melhores vantagens para você, dependendo da sua situação.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-036"
+  ]
+ },
+ {
+  "rid": "R083",
+  "pergunta_id": "t10",
+  "pergunta": "Qual o valor em reais da multa pra quem usa o cartão de idoso de outra pessoa?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base trata de penalidades como suspensão do benefício, retenção e bloqueio do cartão, mas não menciona multa em dinheiro nem valores.",
+  "evidencias_esperadas": [],
+  "resposta": "Não consta",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R084",
+  "pergunta_id": "t03",
+  "pergunta": "Que horas o ônibus da linha 8000-10 passa no Terminal Santana amanhã de manhã?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: a base não contém horários de linhas nem itinerários.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R085",
+  "pergunta_id": "t35",
+  "pergunta": "Quanto custa o metrô do Rio de Janeiro e idoso tem desconto lá?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: outra cidade; a base cobre apenas São Paulo.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R086",
+  "pergunta_id": "t09",
+  "pergunta": "Qual o horário de funcionamento dos Postos de Atendimento que ficam nas subprefeituras?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base cita os Postos nas Subprefeituras com agendamento pelo Descomplica SP, mas só informa horário dos Postos nos Terminais e do Posto Central.",
+  "evidencias_esperadas": [],
+  "resposta": "Os Postos de Atendimento nos Terminais funcionam todos os dias, das 6h às 22h.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-60-64-017"
+  ]
+ },
+ {
+  "rid": "R087",
+  "pergunta_id": "t05",
+  "pergunta": "Tenho vale-transporte, crédito de estudante e crédito comum no mesmo cartão. Qual saldo a catraca desconta primeiro?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "primeiro desconta o crédito do tipo Vale-Transporte",
+   "depois o crédito de Estudante e por último o Comum"
+  ],
+  "afirmacoes_proibidas": [
+   "o crédito comum é descontado primeiro",
+   "a ordem de desconto é escolhida pelo passageiro"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-022"
+   ]
+  ],
+  "resposta": "A catraca desconta primeiro o crédito do tipo Vale-Transporte.",
+  "fontes_citadas": [
+   "sptrans-bilhete-unico-022"
+  ]
+ },
+ {
+  "rid": "R088",
+  "pergunta_id": "t08",
+  "pergunta": "Tenho 62 anos e guardei meu cartão antigo de idoso. Posso continuar usando ele na catraca?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o cartão antigo de idoso não funciona mais (aparece “cartão bloqueado”)"
+  ],
+  "afirmacoes_proibidas": [
+   "o cartão antigo de idoso continua valendo normalmente para quem tem 60 a 64 anos"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-021"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R089",
+  "pergunta_id": "t21",
+  "pergunta": "Pela Lei Brasileira de Inclusão, quantas vagas de estacionamento têm que ser reservadas pra pessoa com deficiência? Tem um mínimo?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "as vagas reservadas devem equivaler a 2% do total",
+   "garantida no mínimo 1 vaga sinalizada"
+  ],
+  "afirmacoes_proibidas": [
+   "a reserva é de 5%",
+   "a reserva é de 10%"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "lei-13146-transporte-005"
+   ]
+  ],
+  "resposta": null,
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R090",
+  "pergunta_id": "t30",
+  "pergunta": "Quantos anos de validade tem o Bilhete Único Especial da Pessoa com Deficiência de quem tem autismo?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base diz apenas que o prazo é estabelecido conforme a legislação vigente e o CID apresentado; não informa número de anos para nenhum diagnóstico.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R091",
+  "pergunta_id": "t02",
+  "pergunta": "Eu sou PCD e também estudante. Posso ficar com os dois benefícios juntos no cartão?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a legislação não permite acumular isenções (PCD e estudante)",
+   "o sistema habilita automaticamente o benefício com as melhores vantagens para o usuário"
+  ],
+  "afirmacoes_proibidas": [
+   "é possível usar os dois benefícios ao mesmo tempo",
+   "é preciso escolher manualmente apenas na catraca"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-036"
+   ]
+  ],
+  "resposta": "Não, você não pode ficar com os dois benefícios juntos no cartão. O sistema automaticamente habilita o benefício que oferece as melhores vantagens para o usuário.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-036"
+  ]
+ },
+ {
+  "rid": "R092",
+  "pergunta_id": "t37",
+  "pergunta": "Emprestei meu cartão pra minha irmã de 62 anos passar e fui pego. Qual a punição?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "suspensão do benefício por 6 meses na 1ª ocorrência",
+   "suspensão por 12 meses na 2ª ocorrência"
+  ],
+  "afirmacoes_proibidas": [
+   "a punição é multa em dinheiro",
+   "a suspensão é de 3 meses",
+   "o cartão é cancelado definitivamente na primeira ocorrência"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-018"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R093",
+  "pergunta_id": "t35",
+  "pergunta": "Quanto custa o metrô do Rio de Janeiro e idoso tem desconto lá?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: outra cidade; a base cobre apenas São Paulo.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R094",
+  "pergunta_id": "t34",
+  "pergunta": "Moro a uns 600 metros da minha escola. Tenho direito ao Bilhete Único de Estudante?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a escola deve ficar a uma distância não inferior a 1 km da residência, então com 600 metros não há direito"
+  ],
+  "afirmacoes_proibidas": [
+   "a partir de 500 metros já tem direito",
+   "não existe distância mínima"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-004"
+   ]
+  ],
+  "resposta": "Comprovadamente, você residindo no Município de São Paulo e estar matriculado em um curso sediado na Região Metropolitana de São Paulo ou nos municípios constantes de portaria da SMT, você tem direito ao Bilhete Único de Estudante.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-004"
+  ]
+ },
+ {
+  "rid": "R095",
+  "pergunta_id": "t06",
+  "pergunta": "Minha mãe tem 68 anos e quase não sai de casa. Posso ir eu no posto fazer o cadastro do cartão de idoso dela no lugar dela?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "não é possível fazer o cadastramento por meio de representante"
+  ],
+  "afirmacoes_proibidas": [
+   "o filho ou outro representante pode fazer o cadastro no posto"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-009"
+   ]
+  ],
+  "resposta": "Não é possível fazer o cadastramento por meio de um representante. Recomendamos o Atendimento Digital no site sptrans.com.br/atendimento.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-009"
+  ]
+ },
+ {
+  "rid": "R096",
+  "pergunta_id": "t20",
+  "pergunta": "Tenho 61 anos e uso a gratuidade. Em que época do mês eu consigo fazer a nova recarga?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "as novas recargas são feitas sempre nos primeiros dias de cada mês"
+  ],
+  "afirmacoes_proibidas": [
+   "a recarga só pode ser feita no fim do mês",
+   "a recarga só pode ser feita uma vez por ano"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-014"
+   ]
+  ],
+  "resposta": "Você pode fazer a nova recarga sempre nos primeiros dias de cada mês.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-60-64-014"
+  ]
+ },
+ {
+  "rid": "R097",
+  "pergunta_id": "t33",
+  "pergunta": "As locadoras de carro são obrigadas a ter carro adaptado pra pessoa com deficiência? Quantos?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "sim, 1 veículo adaptado a cada conjunto de 20 veículos da frota"
+  ],
+  "afirmacoes_proibidas": [
+   "a obrigação é de 1 veículo a cada 100",
+   "locadoras não têm essa obrigação"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "lei-13146-transporte-012"
+   ]
+  ],
+  "resposta": "As locadoras de veículos são obrigadas a oferecer 1 (um) veículo adaptado para uso de pessoa com deficiência, a cada conjunto de 20 (vinte) veículos de sua frota.",
+  "fontes_citadas": [
+   "lei-13146-transporte-012"
+  ]
+ },
+ {
+  "rid": "R098",
+  "pergunta_id": "t31",
+  "pergunta": "Quem faz o meu cadastro de estudante no sistema? E meu curso é semestral, por que não liberaram minhas cotas do 2º semestre?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o cadastro e o envio dos dados à SPTrans são feitos pela Unidade de Ensino",
+   "nos cursos semestrais a escola precisa reenviar os dados da matrícula a cada semestre; até lá as cotas ficam bloqueadas"
+  ],
+  "afirmacoes_proibidas": [
+   "o próprio aluno envia os dados de matrícula direto à SPTrans",
+   "as cotas do 2º semestre são liberadas automaticamente"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-009"
+   ],
+   [
+    "sptrans-bilhete-estudante-018",
+    "sptrans-bilhete-estudante-046"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R099",
+  "pergunta_id": "t19",
+  "pergunta": "Posso mandar meu vizinho ao posto da SPTrans resolver coisa do meu Bilhete Único? E minha filha de 15 anos, quem resolve por ela?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "outra pessoa só pode resolver assuntos do cartão se o titular for menor de 18 anos",
+   "para o menor, o pai, a mãe ou o responsável vai com documento original com foto dele(a) e do menor"
+  ],
+  "afirmacoes_proibidas": [
+   "qualquer pessoa, como um vizinho, pode resolver pelo adulto",
+   "para menores basta uma procuração simples"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-032"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R100",
+  "pergunta_id": "t30",
+  "pergunta": "Quantos anos de validade tem o Bilhete Único Especial da Pessoa com Deficiência de quem tem autismo?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base diz apenas que o prazo é estabelecido conforme a legislação vigente e o CID apresentado; não informa número de anos para nenhum diagnóstico.",
+  "evidencias_esperadas": [],
+  "resposta": "Não consta",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R101",
+  "pergunta_id": "t05",
+  "pergunta": "Tenho vale-transporte, crédito de estudante e crédito comum no mesmo cartão. Qual saldo a catraca desconta primeiro?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "primeiro desconta o crédito do tipo Vale-Transporte",
+   "depois o crédito de Estudante e por último o Comum"
+  ],
+  "afirmacoes_proibidas": [
+   "o crédito comum é descontado primeiro",
+   "a ordem de desconto é escolhida pelo passageiro"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-022"
+   ]
+  ],
+  "resposta": "A catraca desconta primeiro o crédito do tipo Vale-Transporte.",
+  "fontes_citadas": [
+   "sptrans-bilhete-unico-022"
+  ]
+ },
+ {
+  "rid": "R102",
+  "pergunta_id": "t39",
+  "pergunta": "Quanto custa a tarifa integrada ônibus + metrô/trem com crédito de estudante e como esse valor é calculado?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a tarifa Integrada Ônibus + Metrô/Trem Estudante é de R$ 5,35",
+   "corresponde à metade da tarifa Comum Ônibus mais a metade da tarifa Comum Metrô/Trem"
+  ],
+  "afirmacoes_proibidas": [
+   "a tarifa integrada de estudante é de R$ 11,32",
+   "a tarifa integrada de estudante é de R$ 2,65"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-tarifas-004"
+   ]
+  ],
+  "resposta": "A tarifa Integrada Ônibus + Metrô/Trem Estudante é de R$ 5,35. Este valor é calculado considerando a metade do valor da tarifa Comum Ônibus + metade do valor da tarifa Comum Metrô/Trem.",
+  "fontes_citadas": [
+   "sptrans-tarifas-004",
+   "sptrans-tarifas-003"
+  ]
+ },
+ {
+  "rid": "R103",
+  "pergunta_id": "t30",
+  "pergunta": "Quantos anos de validade tem o Bilhete Único Especial da Pessoa com Deficiência de quem tem autismo?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base diz apenas que o prazo é estabelecido conforme a legislação vigente e o CID apresentado; não informa número de anos para nenhum diagnóstico.",
+  "evidencias_esperadas": [],
+  "resposta": "O prazo de validade do Bilhete Único Especial da Pessoa com Deficiência para quem tem autismo é de 90 dias, conforme o Formulário Específico de Solicitação da SPTrans.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-005"
+  ]
+ },
+ {
+  "rid": "R104",
+  "pergunta_id": "t11",
+  "pergunta": "Só faço 65 anos no mês que vem. Já posso pedir o Bilhete Único Especial da Pessoa Idosa agora?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "só é possível solicitar o cartão especial com 65 anos completos"
+  ],
+  "afirmacoes_proibidas": [
+   "pode solicitar antes de completar 65 anos",
+   "pode solicitar com 64 anos"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-007"
+   ]
+  ],
+  "resposta": "Não, só é possível realizar a solicitação com idade igual a 65 anos.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-007"
+  ]
+ },
+ {
+  "rid": "R105",
+  "pergunta_id": "t25",
+  "pergunta": "Minha clínica geral pode assinar o formulário do bilhete de PCD do meu pai? E se o médico assinar de forma digital, vale?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o formulário deve ser assinado por médico especializado na área relacionada ao diagnóstico",
+   "a assinatura digital do médico é aceita"
+  ],
+  "afirmacoes_proibidas": [
+   "qualquer médico de qualquer especialidade pode assinar sem restrição",
+   "assinatura digital não é aceita"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-047"
+   ],
+   [
+    "sptrans-bilhete-pcd-048"
+   ]
+  ],
+  "resposta": "Não, a clínica geral não pode assinar o formulário. A assinatura do médico deve ser legível e física.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-047"
+  ]
+ },
+ {
+  "rid": "R106",
+  "pergunta_id": "t34",
+  "pergunta": "Moro a uns 600 metros da minha escola. Tenho direito ao Bilhete Único de Estudante?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a escola deve ficar a uma distância não inferior a 1 km da residência, então com 600 metros não há direito"
+  ],
+  "afirmacoes_proibidas": [
+   "a partir de 500 metros já tem direito",
+   "não existe distância mínima"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-004"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R107",
+  "pergunta_id": "t07",
+  "pergunta": "Comecei a usar minha cota mensal, mas mudei de ideia. Dá pra parar a contagem? E as cotas que nem comecei a usar, devolvem em dinheiro?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "depois de iniciado o uso da cota não há como interrompê-lo",
+   "a restituição de cotas/créditos não iniciados é feita só em créditos de viagem ou cotas de tempo, não em dinheiro"
+  ],
+  "afirmacoes_proibidas": [
+   "a SPTrans devolve o valor em dinheiro",
+   "é possível pausar a cota mensal"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-023"
+   ],
+   [
+    "sptrans-bilhete-unico-024"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R108",
+  "pergunta_id": "t40",
+  "pergunta": "O cartão de idoso tem algum custo de entrega? E se passar de 30 dias e meu pai não receber, o que a gente faz?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a entrega do cartão é gratuita",
+   "se não chegar em 30 dias, contatar a Central 156 ou o Atendimento Digital"
+  ],
+  "afirmacoes_proibidas": [
+   "a entrega do cartão de idoso é cobrada",
+   "é preciso ir presencialmente ao Posto Central retirar o cartão"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-028"
+   ],
+   [
+    "sptrans-gratuidade-65-mais-017"
+   ]
+  ],
+  "resposta": "O cartão de idoso é totalmente gratuito. Se passar dos 30 dias e seu pai não receber, ele deve entrar em contato através da Central 156 ou pelo Atendimento Digital. Se for constatado o extravio, o cartão será bloqueado e a 2ª via será solicitada e enviada para o endereço cadastrado no sistema. É importante checar se o endereço está atualizado.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-017",
+   "sptrans-gratuidade-65-mais-012",
+   "sptrans-gratuidade-65-mais-028"
+  ]
+ },
+ {
+  "rid": "R109",
+  "pergunta_id": "t01",
+  "pergunta": "Meu Bilhete Único de Estudante foi apreendido por uso indevido. Em quanto tempo posso pedir a 2ª via e onde faço o pedido?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a 2ª via pode ser solicitada após 30 dias da apreensão",
+   "o pedido é feito pelo site de atendimento da SPTrans"
+  ],
+  "afirmacoes_proibidas": [
+   "a 2ª via pode ser pedida imediatamente",
+   "o prazo é de 6 meses"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-023"
+   ]
+  ],
+  "resposta": "Você pode pedir a 2ª via do seu Bilhete Único de Estudante no site do sptrans.com.br/atendimento em até 30 dias. O pedido deve ser feito pelo serviço ESTUDANTE - JUSTIFICATIVA DE BLOQUEIO OU APREENSÃO.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-023"
+  ]
+ },
+ {
+  "rid": "R110",
+  "pergunta_id": "t27",
+  "pergunta": "Meu sobrinho tem autismo. O autismo conta como deficiência permanente pro bilhete de PCD?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "sim, o diagnóstico de Transtorno do Espectro Autista (TEA) está entre as deficiências consideradas permanentes"
+  ],
+  "afirmacoes_proibidas": [
+   "o autismo não é considerado deficiência permanente",
+   "o autismo só é considerado deficiência temporária"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-042",
+    "sptrans-bilhete-pcd-043"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R111",
+  "pergunta_id": "t38",
+  "pergunta": "Pedi a gratuidade de estudante por baixa renda usando o CadÚnico. Quanto tempo demora a validação e o que eu posso usar nesse meio-tempo?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a validação pelo CadÚnico leva até 45 dias",
+   "nesse período o estudante pode usar a meia-tarifa"
+  ],
+  "afirmacoes_proibidas": [
+   "a validação leva até 15 dias",
+   "nesse período o estudante não pode usar nenhum benefício"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-030",
+    "sptrans-bilhete-estudante-039"
+   ]
+  ],
+  "resposta": "O prazo para validação é de até 45 dias. Nesse período você pode usar o benefício da meia-tarifa.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-030",
+   "sptrans-bilhete-estudante-039"
+  ]
+ },
+ {
+  "rid": "R112",
+  "pergunta_id": "t38",
+  "pergunta": "Pedi a gratuidade de estudante por baixa renda usando o CadÚnico. Quanto tempo demora a validação e o que eu posso usar nesse meio-tempo?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a validação pelo CadÚnico leva até 45 dias",
+   "nesse período o estudante pode usar a meia-tarifa"
+  ],
+  "afirmacoes_proibidas": [
+   "a validação leva até 15 dias",
+   "nesse período o estudante não pode usar nenhum benefício"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-030",
+    "sptrans-bilhete-estudante-039"
+   ]
+  ],
+  "resposta": "A validação demora até 45 dias. Durante esse período, você pode usar a meia-tarifa.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-030",
+   "sptrans-bilhete-estudante-039"
+  ]
+ },
+ {
+  "rid": "R113",
+  "pergunta_id": "t11",
+  "pergunta": "Só faço 65 anos no mês que vem. Já posso pedir o Bilhete Único Especial da Pessoa Idosa agora?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "só é possível solicitar o cartão especial com 65 anos completos"
+  ],
+  "afirmacoes_proibidas": [
+   "pode solicitar antes de completar 65 anos",
+   "pode solicitar com 64 anos"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-007"
+   ]
+  ],
+  "resposta": "Não, só é possível realizar a solicitação com idade igual a 65 anos.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-007"
+  ]
+ },
+ {
+  "rid": "R114",
+  "pergunta_id": "t07",
+  "pergunta": "Comecei a usar minha cota mensal, mas mudei de ideia. Dá pra parar a contagem? E as cotas que nem comecei a usar, devolvem em dinheiro?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "depois de iniciado o uso da cota não há como interrompê-lo",
+   "a restituição de cotas/créditos não iniciados é feita só em créditos de viagem ou cotas de tempo, não em dinheiro"
+  ],
+  "afirmacoes_proibidas": [
+   "a SPTrans devolve o valor em dinheiro",
+   "é possível pausar a cota mensal"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-023"
+   ],
+   [
+    "sptrans-bilhete-unico-024"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R115",
+  "pergunta_id": "t16",
+  "pergunta": "Meu filho tem 5 anos. Ele já pode ter Bilhete Único?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o Bilhete Único é para pessoas acima de 6 anos que tenham RG e CPF próprios, então aos 5 anos ainda não"
+  ],
+  "afirmacoes_proibidas": [
+   "crianças de qualquer idade podem ter Bilhete Único",
+   "basta ter CPF dos pais"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-002"
+   ]
+  ],
+  "resposta": "Sim, seu filho pode ter Bilhete Único, mas precisa de autorização de um responsável.",
+  "fontes_citadas": [
+   "sptrans-bilhete-unico-032"
+  ]
+ },
+ {
+  "rid": "R116",
+  "pergunta_id": "t29",
+  "pergunta": "A câmera do ônibus acusou foto diferente e suspenderam minha gratuidade de estudante. Por quanto tempo fico sem? E se acontecer de novo?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "suspensão de 6 meses na primeira ocorrência",
+   "suspensão de 12 meses em caso de reincidência"
+  ],
+  "afirmacoes_proibidas": [
+   "a suspensão é de 30 dias",
+   "a suspensão é definitiva até o fim do ano letivo na primeira ocorrência"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-037"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R117",
+  "pergunta_id": "t19",
+  "pergunta": "Posso mandar meu vizinho ao posto da SPTrans resolver coisa do meu Bilhete Único? E minha filha de 15 anos, quem resolve por ela?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "outra pessoa só pode resolver assuntos do cartão se o titular for menor de 18 anos",
+   "para o menor, o pai, a mãe ou o responsável vai com documento original com foto dele(a) e do menor"
+  ],
+  "afirmacoes_proibidas": [
+   "qualquer pessoa, como um vizinho, pode resolver pelo adulto",
+   "para menores basta uma procuração simples"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-032"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R118",
+  "pergunta_id": "t14",
+  "pergunta": "Pelo Estatuto da Pessoa Idosa, qual a porcentagem das vagas de estacionamento que precisa ser reservada para idosos?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "5% das vagas nos estacionamentos públicos e privados"
+  ],
+  "afirmacoes_proibidas": [
+   "a reserva é de 2%",
+   "a reserva é de 10%"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "lei-10741-transporte-005"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R119",
+  "pergunta_id": "t06",
+  "pergunta": "Minha mãe tem 68 anos e quase não sai de casa. Posso ir eu no posto fazer o cadastro do cartão de idoso dela no lugar dela?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "não é possível fazer o cadastramento por meio de representante"
+  ],
+  "afirmacoes_proibidas": [
+   "o filho ou outro representante pode fazer o cadastro no posto"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-009"
+   ]
+  ],
+  "resposta": "Não é possível fazer o cadastramento por meio de um representante. Recomendamos o Atendimento Digital.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-009"
+  ]
+ },
+ {
+  "rid": "R120",
+  "pergunta_id": "t24",
+  "pergunta": "Qual é o telefone do Posto Central da SPTrans na Rua Boa Vista?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base informa endereço e horário do Posto Central, mas não traz telefone dele.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R121",
+  "pergunta_id": "t34",
+  "pergunta": "Moro a uns 600 metros da minha escola. Tenho direito ao Bilhete Único de Estudante?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a escola deve ficar a uma distância não inferior a 1 km da residência, então com 600 metros não há direito"
+  ],
+  "afirmacoes_proibidas": [
+   "a partir de 500 metros já tem direito",
+   "não existe distância mínima"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-004"
+   ]
+  ],
+  "resposta": "Não consta",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R122",
+  "pergunta_id": "t38",
+  "pergunta": "Pedi a gratuidade de estudante por baixa renda usando o CadÚnico. Quanto tempo demora a validação e o que eu posso usar nesse meio-tempo?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a validação pelo CadÚnico leva até 45 dias",
+   "nesse período o estudante pode usar a meia-tarifa"
+  ],
+  "afirmacoes_proibidas": [
+   "a validação leva até 15 dias",
+   "nesse período o estudante não pode usar nenhum benefício"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-030",
+    "sptrans-bilhete-estudante-039"
+   ]
+  ],
+  "resposta": "O prazo para a validação é de até 45 dias. Nesse período você pode usar o benefício da meia-tarifa.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-030",
+   "sptrans-bilhete-estudante-039"
+  ]
+ },
+ {
+  "rid": "R123",
+  "pergunta_id": "t05",
+  "pergunta": "Tenho vale-transporte, crédito de estudante e crédito comum no mesmo cartão. Qual saldo a catraca desconta primeiro?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "primeiro desconta o crédito do tipo Vale-Transporte",
+   "depois o crédito de Estudante e por último o Comum"
+  ],
+  "afirmacoes_proibidas": [
+   "o crédito comum é descontado primeiro",
+   "a ordem de desconto é escolhida pelo passageiro"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-022"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R124",
+  "pergunta_id": "t15",
+  "pergunta": "Esqueci meu Bilhete Único de PCD em casa. Consigo usar a gratuidade mesmo assim?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "não; é obrigatório estar com o Bilhete Único da Pessoa com Deficiência em mãos e ativo para usar a gratuidade"
+  ],
+  "afirmacoes_proibidas": [
+   "dá para usar a gratuidade só com documento ou laudo",
+   "a gratuidade vale sem o cartão"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-011"
+   ]
+  ],
+  "resposta": "Não, para utilizar a gratuidade, é obrigatório estar com o Bilhete Único da Pessoa com Deficiência em mãos e ativo.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-011"
+  ]
+ },
+ {
+  "rid": "R125",
+  "pergunta_id": "t06",
+  "pergunta": "Minha mãe tem 68 anos e quase não sai de casa. Posso ir eu no posto fazer o cadastro do cartão de idoso dela no lugar dela?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "não é possível fazer o cadastramento por meio de representante"
+  ],
+  "afirmacoes_proibidas": [
+   "o filho ou outro representante pode fazer o cadastro no posto"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-009"
+   ]
+  ],
+  "resposta": "Não é possível fazer o cadastramento por meio de um representante. Recomendamos o Atendimento Digital (sptrans.com.br/atendimento).",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-009"
+  ]
+ },
+ {
+  "rid": "R126",
+  "pergunta_id": "t13",
+  "pergunta": "Sou cadeirante e passei meu cartão duas vezes no mesmo ônibus. Existe um tempo mínimo pra passar de novo? E no metrô e no trem?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "no mesmo coletivo o limite de reapresentação é de 60 minutos",
+   "nos bloqueios do metrô/trem o limite é de 30 minutos"
+  ],
+  "afirmacoes_proibidas": [
+   "o limite no mesmo ônibus é de 30 minutos",
+   "o limite no metrô é de 60 minutos",
+   "não existe limite de reapresentação"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-014"
+   ]
+  ],
+  "resposta": "Sim, há um limite de tempo de 60 minutos para reapresentação no mesmo ônibus. No metrô e trem, o limite é de 30 minutos.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-014"
+  ]
+ },
+ {
+  "rid": "R127",
+  "pergunta_id": "t09",
+  "pergunta": "Qual o horário de funcionamento dos Postos de Atendimento que ficam nas subprefeituras?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base cita os Postos nas Subprefeituras com agendamento pelo Descomplica SP, mas só informa horário dos Postos nos Terminais e do Posto Central.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R128",
+  "pergunta_id": "t28",
+  "pergunta": "Tenho direito a ônibus e metrô no bilhete de estudante. Como calculo quanto custa minha cota em dinheiro?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "multiplicar a quantidade de créditos pelo valor da meia-tarifa vigente",
+   "com direito a dois modais, multiplicar o resultado por dois"
+  ],
+  "afirmacoes_proibidas": [
+   "multiplica-se pelo valor da tarifa inteira",
+   "o cálculo não depende da quantidade de modais"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-016"
+   ]
+  ],
+  "resposta": "Para calcular o valor da sua cota em dinheiro, multiplique a quantidade de créditos a que tem direito pelo valor da Meia-Tarifa vigente, e, se tiver direito a dois modais, multiplique o resultado por dois.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-016"
+  ]
+ },
+ {
+  "rid": "R129",
+  "pergunta_id": "t34",
+  "pergunta": "Moro a uns 600 metros da minha escola. Tenho direito ao Bilhete Único de Estudante?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a escola deve ficar a uma distância não inferior a 1 km da residência, então com 600 metros não há direito"
+  ],
+  "afirmacoes_proibidas": [
+   "a partir de 500 metros já tem direito",
+   "não existe distância mínima"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-004"
+   ]
+  ],
+  "resposta": "Para ter direito ao Bilhete Único de Estudante, você precisa morar a menos de 1 quilômetro da escola.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-004"
+  ]
+ },
+ {
+  "rid": "R130",
+  "pergunta_id": "t07",
+  "pergunta": "Comecei a usar minha cota mensal, mas mudei de ideia. Dá pra parar a contagem? E as cotas que nem comecei a usar, devolvem em dinheiro?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "depois de iniciado o uso da cota não há como interrompê-lo",
+   "a restituição de cotas/créditos não iniciados é feita só em créditos de viagem ou cotas de tempo, não em dinheiro"
+  ],
+  "afirmacoes_proibidas": [
+   "a SPTrans devolve o valor em dinheiro",
+   "é possível pausar a cota mensal"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-023"
+   ],
+   [
+    "sptrans-bilhete-unico-024"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R131",
+  "pergunta_id": "t27",
+  "pergunta": "Meu sobrinho tem autismo. O autismo conta como deficiência permanente pro bilhete de PCD?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "sim, o diagnóstico de Transtorno do Espectro Autista (TEA) está entre as deficiências consideradas permanentes"
+  ],
+  "afirmacoes_proibidas": [
+   "o autismo não é considerado deficiência permanente",
+   "o autismo só é considerado deficiência temporária"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-042",
+    "sptrans-bilhete-pcd-043"
+   ]
+  ],
+  "resposta": "Sim, o autismo é considerado deficiência permanente para o bilhete único especial da Pessoa com Deficiência.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-042"
+  ]
+ },
+ {
+  "rid": "R132",
+  "pergunta_id": "t40",
+  "pergunta": "O cartão de idoso tem algum custo de entrega? E se passar de 30 dias e meu pai não receber, o que a gente faz?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a entrega do cartão é gratuita",
+   "se não chegar em 30 dias, contatar a Central 156 ou o Atendimento Digital"
+  ],
+  "afirmacoes_proibidas": [
+   "a entrega do cartão de idoso é cobrada",
+   "é preciso ir presencialmente ao Posto Central retirar o cartão"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-028"
+   ],
+   [
+    "sptrans-gratuidade-65-mais-017"
+   ]
+  ],
+  "resposta": "Não há custo de entrega para o cartão de idoso. Se passar do prazo de 30 dias, entrar em contato através da Central 156 ou pelo Atendimento Digital.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-028",
+   "sptrans-gratuidade-65-mais-017"
+  ]
+ },
+ {
+  "rid": "R133",
+  "pergunta_id": "t18",
+  "pergunta": "Meu cartão de PCD não chegou e já passaram os 20 dias. O que eu faço?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "informar o não recebimento pelo site de Atendimento da SPTrans ou em um Posto de Atendimento"
+  ],
+  "afirmacoes_proibidas": [
+   "basta esperar mais 20 dias sem fazer nada",
+   "o cartão só pode ser retirado nas subprefeituras"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-017"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R134",
+  "pergunta_id": "t08",
+  "pergunta": "Tenho 62 anos e guardei meu cartão antigo de idoso. Posso continuar usando ele na catraca?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o cartão antigo de idoso não funciona mais (aparece “cartão bloqueado”)"
+  ],
+  "afirmacoes_proibidas": [
+   "o cartão antigo de idoso continua valendo normalmente para quem tem 60 a 64 anos"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-021"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R135",
+  "pergunta_id": "t31",
+  "pergunta": "Quem faz o meu cadastro de estudante no sistema? E meu curso é semestral, por que não liberaram minhas cotas do 2º semestre?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o cadastro e o envio dos dados à SPTrans são feitos pela Unidade de Ensino",
+   "nos cursos semestrais a escola precisa reenviar os dados da matrícula a cada semestre; até lá as cotas ficam bloqueadas"
+  ],
+  "afirmacoes_proibidas": [
+   "o próprio aluno envia os dados de matrícula direto à SPTrans",
+   "as cotas do 2º semestre são liberadas automaticamente"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-009"
+   ],
+   [
+    "sptrans-bilhete-estudante-018",
+    "sptrans-bilhete-estudante-046"
+   ]
+  ],
+  "resposta": "O cadastro do estudante é feito pela unidade de ensino. Como seu curso é semestral, é necessário que a sua escola envie os dados das matrículas referentes ao segundo semestre para a SPTrans. Até que isso seja feito, as cotas ficam bloqueadas.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-009",
+   "sptrans-bilhete-estudante-018"
+  ]
+ },
+ {
+  "rid": "R136",
+  "pergunta_id": "t01",
+  "pergunta": "Meu Bilhete Único de Estudante foi apreendido por uso indevido. Em quanto tempo posso pedir a 2ª via e onde faço o pedido?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a 2ª via pode ser solicitada após 30 dias da apreensão",
+   "o pedido é feito pelo site de atendimento da SPTrans"
+  ],
+  "afirmacoes_proibidas": [
+   "a 2ª via pode ser pedida imediatamente",
+   "o prazo é de 6 meses"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-023"
+   ]
+  ],
+  "resposta": "Pode pedir a 2ª via após 30 dias da apreensão. O pedido deve ser feito no site: sptrans.com.br/atendimento. Faça o cadastro e selecione o serviço: ESTUDANTE - JUSTIFICATIVA DE BLOQUEIO OU APREENSÃO.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-023"
+  ]
+ },
+ {
+  "rid": "R137",
+  "pergunta_id": "t02",
+  "pergunta": "Eu sou PCD e também estudante. Posso ficar com os dois benefícios juntos no cartão?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a legislação não permite acumular isenções (PCD e estudante)",
+   "o sistema habilita automaticamente o benefício com as melhores vantagens para o usuário"
+  ],
+  "afirmacoes_proibidas": [
+   "é possível usar os dois benefícios ao mesmo tempo",
+   "é preciso escolher manualmente apenas na catraca"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-036"
+   ]
+  ],
+  "resposta": "Não, a legislação não permite a concessão acumulativa de isenções tarifárias para esses perfis de usuário.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-036"
+  ]
+ },
+ {
+  "rid": "R138",
+  "pergunta_id": "t32",
+  "pergunta": "Perdi o cartão de PCD e faltam só 40 dias pro benefício vencer. Posso pedir a 2ª via?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a 2ª via pode ser impedida quando faltam menos de 60 dias para o vencimento do benefício",
+   "nesse caso é preciso pedir a renovação do benefício, e não a 2ª via"
+  ],
+  "afirmacoes_proibidas": [
+   "a 2ª via pode ser pedida normalmente nesse caso",
+   "o prazo mínimo é de 30 dias"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-026"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R139",
+  "pergunta_id": "t35",
+  "pergunta": "Quanto custa o metrô do Rio de Janeiro e idoso tem desconto lá?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: outra cidade; a base cobre apenas São Paulo.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R140",
+  "pergunta_id": "t17",
+  "pergunta": "Como peço a gratuidade de idoso no ônibus intermunicipal da EMTU?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "Fora do escopo: a base não trata de linhas intermunicipais da EMTU.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R141",
+  "pergunta_id": "t28",
+  "pergunta": "Tenho direito a ônibus e metrô no bilhete de estudante. Como calculo quanto custa minha cota em dinheiro?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "multiplicar a quantidade de créditos pelo valor da meia-tarifa vigente",
+   "com direito a dois modais, multiplicar o resultado por dois"
+  ],
+  "afirmacoes_proibidas": [
+   "multiplica-se pelo valor da tarifa inteira",
+   "o cálculo não depende da quantidade de modais"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-016"
+   ]
+  ],
+  "resposta": "Para calcular o valor de sua cota em dinheiro, multiplique a quantidade de créditos a que tem direito pelo valor da Meia-Tarifa vigente. Se tiver direito a dois modais, multiplique o resultado por dois.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-016"
+  ]
+ },
+ {
+  "rid": "R142",
+  "pergunta_id": "t33",
+  "pergunta": "As locadoras de carro são obrigadas a ter carro adaptado pra pessoa com deficiência? Quantos?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "sim, 1 veículo adaptado a cada conjunto de 20 veículos da frota"
+  ],
+  "afirmacoes_proibidas": [
+   "a obrigação é de 1 veículo a cada 100",
+   "locadoras não têm essa obrigação"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "lei-13146-transporte-012"
+   ]
+  ],
+  "resposta": "Sim, as locadoras de carro são obrigadas a ter um carro adaptado para pessoas com deficiência a cada 20 veículos.",
+  "fontes_citadas": [
+   "lei-13146-transporte-012"
+  ]
+ },
+ {
+  "rid": "R143",
+  "pergunta_id": "t11",
+  "pergunta": "Só faço 65 anos no mês que vem. Já posso pedir o Bilhete Único Especial da Pessoa Idosa agora?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "só é possível solicitar o cartão especial com 65 anos completos"
+  ],
+  "afirmacoes_proibidas": [
+   "pode solicitar antes de completar 65 anos",
+   "pode solicitar com 64 anos"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-65-mais-007"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R144",
+  "pergunta_id": "t39",
+  "pergunta": "Quanto custa a tarifa integrada ônibus + metrô/trem com crédito de estudante e como esse valor é calculado?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a tarifa Integrada Ônibus + Metrô/Trem Estudante é de R$ 5,35",
+   "corresponde à metade da tarifa Comum Ônibus mais a metade da tarifa Comum Metrô/Trem"
+  ],
+  "afirmacoes_proibidas": [
+   "a tarifa integrada de estudante é de R$ 11,32",
+   "a tarifa integrada de estudante é de R$ 2,65"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-tarifas-004"
+   ]
+  ],
+  "resposta": "A tarifa Integrada Ônibus + Metrô/Trem Estudante custa R$ 5,35.",
+  "fontes_citadas": [
+   "sptrans-tarifas-004"
+  ]
+ },
+ {
+  "rid": "R145",
+  "pergunta_id": "t10",
+  "pergunta": "Qual o valor em reais da multa pra quem usa o cartão de idoso de outra pessoa?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base trata de penalidades como suspensão do benefício, retenção e bloqueio do cartão, mas não menciona multa em dinheiro nem valores.",
+  "evidencias_esperadas": [],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R146",
+  "pergunta_id": "t20",
+  "pergunta": "Tenho 61 anos e uso a gratuidade. Em que época do mês eu consigo fazer a nova recarga?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "as novas recargas são feitas sempre nos primeiros dias de cada mês"
+  ],
+  "afirmacoes_proibidas": [
+   "a recarga só pode ser feita no fim do mês",
+   "a recarga só pode ser feita uma vez por ano"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-014"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R147",
+  "pergunta_id": "t16",
+  "pergunta": "Meu filho tem 5 anos. Ele já pode ter Bilhete Único?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o Bilhete Único é para pessoas acima de 6 anos que tenham RG e CPF próprios, então aos 5 anos ainda não"
+  ],
+  "afirmacoes_proibidas": [
+   "crianças de qualquer idade podem ter Bilhete Único",
+   "basta ter CPF dos pais"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-002"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R148",
+  "pergunta_id": "t24",
+  "pergunta": "Qual é o telefone do Posto Central da SPTrans na Rua Boa Vista?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base informa endereço e horário do Posto Central, mas não traz telefone dele.",
+  "evidencias_esperadas": [],
+  "resposta": "O telefone do Posto Central da SPTrans na Rua Boa Vista é 156.",
+  "fontes_citadas": [
+   "sptrans-bilhete-unico-036"
+  ]
+ },
+ {
+  "rid": "R149",
+  "pergunta_id": "t08",
+  "pergunta": "Tenho 62 anos e guardei meu cartão antigo de idoso. Posso continuar usando ele na catraca?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o cartão antigo de idoso não funciona mais (aparece “cartão bloqueado”)"
+  ],
+  "afirmacoes_proibidas": [
+   "o cartão antigo de idoso continua valendo normalmente para quem tem 60 a 64 anos"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-021"
+   ]
+  ],
+  "resposta": "Não. Ao encostar o cartão antigo no validador aparecerá a mensagem 'CARTÃO BLOQUEADO'. Você deve recarregar a gratuidade no Bilhete Único Comum.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-60-64-021"
+  ]
+ },
+ {
+  "rid": "R150",
+  "pergunta_id": "t09",
+  "pergunta": "Qual o horário de funcionamento dos Postos de Atendimento que ficam nas subprefeituras?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base cita os Postos nas Subprefeituras com agendamento pelo Descomplica SP, mas só informa horário dos Postos nos Terminais e do Posto Central.",
+  "evidencias_esperadas": [],
+  "resposta": "Os Postos de Atendimento funcionam todos os dias, das 6h às 22h.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-60-64-017"
+  ]
+ },
+ {
+  "rid": "R151",
+  "pergunta_id": "t29",
+  "pergunta": "A câmera do ônibus acusou foto diferente e suspenderam minha gratuidade de estudante. Por quanto tempo fico sem? E se acontecer de novo?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "suspensão de 6 meses na primeira ocorrência",
+   "suspensão de 12 meses em caso de reincidência"
+  ],
+  "afirmacoes_proibidas": [
+   "a suspensão é de 30 dias",
+   "a suspensão é definitiva até o fim do ano letivo na primeira ocorrência"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-037"
+   ]
+  ],
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.",
+  "fontes_citadas": []
+ },
+ {
+  "rid": "R152",
+  "pergunta_id": "t23",
+  "pergunta": "Tenho 63 anos e recarreguei minha gratuidade no fim do mês. Preciso recarregar de novo quando virar o mês?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a cota é mensal e só vale dentro do mês em que foi carregada, então é preciso recarregar no mês seguinte"
+  ],
+  "afirmacoes_proibidas": [
+   "a cota é acumulada e vale por vários meses",
+   "não precisa recarregar de novo"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-002"
+   ]
+  ],
+  "resposta": "Sim, você precisará recarregar o cartão no início do mês seguinte.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-60-64-002"
+  ]
+ },
+ {
+  "rid": "R153",
+  "pergunta_id": "t20",
+  "pergunta": "Tenho 61 anos e uso a gratuidade. Em que época do mês eu consigo fazer a nova recarga?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "as novas recargas são feitas sempre nos primeiros dias de cada mês"
+  ],
+  "afirmacoes_proibidas": [
+   "a recarga só pode ser feita no fim do mês",
+   "a recarga só pode ser feita uma vez por ano"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-014"
+   ]
+  ],
+  "resposta": "Você pode fazer a nova recarga sempre nos primeiros dias de cada mês.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-60-64-014"
+  ]
+ },
+ {
+  "rid": "R154",
+  "pergunta_id": "t27",
+  "pergunta": "Meu sobrinho tem autismo. O autismo conta como deficiência permanente pro bilhete de PCD?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "sim, o diagnóstico de Transtorno do Espectro Autista (TEA) está entre as deficiências consideradas permanentes"
+  ],
+  "afirmacoes_proibidas": [
+   "o autismo não é considerado deficiência permanente",
+   "o autismo só é considerado deficiência temporária"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-042",
+    "sptrans-bilhete-pcd-043"
+   ]
+  ],
+  "resposta": "Sim, o autismo é considerado deficiência permanente para o bilhete de PCD.",
+  "fontes_citadas": [
+   "[HIV é considerado deficiência permanente?] De acordo com a legislação vigente, são consideradas deficiências permanentes: múltiplas, física, auditiva, visual, intelectual e diagnóstico de Transtorno do Espectro Autista - TEA."
+  ]
+ },
+ {
+  "rid": "R155",
+  "pergunta_id": "t36",
+  "pergunta": "O acompanhante de uma pessoa idosa de 70 anos também viaja de graça no ônibus?",
+  "nao_consta_esperado": true,
+  "fatos_obrigatorios": [],
+  "afirmacoes_proibidas": [],
+  "motivo_nao_consta": "A base só trata de acompanhante cadastrado para estudante PCD e de gratuidade da própria pessoa idosa; nada sobre acompanhante de idoso.",
+  "evidencias_esperadas": [],
+  "resposta": "Não, o acompanhante não viaja de graça. A gratuidade é para a pessoa idosa de 70 anos, não para acompanhantes.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-65-mais-008"
+  ]
+ },
+ {
+  "rid": "R156",
+  "pergunta_id": "t18",
+  "pergunta": "Meu cartão de PCD não chegou e já passaram os 20 dias. O que eu faço?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "informar o não recebimento pelo site de Atendimento da SPTrans ou em um Posto de Atendimento"
+  ],
+  "afirmacoes_proibidas": [
+   "basta esperar mais 20 dias sem fazer nada",
+   "o cartão só pode ser retirado nas subprefeituras"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-pcd-017"
+   ]
+  ],
+  "resposta": "Se o seu cartão de PCD não chegou e já passaram os 20 dias, você deve informar o não recebimento acessando o site da SPTrans ou comparecendo ao Posto de Atendimento. O cartão será reenviado para o endereço cadastrado ou poderá ser retirado pessoalmente no Posto Central.",
+  "fontes_citadas": [
+   "sptrans-bilhete-pcd-017"
+  ]
+ },
+ {
+  "rid": "R157",
+  "pergunta_id": "t23",
+  "pergunta": "Tenho 63 anos e recarreguei minha gratuidade no fim do mês. Preciso recarregar de novo quando virar o mês?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "a cota é mensal e só vale dentro do mês em que foi carregada, então é preciso recarregar no mês seguinte"
+  ],
+  "afirmacoes_proibidas": [
+   "a cota é acumulada e vale por vários meses",
+   "não precisa recarregar de novo"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-gratuidade-60-64-002"
+   ]
+  ],
+  "resposta": "Sim. A cota é mensal, ou seja, só poderá ser usada dentro do mês em que foi carregada no cartão.",
+  "fontes_citadas": [
+   "sptrans-gratuidade-60-64-002"
+  ]
+ },
+ {
+  "rid": "R158",
+  "pergunta_id": "t31",
+  "pergunta": "Quem faz o meu cadastro de estudante no sistema? E meu curso é semestral, por que não liberaram minhas cotas do 2º semestre?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "o cadastro e o envio dos dados à SPTrans são feitos pela Unidade de Ensino",
+   "nos cursos semestrais a escola precisa reenviar os dados da matrícula a cada semestre; até lá as cotas ficam bloqueadas"
+  ],
+  "afirmacoes_proibidas": [
+   "o próprio aluno envia os dados de matrícula direto à SPTrans",
+   "as cotas do 2º semestre são liberadas automaticamente"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-009"
+   ],
+   [
+    "sptrans-bilhete-estudante-018",
+    "sptrans-bilhete-estudante-046"
+   ]
+  ],
+  "resposta": "(Perguntas e Respostas SPTrans - Bilhete Único de Estudante) O cadastro do estudante no banco de dados de possíveis beneficiários ao desconto nas passagens, bem como o envio desse arquivo à SPTrans, para inclusão no Sistema, é responsabilidade da Unidade de Ensino. (Perguntas e Respostas SPTrans - Bilhete Único de Estudante) Para alunos de cursos semestrais é necessário que a Unidade de Ensino reenvie os dados das matrículas à SPTrans a cada final de semestre. Enquanto o processo não for realizado as cotas ficam bloqueadas.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-009",
+   "sptrans-bilhete-estudante-018"
+  ]
+ },
+ {
+  "rid": "R159",
+  "pergunta_id": "t07",
+  "pergunta": "Comecei a usar minha cota mensal, mas mudei de ideia. Dá pra parar a contagem? E as cotas que nem comecei a usar, devolvem em dinheiro?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "depois de iniciado o uso da cota não há como interrompê-lo",
+   "a restituição de cotas/créditos não iniciados é feita só em créditos de viagem ou cotas de tempo, não em dinheiro"
+  ],
+  "afirmacoes_proibidas": [
+   "a SPTrans devolve o valor em dinheiro",
+   "é possível pausar a cota mensal"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-unico-023"
+   ],
+   [
+    "sptrans-bilhete-unico-024"
+   ]
+  ],
+  "resposta": "Não, não é possível parar a contagem de uma cota mensal. As cotas que não foram usadas não são devolvidas em dinheiro.",
+  "fontes_citadas": [
+   "sptrans-bilhete-unico-023"
+  ]
+ },
+ {
+  "rid": "R160",
+  "pergunta_id": "t29",
+  "pergunta": "A câmera do ônibus acusou foto diferente e suspenderam minha gratuidade de estudante. Por quanto tempo fico sem? E se acontecer de novo?",
+  "nao_consta_esperado": false,
+  "fatos_obrigatorios": [
+   "suspensão de 6 meses na primeira ocorrência",
+   "suspensão de 12 meses em caso de reincidência"
+  ],
+  "afirmacoes_proibidas": [
+   "a suspensão é de 30 dias",
+   "a suspensão é definitiva até o fim do ano letivo na primeira ocorrência"
+  ],
+  "motivo_nao_consta": null,
+  "evidencias_esperadas": [
+   [
+    "sptrans-bilhete-estudante-037"
+   ]
+  ],
+  "resposta": "A sua gratuidade será suspensa por 6 meses. Se ocorrer novamente, ficará sem por 12 meses.",
+  "fontes_citadas": [
+   "sptrans-bilhete-estudante-037"
+  ]
+ }
+]
