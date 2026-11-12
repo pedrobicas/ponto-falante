@@ -36,8 +36,9 @@ services:
         sync: false
       - key: SPTRANS_BASE_URL
         value: https://api.olhovivo.sptrans.com.br/v2.1
+      # auto: dados reais pelo gateway da Prefeitura (validado em 11/11/2026); sem credenciais cai em demo.
       - key: PF_SPTRANS_MODO
-        value: demo
+        value: auto
       - key: GENAI_URL
         sync: false
       - key: GENAI_API_KEY
