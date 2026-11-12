@@ -1,0 +1,17 @@
+Assistente de tempo real em produção (https://ponto-falante.onrender.com/api/chat), 11/11/2026
+
+P: Quando passa o próximo ônibus no ponto Paulista?
+origem: TEMPO_REAL | disponivel: True | fontes: ['SPTrans Olho Vivo, tempo real']
+R: Ponto Paulista B/c. Linha 778R-10, sentido Term. Princ. Isabel, previsto em 2 minutos, acessível para cadeira de rodas. Linha 7282-10, sentido Pça. Ramos de Azevedo, previsto em 3 minutos, acessível para cadeira de rodas. Linha 909T-1, sentido Term. Pq. D. Pedro II, previsto em 5 minutos, acessível para cadeira de rodas. Linha 702C-10, sentido Metrô Belém, previsto em 7 minutos, acessível para cadeira de rodas. Há mais 16 previstos na tela do ponto. Previsão da SPTrans calculada às 23:07. Encontrei também: Paulista C/b (código 260016855).
+
+P: Qual o itinerário da linha 8000?
+origem: TEMPO_REAL | disponivel: True | fontes: ['SPTrans Olho Vivo, tempo real']
+R: Linha 8000-1, entre Pça. Ramos de Azevedo e Term. Lapa. Linha 8000-10, entre Pça. Ramos de Azevedo e Term. Lapa. Para saber quando ela passa, pergunte com o nome do ponto.
+
+P: Previsão da linha 7267 no ponto 260015039
+origem: TEMPO_REAL | disponivel: True | fontes: ['SPTrans Olho Vivo, tempo real']
+R: Ponto Paulista B/c. Não há previsão para a linha 7267 neste ponto agora.
+
+P: Idoso paga ônibus em São Paulo?
+origem: INDISPONIVEL | disponivel: False | fontes: []
+R: O assistente está indisponível agora. Tente de novo em alguns minutos.

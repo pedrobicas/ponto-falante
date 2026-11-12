@@ -148,8 +148,8 @@ def main() -> int:
     if not chaves:
         print("SPTRANS_TOKEN ausente no .env")
         return 2
+    # Só HTTPS: a chave real nunca trafega em texto claro (nem para testar redirecionamento).
     bases = [("https api.olhovivo v2.1", "https://api.olhovivo.sptrans.com.br/v2.1"),
-             ("http  api.olhovivo v2.1", "http://api.olhovivo.sptrans.com.br/v2.1"),
              ("https api.olhovivo v2", "https://api.olhovivo.sptrans.com.br/v2")]
     for nome, bruto in chaves:
         token = bruto.strip().strip('"').strip("'")
