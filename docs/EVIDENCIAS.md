@@ -7,7 +7,7 @@ para o arquivo ou a execução correspondente.
 
 | Suíte | Testes | Comando |
 |---|---|---|
-| Spring Boot (PostgreSQL embutido, contratos Olho Vivo, segurança) | 45 | `backend/mvnw -B verify` |
+| Spring Boot (PostgreSQL embutido, contratos Olho Vivo, segurança) | 53 | `backend/mvnw -B verify` |
 | Angular (unidade + acessibilidade axe) | 13 | `npm test -- --watch=false` |
 | GenAI (RAG, agente v1/v2, API, segurança) | 51 | `pytest -q genai/tests` |
 | RPA (cenários do boletim) | 14 | `pytest -q rpa` |
