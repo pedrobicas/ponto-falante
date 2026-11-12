@@ -81,6 +81,8 @@ public final class FraseFalada {
             sb.append(pequena && sb.length() > 0 ? palavra
                     : Character.toUpperCase(palavra.charAt(0)) + palavra.substring(1));
         }
-        return sb.toString();
+        // "B/C" (bairro/centro) continua em maiúsculas depois da barra.
+        return java.util.regex.Pattern.compile("/(\\p{L})").matcher(sb.toString())
+                .replaceAll(m -> "/" + m.group(1).toUpperCase(Locale.ROOT));
     }
 }

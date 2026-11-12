@@ -12,6 +12,7 @@ class FraseFaladaTest {
             "TERM. PQ. D. PEDRO II|Term. Pq. D. Pedro II",
             "PÇA. RAMOS DE AZEVEDO|Pça. Ramos de Azevedo",
             "METRÔ BELÉM|Metrô Belém",
+            "PAULISTA B/C|Paulista B/C",
             "VILA DI GIORGIO|Vila di Giorgio",
             "Já em caixa normal|Já em caixa normal"})
     void nomesDaSptransFicamLegiveisParaAVoz(String entrada, String esperado) {
