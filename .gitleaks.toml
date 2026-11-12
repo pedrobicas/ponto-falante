@@ -5,4 +5,4 @@ useDefault = true
 
 [allowlist]
 description = "Páginas públicas salvas como fonte bruta da base de conhecimento"
-paths = ['''genai/base/brutos/.*\.html''']
+paths = ['''genai/base/brutos/.*\.html''', '''docs/evidencias/sptrans_matriz_login\.txt''']
