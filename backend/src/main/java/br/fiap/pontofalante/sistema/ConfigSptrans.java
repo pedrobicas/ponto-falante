@@ -14,6 +14,8 @@ import java.util.Map;
 @Configuration(proxyBeanMethods = false)
 public class ConfigSptrans {
     static final String HTTPS = "https://api.olhovivo.sptrans.com.br/v2.1";
+    static final String GATEWAY = "https://gateway.apilib.prefeitura.sp.gov.br/sptrans/olhovivo/v2.1";
+    static final String GATEWAY_TOKEN = "https://gateway.apilib.prefeitura.sp.gov.br/token";
 
     /** Executa antes da vinculacao de PfProps, sem editar o cliente original da equipe. */
     @Bean
@@ -29,6 +31,16 @@ public class ConfigSptrans {
                     || Character.isISOControl(c) || c == 0xfeff)) {
                 throw new IllegalArgumentException("SPTRANS_TOKEN contem espacos internos ou caracteres de controle.");
             }
+            String chaveGw = modo.equals("demo") ? "" : env.getProperty("pf.sptrans-gateway-chave", "").strip();
+            String segredoGw = modo.equals("demo") ? "" : env.getProperty("pf.sptrans-gateway-segredo", "").strip();
+            for (String c : new String[] {chaveGw, segredoGw}) {
+                if (c.codePoints().anyMatch(x -> Character.isWhitespace(x) || Character.isISOControl(x) || x == 0xfeff)) {
+                    throw new IllegalArgumentException("Credencial do gateway SPTrans contem espacos ou caracteres de controle.");
+                }
+            }
+            String urlGw = validarUrl(env.getProperty("pf.sptrans-gateway-url", GATEWAY).strip(), "SPTRANS_GATEWAY_URL");
+            String tokenGw = validarUrl(env.getProperty("pf.sptrans-gateway-token-url", GATEWAY_TOKEN).strip(),
+                    "SPTRANS_GATEWAY_TOKEN_URL");
             String base = env.getProperty("pf.sptrans-base-url", env.getProperty("SPTRANS_BASE_URL", HTTPS)).strip();
             while (base.endsWith("/")) base = base.substring(0, base.length() - 1);
             // Corrige o default legado em memoria, antes de qualquer requisicao HTTP.
@@ -47,7 +59,27 @@ public class ConfigSptrans {
                 throw new IllegalArgumentException("SPTRANS_BASE_URL deve usar HTTPS e nao conter credenciais ou parametros.");
             }
             env.getPropertySources().addFirst(new MapPropertySource("sptransConfigSegura", Map.of(
-                    "pf.sptrans-token", token, "pf.sptrans-base-url", base)));
+                    "pf.sptrans-token", token, "pf.sptrans-base-url", base,
+                    "pf.sptrans-gateway-chave", chaveGw, "pf.sptrans-gateway-segredo", segredoGw,
+                    "pf.sptrans-gateway-url", urlGw, "pf.sptrans-gateway-token-url", tokenGw)));
         };
+    }
+
+    /** HTTPS obrigatório (http só em loopback, para testes), sem credenciais, parâmetros ou fragmento. */
+    static String validarUrl(String url, String nome) {
+        while (url.endsWith("/")) url = url.substring(0, url.length() - 1);
+        URI uri;
+        try {
+            uri = URI.create(url);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(nome + " invalida.");
+        }
+        boolean local = "127.0.0.1".equals(uri.getHost()) || "localhost".equals(uri.getHost());
+        if (uri.getHost() == null || uri.getUserInfo() != null || uri.getRawQuery() != null
+                || uri.getRawFragment() != null
+                || !("https".equals(uri.getScheme()) || (local && "http".equals(uri.getScheme())))) {
+            throw new IllegalArgumentException(nome + " deve usar HTTPS e nao conter credenciais ou parametros.");
+        }
+        return url;
     }
 }

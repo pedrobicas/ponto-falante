@@ -56,6 +56,11 @@ info:
 pf:
   sptrans-token: ${SPTRANS_TOKEN:}
   sptrans-base-url: ${SPTRANS_BASE_URL:https://api.olhovivo.sptrans.com.br/v2.1}
+  # Gateway oficial da Prefeitura (apilib): Consumer Key/Secret da aplicação inscrita na API OlhoVivo v2.1.
+  sptrans-gateway-chave: ${SPTRANS_GATEWAY_CHAVE:}
+  sptrans-gateway-segredo: ${SPTRANS_GATEWAY_SEGREDO:}
+  sptrans-gateway-url: ${SPTRANS_GATEWAY_URL:https://gateway.apilib.prefeitura.sp.gov.br/sptrans/olhovivo/v2.1}
+  sptrans-gateway-token-url: ${SPTRANS_GATEWAY_TOKEN_URL:https://gateway.apilib.prefeitura.sp.gov.br/token}
   genai-url: ${GENAI_URL:}
   genai-api-key: ${GENAI_API_KEY:}
   salt: ${PF_SALT:troque-este-sal-em-producao}

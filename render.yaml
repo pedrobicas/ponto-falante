@@ -29,6 +29,11 @@ services:
         generateValue: true
       - key: SPTRANS_TOKEN
         sync: false
+      # Gateway oficial da Prefeitura (apilib): Consumer Key/Secret. Preenchidos, têm prioridade sobre SPTRANS_TOKEN.
+      - key: SPTRANS_GATEWAY_CHAVE
+        sync: false
+      - key: SPTRANS_GATEWAY_SEGREDO
+        sync: false
       - key: SPTRANS_BASE_URL
         value: https://api.olhovivo.sptrans.com.br/v2.1
       - key: PF_SPTRANS_MODO

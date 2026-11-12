@@ -37,6 +37,26 @@ class ConfigSptransTest {
                 .run(ctx -> assertThat(ctx.getBean(PfProps.class).temTokenSptrans()).isTrue());
     }
 
+    @Test void credenciaisDoGatewayHabilitamDadosReaisEDemoAsDescarta() {
+        runner.withPropertyValues("pf.sptrans-gateway-chave=ck", "pf.sptrans-gateway-segredo=cs").run(ctx -> {
+            PfProps p = ctx.getBean(PfProps.class);
+            assertThat(p.usaGatewaySptrans()).isTrue();
+            assertThat(p.temTokenSptrans()).isTrue();
+            assertThat(p.sptransGatewayUrl()).isEqualTo("https://gateway.apilib.prefeitura.sp.gov.br/sptrans/olhovivo/v2.1");
+        });
+        runner.withPropertyValues("PF_SPTRANS_MODO=demo", "pf.sptrans-gateway-chave=ck", "pf.sptrans-gateway-segredo=cs")
+                .run(ctx -> assertThat(ctx.getBean(PfProps.class).temTokenSptrans()).isFalse());
+        runner.withPropertyValues("pf.sptrans-gateway-chave=ck").run(ctx ->
+                assertThat(ctx.getBean(PfProps.class).usaGatewaySptrans()).isFalse());
+    }
+
+    @Test void rejeitaGatewaySemHttps() {
+        runner.withPropertyValues("pf.sptrans-gateway-url=http://gateway.externo/olhovivo")
+                .run(ctx -> assertThat(ctx).hasFailed());
+        runner.withPropertyValues("pf.sptrans-gateway-token-url=https://usuario:senha@gateway.externo/token")
+                .run(ctx -> assertThat(ctx).hasFailed());
+    }
+
     @Test void rejeitaWhitespaceInternoSemExporChave() {
         runner.withPropertyValues("pf.sptrans-token=segredo com espaco").run(ctx -> {
             assertThat(ctx).hasFailed();
