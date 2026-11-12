@@ -31,7 +31,10 @@ Trivy (dependências e imagem) e um teste de fumaça da imagem.
 - Teste de aceitação contra a produção:
   `python scripts/integracao/testar_mvp.py --url https://ponto-falante.onrender.com` →
   `MVP: saude, contratos e previsoes OK; Angular e navegacao OK.`
-- Previsões em **modo demonstração**: a API devolve `dados_simulados: true` e a tela mostra o selo **SIMULADO**.
+- Desde 11/11/2026 (22h35), previsões **reais** pelo gateway da Prefeitura: `/api/status` com `sptrans: REAL`;
+  consulta em produção trouxe 2 pontos ("paulista"), 4 linhas ("8000") e 24 ônibus previstos no ponto 260015039,
+  todos com `fonte: OLHO_VIVO` e `tipo: PREVISAO`. Validação: [evidencias/sptrans_gateway_validacao.txt](evidencias/sptrans_gateway_validacao.txt).
+- Sem credenciais, o modo demonstração continua identificado com o selo **SIMULADO**.
 
 ## 4. RPA em produção
 
@@ -69,6 +72,6 @@ Em [evidencias/telas](evidencias/telas): início, ponto, assistente, boletim e a
 
 ## 8. SPTrans
 
-A integração Olho Vivo está implementada e coberta por testes de contrato. O login real retorna `false` com a chave do
-aplicativo, inclusive pelo navegador do dono da conta, o que aponta para a conta na SPTrans e não para o código.
+O login direto da Olho Vivo retorna `false` para qualquer chave (inclusive uma inventada, usada como controle). A solução foi o
+gateway oficial da Prefeitura (OAuth2), validado com dados reais e em uso no Render.
 Diagnóstico completo: [DIAGNOSTICO_SPTRANS.md](DIAGNOSTICO_SPTRANS.md).

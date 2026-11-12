@@ -23,7 +23,7 @@ Global Solution FIAP 2026.2 · Engenharia de Software.
 |---|---|
 | Interface Angular (acessível, voz, 4 temas) | Publicada, servida pelo Spring Boot |
 | Spring Boot + PostgreSQL (Flyway) | Publicado no Render (plano gratuito) |
-| Previsões de ônibus | **Modo demonstração**: dados marcados como **SIMULADO** na API e na tela. A integração real com a Olho Vivo (SPTrans) está implementada e testada, mas a SPTrans responde `false` ao login com a chave do aplicativo (ver [diagnóstico](docs/DIAGNOSTICO_SPTRANS.md)). Basta `PF_SPTRANS_MODO=auto` quando a chave for aceita. |
+| Previsões de ônibus | **Real**: dados da Olho Vivo (SPTrans) pelo gateway oficial da Prefeitura (apilib, OAuth2), marcados como "Dados da SPTrans" e sempre como previsão. O login direto da Olho Vivo recusa qualquer chave hoje ([diagnóstico](docs/DIAGNOSTICO_SPTRANS.md)). Sem credenciais, o sistema volta ao modo demonstração com o selo **SIMULADO**. |
 | Boletim de atrasos (RPA) | **Real**: GitHub Actions roda o robô todo dia às 6h (Brasília), lê o histórico do MVP e publica o boletim. Hoje o histórico é simulado e o boletim diz isso. |
 | Assistente (GenAI) | Implementado e avaliado; roda no PC da equipe (Ollama + FastAPI) e só fica disponível no site quando o túnel Cloudflare estiver ligado. Sem ele, o chat avisa que está indisponível e o resto funciona. |
 | Integrações visão computacional, Big Data e ESP32 | Endpoints e contratos prontos, protegidos por chave ([contrato](contratos/openapi-mvp.yaml)) |
