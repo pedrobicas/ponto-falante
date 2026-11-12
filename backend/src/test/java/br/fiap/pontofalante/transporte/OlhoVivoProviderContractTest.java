@@ -29,12 +29,14 @@ class OlhoVivoProviderContractTest {
     int loginStatus = 200;
     int consultaStatus = 200;
     volatile String userAgentLogin;
+    volatile long atrasoLoginMs;
 
     @BeforeEach void iniciar() throws Exception {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/v2.1/Login/Autenticar", ex -> {
             logins.incrementAndGet();
             userAgentLogin = ex.getRequestHeaders().getFirst("User-Agent");
+            if (atrasoLoginMs > 0) { try { Thread.sleep(atrasoLoginMs); } catch (InterruptedException e) { Thread.currentThread().interrupt(); } }
             if (!semCookie) ex.getResponseHeaders().add("Set-Cookie", "apiCredentials=local; Path=/; HttpOnly");
             byte[] body = (recusar ? "false" : "true").getBytes(StandardCharsets.UTF_8);
             ex.sendResponseHeaders(loginStatus, body.length);
@@ -86,6 +88,28 @@ class OlhoVivoProviderContractTest {
         assertThat(provider.disponivel()).isFalse();
         assertThatThrownBy(() -> provider.buscarLinhas("8000")).isInstanceOf(TransporteIndisponivelException.class);
         assertThat(consultas.get()).isZero();
+    }
+
+    @Test void loginsConcorrentesCompartilhamUmaTentativaEAFalha() throws Exception {
+        recusar = true;
+        atrasoLoginMs = 150;
+        var pool = java.util.concurrent.Executors.newFixedThreadPool(6);
+        try {
+            var tarefas = new java.util.ArrayList<java.util.concurrent.Future<?>>();
+            for (int i = 0; i < 6; i++) {
+                final String termo = "linha" + i;   // termos diferentes: sem ajuda do cache
+                tarefas.add(pool.submit(() -> provider.buscarLinhas(termo)));
+            }
+            for (var f : tarefas) {
+                assertThatThrownBy(f::get).hasCauseInstanceOf(TransporteIndisponivelException.class);
+            }
+        } finally {
+            pool.shutdownNow();
+        }
+        assertThat(logins.get()).isEqualTo(1);
+        // Falha recente é reaproveitada: nova consulta não chama o login de novo durante a espera.
+        assertThatThrownBy(() -> provider.buscarLinhas("outra")).isInstanceOf(TransporteIndisponivelException.class);
+        assertThat(logins.get()).isEqualTo(1);
     }
 
     @Test void loginSemCookieNaoSimulaSucesso() {

@@ -42,6 +42,7 @@ public class BoletimService {
         if (!corpo.path("resumo_falado").isTextual()) {
             throw ErroApi.requisicaoInvalida("Campo obrigatório ausente ou inválido: resumo_falado.");
         }
+        boolean simulados = validarProveniencia(corpo);
         String json;
         try {
             json = mapper.writeValueAsString(corpo);
@@ -49,8 +50,37 @@ public class BoletimService {
             throw ErroApi.requisicaoInvalida("O boletim não pôde ser lido.");
         }
         Boletim b = new Boletim(data, json, corpo.path("desatualizado").asBoolean(),
-                corpo.path("dados_simulados").asBoolean(false), OffsetDateTime.now(relogio));
+                simulados, OffsetDateTime.now(relogio));
         return repo.save(b);
+    }
+
+    /**
+     * A identificação de dados simulados nunca é inferida: dados_simulados precisa ser booleano explícito e
+     * coerente com fonte_dados (contagem de registros por origem). Boletim contraditório é rejeitado.
+     */
+    private static boolean validarProveniencia(JsonNode corpo) {
+        JsonNode flag = corpo.path("dados_simulados");
+        if (!flag.isBoolean()) {
+            throw ErroApi.requisicaoInvalida("Campo obrigatório ausente ou inválido: dados_simulados (booleano).");
+        }
+        JsonNode fontes = corpo.path("fonte_dados");
+        if (!fontes.isObject()) {
+            throw ErroApi.requisicaoInvalida("Campo obrigatório ausente ou inválido: fonte_dados.");
+        }
+        long simulador = contagem(fontes, "simulador");
+        contagem(fontes, "olhovivo");
+        if (flag.asBoolean() != (simulador > 0)) {
+            throw ErroApi.requisicaoInvalida("dados_simulados contradiz fonte_dados.simulador.");
+        }
+        return flag.asBoolean();
+    }
+
+    private static long contagem(JsonNode fontes, String campo) {
+        JsonNode n = fontes.path(campo);
+        if (!n.isIntegralNumber() || n.asLong() < 0) {
+            throw ErroApi.requisicaoInvalida("fonte_dados." + campo + " deve ser um inteiro não negativo.");
+        }
+        return n.asLong();
     }
 
     private static LocalDate dataReferencia(JsonNode corpo) {

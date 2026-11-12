@@ -27,6 +27,9 @@ services:
         condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/pontofalante
+      # Acesso direto pela porta publicada, sem proxy: não confiar em X-Forwarded-For de ninguém
+      # (192.0.2.1 é endereço reservado de documentação, nunca um par real).
+      SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES: ${PF_PROXIES_CONFIAVEIS:-192\.0\.2\.1}
       SPRING_DATASOURCE_USERNAME: pontofalante
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPTRANS_TOKEN: ${SPTRANS_TOKEN:-}

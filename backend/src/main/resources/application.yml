@@ -1,5 +1,8 @@
 server:
   port: ${PORT:8080}
+  # IP real do cliente vem do X-Forwarded-For apenas quando a conexão é de proxy confiável
+  # (padrão do Tomcat: faixas privadas, como o proxy interno do Render).
+  forward-headers-strategy: native
   shutdown: graceful
   error:
     include-stacktrace: never
@@ -52,7 +55,7 @@ info:
 
 pf:
   sptrans-token: ${SPTRANS_TOKEN:}
-  sptrans-base-url: ${SPTRANS_BASE_URL:http://api.olhovivo.sptrans.com.br/v2.1}
+  sptrans-base-url: ${SPTRANS_BASE_URL:https://api.olhovivo.sptrans.com.br/v2.1}
   genai-url: ${GENAI_URL:}
   genai-api-key: ${GENAI_API_KEY:}
   salt: ${PF_SALT:troque-este-sal-em-producao}

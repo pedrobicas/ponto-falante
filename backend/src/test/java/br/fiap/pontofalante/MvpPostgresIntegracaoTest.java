@@ -93,10 +93,40 @@ class MvpPostgresIntegracaoTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "\"fonte_dados\":{\"olhovivo\":0,\"simulador\":100}",
+            "\"dados_simulados\":null,\"fonte_dados\":{\"olhovivo\":0,\"simulador\":100}",
+            "\"dados_simulados\":false,\"fonte_dados\":{\"olhovivo\":0,\"simulador\":100}",
+            "\"dados_simulados\":true,\"fonte_dados\":{\"olhovivo\":10,\"simulador\":0}",
+            "\"dados_simulados\":false"})
+    void boletimSemProvenienciaCoerenteERejeitado(String proveniencia) throws Exception {
+        String body = "{\"data_referencia\":\"2026-11-09\",\"gerado_em\":\"2026-11-10T06:00:00-03:00\","
+                + "\"desatualizado\":false,\"linhas\":[],\"resumo_falado\":\"x\"," + proveniencia + "}";
+        mvc.perform(post("/api/boletim").header("X-API-Key", "chave-local")
+                .contentType("application/json").content(body)).andExpect(status().isBadRequest());
+    }
+
+    @Test void chatIgnoraXForwardedForEmConexaoDireta() throws Exception {
+        int limite = 10;
+        for (int i = 0; i < limite; i++) {
+            final int n = i;
+            mvc.perform(post("/api/chat").with(r -> { r.setRemoteAddr("203.0.113.77"); return r; })
+                    .header("X-Forwarded-For", "198.51.100." + n)
+                    .contentType("application/json").content("{\"pergunta\":\"Teste de limite\"}"))
+                    .andExpect(status().isOk());
+        }
+        mvc.perform(post("/api/chat").with(r -> { r.setRemoteAddr("203.0.113.77"); return r; })
+                .header("X-Forwarded-For", "198.51.100.200")
+                .contentType("application/json").content("{\"pergunta\":\"Teste de limite\"}"))
+                .andExpect(status().isTooManyRequests());
+    }
+
     @Test void publicaELeBoletimNoPostgres() throws Exception {
         String body = """
                 {"data_referencia":"2026-11-10","gerado_em":"2026-11-11T06:00:00-03:00",
-                 "desatualizado":false,"dados_simulados":true,"linhas":[],"resumo_falado":"Boletim de teste."}
+                 "desatualizado":false,"dados_simulados":true,"fonte_dados":{"olhovivo":0,"simulador":5},
+                 "linhas":[],"resumo_falado":"Boletim de teste."}
                 """;
         mvc.perform(post("/api/boletim").header("X-API-Key", "chave-local")
                 .contentType("application/json").content(body)).andExpect(status().isCreated());
