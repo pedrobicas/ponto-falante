@@ -23,14 +23,20 @@ public final class DemoLocal {
             env.put("SERVER_ADDRESS", "127.0.0.1");
             env.put("PORT", Integer.toString(porta));
             env.put("SPTRANS_TOKEN", "");
-            env.put("PF_SPTRANS_MODO", "demo");
+            // Demo por padrão; o launcher só passa "auto" com --sptrans-gateway (credenciais do gateway no ambiente).
+            boolean real = "auto".equals(System.getenv("PF_SPTRANS_MODO"));
+            env.put("PF_SPTRANS_MODO", real ? "auto" : "demo");
+            if (!real) {
+                env.put("SPTRANS_GATEWAY_CHAVE", "");
+                env.put("SPTRANS_GATEWAY_SEGREDO", "");
+            }
             Process app = builder.start();
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 app.destroy();
                 try { app.waitFor(10, TimeUnit.SECONDS); } catch (InterruptedException ignored) {}
                 try { pg.close(); } catch (Exception ignored) {}
             }));
-            System.out.println("MVP local: http://127.0.0.1:" + porta + " — modo demonstrativo; Ctrl+C encerra.");
+            System.out.println("MVP local: http://127.0.0.1:" + porta + " — " + (real ? "SPTrans real via gateway" : "modo demonstrativo") + "; Ctrl+C encerra.");
             int resultado = app.waitFor();
             if (resultado != 0) throw new IllegalStateException("Aplicacao terminou com codigo " + resultado);
         }

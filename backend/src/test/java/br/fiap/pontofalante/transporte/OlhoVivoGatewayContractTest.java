@@ -28,6 +28,7 @@ class OlhoVivoGatewayContractTest {
     volatile String grantRecebido;
     boolean recusarCliente;
     boolean expirarPrimeiro;
+    int falhas500;
 
     @BeforeEach void iniciar() throws Exception {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -51,7 +52,14 @@ class OlhoVivoGatewayContractTest {
             ex.close();
         });
         server.createContext("/olhovivo/v2.1/Linha/Buscar", ex -> {
-            consultas.incrementAndGet();
+            int n = consultas.incrementAndGet();
+            if (n <= falhas500) {
+                byte[] f = "<am:fault><am:code>411</am:code></am:fault>".getBytes(StandardCharsets.UTF_8);
+                ex.sendResponseHeaders(500, f.length);
+                ex.getResponseBody().write(f);
+                ex.close();
+                return;
+            }
             String auth = ex.getRequestHeaders().getFirst("Authorization");
             boolean valido = auth != null && auth.startsWith("Bearer tok-")
                     && !(expirarPrimeiro && "Bearer tok-1".equals(auth));
@@ -90,6 +98,19 @@ class OlhoVivoGatewayContractTest {
         assertThat(provider.disponivel()).isFalse();
         assertThatThrownBy(() -> provider.buscarLinhas("8000")).isInstanceOf(TransporteIndisponivelException.class);
         assertThat(consultas.get()).isZero();
+    }
+
+    @Test void erro500IntermitenteDoGatewayERepetido() {
+        falhas500 = 2;
+        assertThat(provider.buscarLinhas("8000")).hasSize(1);
+        assertThat(consultas.get()).isEqualTo(3);
+        assertThat(tokens.get()).isEqualTo(1);
+    }
+
+    @Test void erro500PersistenteViraIndisponibilidadeSemLaco() {
+        falhas500 = 99;
+        assertThatThrownBy(() -> provider.buscarLinhas("8000")).isInstanceOf(TransporteIndisponivelException.class);
+        assertThat(consultas.get()).isEqualTo(OlhoVivoProvider.TENTATIVAS_5XX);
     }
 
     @Test void tokenRevogadoGeraNovoTokenUmaVez() {

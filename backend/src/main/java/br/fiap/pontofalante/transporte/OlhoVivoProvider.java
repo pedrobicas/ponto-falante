@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
@@ -43,6 +44,7 @@ public class OlhoVivoProvider implements ProvedorTransporte {
     static final Duration VALIDADE_SESSAO = Duration.ofMinutes(30);
     /** Depois de um login recusado ou com falha, novas tentativas esperam este intervalo (falha compartilhada). */
     static final Duration ESPERA_APOS_FALHA = Duration.ofSeconds(30);
+    static final int TENTATIVAS_5XX = 3;
     static final String USER_AGENT = "PontoFalante/1.0 (+https://github.com/pedrobicas/ponto-falante)";
 
     private final PfProps props;
@@ -224,7 +226,29 @@ public class OlhoVivoProvider implements ProvedorTransporte {
         }
     }
 
+    /**
+     * GET idempotente com até duas novas tentativas em 5xx: o gateway da Prefeitura devolve 500 intermitente
+     * ("Transport error: 411 Length Required" na chamada interna à SPTrans), medido em cerca de 20% das requisições.
+     */
     private JsonNode executarGet(String caminho, String parametro, String valor) {
+        for (int tentativa = 1; ; tentativa++) {
+            try {
+                return executarGetUmaVez(caminho, parametro, valor);
+            } catch (HttpServerErrorException e) {
+                if (tentativa >= TENTATIVAS_5XX) {
+                    throw e;
+                }
+                try {
+                    Thread.sleep(150L * tentativa);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw e;
+                }
+            }
+        }
+    }
+
+    private JsonNode executarGetUmaVez(String caminho, String parametro, String valor) {
         String corpo = rest.get()
                 .uri(b -> b.path(caminho).queryParam(parametro, valor).build())
                 .header(viaGateway ? HttpHeaders.AUTHORIZATION : HttpHeaders.COOKIE, cookie)

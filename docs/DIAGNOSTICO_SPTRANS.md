@@ -67,7 +67,7 @@ não do código. O MVP continua em `PF_SPTRANS_MODO=demo`, com os dados identifi
 na API. Encaminhamento: contato com a área de desenvolvedores da SPTrans ou criação de um novo aplicativo no portal;
 quando o teste direto (`scripts/integracao/testar_sptrans.py`) responder `autenticacao OK`, trocar para `auto`.
 
-## Investigação aprofundada e gateway da Prefeitura (12/11/2026)
+## Investigação aprofundada e gateway da Prefeitura (11/11/2026, noite)
 
 ### Login direto: matriz de variações
 
@@ -133,3 +133,20 @@ usada nesse caminho.
 6. Com o teste devolvendo linhas, preencher as mesmas duas variáveis no Render e trocar `PF_SPTRANS_MODO` para `auto`.
 
 Se o gateway também recusar, a reclamação vai ao SP156 (indicado na descrição da API no gateway).
+
+### Resultado com as credenciais reais do gateway (11/11/2026, 22h19)
+
+Funcionou. Evidência completa em [evidencias/sptrans_gateway_validacao.txt](evidencias/sptrans_gateway_validacao.txt)
+e captura em [evidencias/telas/ponto-real-gateway.jpg](evidencias/telas/ponto-real-gateway.jpg):
+
+- `/token` emitiu o access_token (validade de cerca de 1 h).
+- Consultas reais: 4 linhas para "8000", 2 pontos para "paulista" e 21 ônibus previstos em 14 linhas no ponto
+  260015039 (Paulista B/C).
+- Spring local em modo real (`rodar_mvp_local.py --sptrans-gateway`): `/api/status` com `sptrans: REAL`,
+  respostas com `fonte: OLHO_VIVO` e `tipo: PREVISAO`, prefixo do veículo anonimizado, e o teste de aceitação
+  passou. A tela mostra "Dados da SPTrans" e "previsto em", nunca chegada.
+
+Problema encontrado e corrigido: o gateway devolve HTTP 500 intermitente (`Transport error: 411 Length Required`,
+vindo da chamada interna dele à SPTrans) em cerca de 20% das requisições (4 de 20 numa medição). Como as consultas
+são `GET` idempotentes, o `OlhoVivoProvider` repete até 3 vezes com espera curta; se persistir, o site informa
+indisponibilidade como antes. Dois testes de contrato cobrem o caso.

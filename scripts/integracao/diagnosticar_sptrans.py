@@ -8,6 +8,7 @@ import argparse
 import http.cookiejar
 import string
 import sys
+import time
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -86,16 +87,51 @@ def testar_gateway(env: dict[str, str], timeout: float) -> int:
     print(f"gateway /token: http=200 access_token={'presente' if acesso else 'ausente'} expires_in={dados.get('expires_in')}")
     if not acesso:
         return 1
-    req = Request(f"{GATEWAY}/sptrans/olhovivo/v2.1/Linha/Buscar?termosBusca=8000",
-                  headers={"User-Agent": UA, "Authorization": f"Bearer {acesso}", "Accept": "application/json"})
-    try:
-        with build_opener().open(req, timeout=timeout) as r:
-            linhas = json.loads(r.read(2_000_000))
-        print(f"gateway /Linha/Buscar?termosBusca=8000: http=200 linhas={len(linhas) if isinstance(linhas, list) else 'formato_inesperado'}")
-        return 0 if isinstance(linhas, list) else 1
-    except HTTPError as e:
-        print(f"gateway /Linha/Buscar: http={e.code}")
-        return 1
+
+    tentativas_extras = [0]
+
+    def get(caminho: str):
+        # O gateway devolve 500 intermitente ("Transport error: 411 Length Required" na chamada interna à SPTrans);
+        # GET é idempotente, então repete até 3 vezes, como o OlhoVivoProvider.
+        for tentativa in range(3):
+            req = Request(f"{GATEWAY}/sptrans/olhovivo/v2.1{caminho}",
+                          headers={"User-Agent": UA, "Authorization": f"Bearer {acesso}", "Accept": "application/json"})
+            try:
+                with build_opener().open(req, timeout=timeout) as r:
+                    return r.status, json.loads(r.read(5_000_000) or b"null")
+            except HTTPError as e:
+                if e.code < 500 or tentativa == 2:
+                    return e.code, None
+                tentativas_extras[0] += 1
+                time.sleep(0.2)
+
+    falhas = 0
+    st, linhas = get("/Linha/Buscar?termosBusca=8000")
+    ok = st == 200 and isinstance(linhas, list) and linhas and {"cl", "lt", "tl", "sl"} <= set(linhas[0])
+    print(f"/Linha/Buscar?termosBusca=8000: http={st} itens={len(linhas) if isinstance(linhas, list) else '-'} campos_ok={bool(ok)}")
+    falhas += not ok
+    st, paradas = get("/Parada/Buscar?termosBusca=paulista")
+    ok = st == 200 and isinstance(paradas, list) and paradas and {"cp", "np", "py", "px"} <= set(paradas[0])
+    print(f"/Parada/Buscar?termosBusca=paulista: http={st} itens={len(paradas) if isinstance(paradas, list) else '-'} campos_ok={bool(ok)}")
+    falhas += not ok
+    # Previsão: procura a primeira parada da busca com ônibus previstos (horário noturno pode não ter nenhum).
+    com_previsao = None
+    for p in (paradas or [])[:15]:
+        st, prev = get(f"/Previsao/Parada?codigoParada={p['cp']}")
+        if st != 200 or not isinstance(prev, dict):
+            print(f"/Previsao/Parada: http={st} formato_ok=False")
+            falhas += 1
+            break
+        veiculos = sum(len(l.get("vs") or []) for l in ((prev.get("p") or {}).get("l") or []))
+        if veiculos:
+            com_previsao = (prev.get("hr"), len((prev.get("p") or {}).get("l") or []), veiculos)
+            break
+    if com_previsao:
+        print(f"/Previsao/Parada: http=200 hr={com_previsao[0]} linhas={com_previsao[1]} veiculos_previstos={com_previsao[2]}")
+    else:
+        print("/Previsao/Parada: nenhuma das paradas testadas tinha ônibus previstos agora")
+    print(f"novas tentativas por 500 do gateway: {tentativas_extras[0]}")
+    return 1 if falhas else 0
 
 
 def main() -> int:

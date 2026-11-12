@@ -1,0 +1,17 @@
+Validação real do gateway da Prefeitura (11/11/2026, 22h19 de Brasília). Credenciais lidas do .env e nunca impressas.
+
+## scripts/integracao/diagnosticar_sptrans.py --gateway
+gateway /token: http=200 access_token=presente expires_in=3035
+/Linha/Buscar?termosBusca=8000: http=200 itens=4 campos_ok=True
+/Parada/Buscar?termosBusca=paulista: http=200 itens=2 campos_ok=True
+/Previsao/Parada: http=200 hr=22:22 linhas=14 veiculos_previstos=21
+novas tentativas por 500 do gateway: 2
+
+## Spring local (rodar_mvp_local.py --sptrans-gateway), API do Ponto Falante
+{"versao":"1.0.0","sptrans":"REAL","assistente":"INDISPONIVEL","ultimo_boletim":null,"horario_servidor":"2026-11-11T22:19:36.1207154-03:00"}
+GET /api/pontos?busca=paulista -> fonte OLHO_VIVO pontos 2
+GET /api/linhas?busca=8000 -> fonte OLHO_VIVO linhas 4
+GET /api/pontos/260015039/previsoes -> fonte OLHO_VIVO tipo PREVISAO horario_referencia 22:22 onibus 21 veiculo anonimizado True
+
+## Aceitação (testar_mvp.py --url http://127.0.0.1:8091)
+MVP: saude, contratos e previsoes OK; Angular e navegacao OK.
