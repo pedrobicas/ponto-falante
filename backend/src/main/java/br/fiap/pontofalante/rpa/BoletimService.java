@@ -68,7 +68,24 @@ public class BoletimService {
             throw ErroApi.requisicaoInvalida("Campo obrigatório ausente ou inválido: fonte_dados.");
         }
         long simulador = contagem(fontes, "simulador");
-        contagem(fontes, "olhovivo");
+        long olhovivo = contagem(fontes, "olhovivo");
+        // Cada linha só pode citar uma origem que tenha registros no total: evita linha "real" num boletim simulado.
+        for (JsonNode linha : corpo.path("linhas")) {
+            JsonNode citadas = linha.path("fontes");
+            if (citadas.isMissingNode()) {
+                continue;
+            }
+            if (!citadas.isArray()) {
+                throw ErroApi.requisicaoInvalida("linhas[].fontes deve ser uma lista.");
+            }
+            for (JsonNode f : citadas) {
+                String nome = f.asText("");
+                boolean coerente = ("simulador".equals(nome) && simulador > 0) || ("olhovivo".equals(nome) && olhovivo > 0);
+                if (!f.isTextual() || !coerente) {
+                    throw ErroApi.requisicaoInvalida("linhas[].fontes contradiz fonte_dados.");
+                }
+            }
+        }
         if (flag.asBoolean() != (simulador > 0)) {
             throw ErroApi.requisicaoInvalida("dados_simulados contradiz fonte_dados.simulador.");
         }
