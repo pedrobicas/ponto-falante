@@ -1,5 +1,26 @@
 # Revisão dos critérios oficiais · GenAI e RPA
 
+## Situação em 13/11/2026 (substitui as pendências da revisão de 11/11 abaixo)
+
+| Item | Situação | Onde comprovar |
+|---|---|---|
+| GenAI 01, casos com gabarito e "não consta" | ✓ três ciclos (v1, v2, v3), cada um com DEV separado e teste inédito rodado uma vez | `genai/avaliacao/v3/LEIAME.md`, `perguntas_dev_v3.jsonl` |
+| GenAI 03, recall@1/@3 e limiar | ✓ v1 (notebook 02); na v3 o limiar do cross-encoder foi recalibrado no DEV (-2,5) com justificativa | `genai/RELATORIO.md` §7.1 e §12 |
+| GenAI 05/06, especialização × RAG × sem contexto | ✓ teste v3: sem contexto 8,7%, RAG 65,2%, agente v1 65,2% com o menor erro factual (8,7%), v3 58,7% | `genai/avaliacao/v3/teste_final_20261113/placar_teste_v3.csv` |
+| GenAI 07, 5 erros reais | ✓ v1 (§8) e v3 (§12, com causa e correção; um deles é erro da rubrica) | `genai/RELATORIO.md` |
+| GenAI integrada ao produto | ✓ site publicado chama a GenAI do PC do dono pelo Quick Tunnel gratuito; horários respondidos pelo backend com a SPTrans | `docs/evidencias/assistente_producao_20261113.txt` |
+| Decisão `PF_MODO` | ✓ `agente` com `qwen2.5:7b`, a configuração mais segura no teste final | `genai/RELATORIO.md` §12 |
+| RPA 01, BPMN | ✓ novo fluxo com dois robôs (coletor e boletim) | `rpa/docs/fluxo.bpmn`, `fluxo.png`, gerado por `gerar_fluxo_bpmn.py` |
+| RPA 06, integração com o MVP real | ✓ Spring Boot publicado; coleta real no GitHub Actions (6 pontos, 111 ônibus previstos) | `docs/EVIDENCIAS.md` §4 |
+| RPA 07, testes | ✓ 45 testes | `rpa/tests/` |
+| Repositório no GitHub | ✓ privado em https://github.com/pedrobicas/ponto-falante; tornar público é decisão do dono | |
+| CI | ✓ sete jobs verdes | `docs/EVIDENCIAS.md` §2 |
+
+Ainda depende de pessoas: vídeos (GenAI e RPA), PDF do relatório do RPA, links do vídeo nos relatórios, deixar o
+repositório público e manter o PC ligado com `scripts/genai/iniciar.ps1 -TunelRapido` durante a avaliação.
+
+---
+
 Revisado em 11/11/2026 contra o PDF oficial da GS 2026.2:
 
 - GenAI: slides 29 a 31;
