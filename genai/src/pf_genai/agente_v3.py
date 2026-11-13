@@ -49,14 +49,15 @@ class ConfigV3:
     expansao: bool = True
     hibrida: bool = True
     rerank: bool = True
-    limiar_rerank: float = float(os.environ.get("PF_LIMIAR_V3", "0.0"))   # calibrado no DEV v3 (ver RELATORIO)
+    # -2,5: calibrado no DEV v3 em 13/11 (ver RELATORIO, "Iteração v3"); 0,0 recusava respondíveis com evidência.
+    limiar_rerank: float = float(os.environ.get("PF_LIMIAR_V3", "-2.5"))
     filtro_publico: bool = True
     intencao: bool = True
     checagens: bool = True
     tentativas: int = 2
     # Fonte listada em trechos_usados sem citação literal sai da resposta (em vez de recusar tudo).
     # Números continuam auditados só contra as evidências que sobraram.
-    podar_sem_evidencia: bool = False
+    podar_sem_evidencia: bool = True
     extras: dict = field(default_factory=dict)
 
 

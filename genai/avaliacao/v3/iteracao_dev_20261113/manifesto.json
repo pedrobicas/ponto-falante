@@ -64,5 +64,6 @@
     "trechos_v3.py": "004dcb9c1bd816d00870f53ce5ecf911facb12103addfb2e00c856d7fb0ca9d0"
   },
   "inicio_utc": "2026-11-13T11:19:30.549255+00:00",
-  "estado": "em_execucao"
+  "estado": "concluido",
+  "fim_utc": "2026-11-13T11:49:50.221549+00:00"
 }
