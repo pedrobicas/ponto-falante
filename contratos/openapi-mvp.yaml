@@ -116,6 +116,33 @@ paths:
         "400": {description: Pergunta vazia ou com mais de 500 caracteres, content: {application/json: {schema: {$ref: '#/components/schemas/Erro'}}}}
         "429": {description: Muitas perguntas seguidas do mesmo cliente}
 
+  /api/genai/endereco:
+    put:
+      tags: [assistente]
+      summary: O PC da GenAI informa o endereço atual do túnel (Quick Tunnel muda a cada reinício)
+      description: |
+        Aceita só HTTPS em `*.trycloudflare.com` ou no host já configurado em GENAI_URL, sem caminho,
+        usuário nem parâmetros. Antes de trocar, o backend confere `{url}/health`; se falhar, mantém o
+        endereço anterior. Registro só em memória (o script do PC renova a cada 10 minutos).
+      parameters:
+        - {name: X-API-Key, in: header, required: true, schema: {type: string}, description: GENAI_API_KEY}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              properties:
+                url: {type: string, example: "https://exemplo-de-tunel.trycloudflare.com"}
+      responses:
+        "200": {description: Endereço trocado}
+        "400": {description: Endereço fora da regra, content: {application/json: {schema: {$ref: '#/components/schemas/Erro'}}}}
+        "401": {description: Chave ausente ou inválida}
+        "422": {description: "/health não respondeu pelo endereço informado; endereço anterior mantido"}
+        "429": {description: Tentativas seguidas em menos de 5 segundos}
+        "503": {description: GENAI_API_KEY não configurada no servidor}
+
   /api/historico:
     get:
       tags: [rpa]
