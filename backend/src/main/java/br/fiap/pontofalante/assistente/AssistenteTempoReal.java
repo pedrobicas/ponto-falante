@@ -148,8 +148,8 @@ public class AssistenteTempoReal {
         }
         sb.append(". ");
         if (onibus.isEmpty()) {
-            sb.append(filtroLinha == null ? "Não há ônibus previstos agora."
-                    : "Não há previsão para a linha " + filtroLinha + " neste ponto agora.");
+            sb.append(filtroLinha == null ? "Não há ônibus previstos agora. "
+                    : "Não há previsão para a linha " + filtroLinha + " neste ponto agora. ");
         } else {
             int n = Math.min(MAX_ONIBUS, onibus.size());
             for (int i = 0; i < n; i++) {

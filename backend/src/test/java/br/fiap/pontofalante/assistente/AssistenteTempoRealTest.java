@@ -40,6 +40,12 @@ class AssistenteTempoRealTest {
         assertThat(r.fontes()).singleElement().satisfies(f -> assertThat(f.documento()).contains("simulados"));
     }
 
+    @Test void linhaSemPrevisaoNaoGrudaFrasesNaVoz() {
+        RespostaChat r = assistente.responder("Quando passa a linha 9999-10 no ponto Paulista?").orElseThrow();
+        assertThat(r.resposta()).contains("Não há previsão para a linha 9999-10")
+                .doesNotContainPattern("[a-zà-ú]\\.[A-ZÀ-Ú]");
+    }
+
     @Test void codigoDoPontoNaPergunta() {
         RespostaChat r = assistente.responder("previsão do ponto 990007 agora").orElseThrow();
         assertThat(r.resposta()).contains("Rio Branco");
