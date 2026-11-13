@@ -35,11 +35,18 @@ public class ChatService {
     private final PfProps props;
     private final RestClient rest;
     private final AssistenteTempoReal tempoReal;
+    private final EnderecoGenai endereco;
     private volatile long circuitoAbertoAteNanos;
 
     public ChatService(PfProps props, AssistenteTempoReal tempoReal) {
+        this(props, tempoReal, new EnderecoGenai(props));
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public ChatService(PfProps props, AssistenteTempoReal tempoReal, EnderecoGenai endereco) {
         this.props = props;
         this.tempoReal = tempoReal;
+        this.endereco = endereco;
         this.rest = ClienteGenai.criar(props, props.genaiConnectTimeoutMs(), props.genaiReadTimeoutMs());
     }
 
@@ -69,7 +76,8 @@ public class ChatService {
             return new RespostaChat(r.resposta(), r.fontes(), r.confianca(), r.naoConsta(), r.disponivel(),
                     (int) ((System.nanoTime() - inicioTempoReal) / 1_000_000), r.origem());
         }
-        if (!props.temGenai()) {
+        var base = endereco.base();
+        if (base.isEmpty()) {
             return indisponivel();
         }
         if (System.nanoTime() - circuitoAbertoAteNanos < 0) {
@@ -77,7 +85,7 @@ public class ChatService {
         }
         long inicio = System.nanoTime();
         try {
-            JsonNode r = rest.post().uri("/chat")
+            JsonNode r = rest.post().uri(base.get() + "/chat")
                     .header("X-API-Key", props.genaiApiKey() == null ? "" : props.genaiApiKey())
                     .headers(h -> { if (idCliente != null) h.set("X-PF-Cliente", idCliente); })
                     .body(Map.of("pergunta", pergunta))
@@ -118,5 +126,10 @@ public class ChatService {
 
     static RespostaChat indisponivel() {
         return new RespostaChat(MSG_INDISPONIVEL, List.of(), "baixa", true, false, null, "INDISPONIVEL");
+    }
+
+    /** Novo endereço registrado: não esperar o fim do disjuntor aberto pelo túnel antigo. */
+    void fecharCircuito() {
+        circuitoAbertoAteNanos = System.nanoTime();
     }
 }

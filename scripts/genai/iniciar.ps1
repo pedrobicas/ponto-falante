@@ -1,5 +1,5 @@
 # Execute: powershell.exe -NoProfile -File scripts/genai/iniciar.ps1
-param([switch]$SomenteLocal)
+param([switch]$SomenteLocal, [switch]$TunelRapido)
 
 . (Join-Path $PSScriptRoot 'comum.ps1')
 Import-GenAIEnv
@@ -62,8 +62,30 @@ if ($SomenteLocal) {
     return
 }
 if ($env:GENAI_AUTH_DESATIVADA -eq '1') { return }
+if ($TunelRapido) {
+    # Quick Tunnel gratuito: URL aleatoria *.trycloudflare.com, sem conta nem DNS. So a API (8001) sai pelo tunel;
+    # o Ollama continua em loopback. O endereco e informado ao backend por registrar-tunel.ps1.
+    $command = Get-Command cloudflared.exe -ErrorAction SilentlyContinue
+    if ($null -eq $command) { throw 'Instale cloudflared e disponibilize cloudflared.exe no PATH.' }
+    $log = Join-Path $script:GenAIRun 'cloudflared.err.log'
+    if ($null -eq (Get-GenAIManagedProcess 'cloudflared') -and (Test-Path -LiteralPath $log)) { Remove-Item -LiteralPath $log }
+    $tunnel = Start-GenAIProcess -Name 'cloudflared' -Executable $command.Source `
+        -Arguments @('tunnel', '--no-autoupdate', '--url', 'http://127.0.0.1:8001')
+    $deadline = [DateTime]::UtcNow.AddSeconds(45)
+    do {
+        if ($tunnel.HasExited) { throw 'cloudflared encerrou; consulte run/cloudflared.err.log.' }
+        Start-Sleep -Seconds 1
+        $achado = if (Test-Path -LiteralPath $log) { Select-String -LiteralPath $log -Pattern 'https://[a-z0-9-]+\.trycloudflare\.com' } else { $null }
+    } while (-not $achado -and [DateTime]::UtcNow -lt $deadline)
+    if (-not $achado) { throw 'O endereco do tunel nao apareceu em 45 s; consulte run/cloudflared.err.log.' }
+    $powershell = (Get-Process -Id $PID).Path
+    Start-GenAIProcess -Name 'registro' -Executable $powershell `
+        -Arguments @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $PSScriptRoot 'registrar-tunel.ps1'), '-Repetir') | Out-Null
+    Write-Host 'Tunel rapido ativo e registro automatico no backend iniciado (run/registro.log).'
+    return
+}
 if (-not $env:CF_TUNNEL_NAME) {
-    Write-Host 'API pronta para o Spring Boot local. Tunel opcional nao configurado; veja scripts/genai/README.md.'
+    Write-Host 'API pronta para o Spring Boot local. Para o site publicado, use -TunelRapido; veja scripts/genai/README.md.'
     return
 }
 $command = Get-Command cloudflared.exe -ErrorAction SilentlyContinue

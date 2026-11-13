@@ -1,6 +1,6 @@
 # Encerra apenas processos registrados por iniciar.ps1 neste worktree.
 . (Join-Path $PSScriptRoot 'comum.ps1')
-foreach ($name in @('cloudflared', 'api', 'ollama')) {
+foreach ($name in @('registro', 'cloudflared', 'api', 'ollama')) {
     $process = Get-GenAIManagedProcess $name
     if ($null -ne $process) {
         # /T encerra tambem o filho do launcher do Python de um venv no Windows.

@@ -25,3 +25,8 @@ if ($env:GENAI_PUBLIC_URL) {
     }
     Show-GenAIHealth 'API publica' ($env:GENAI_PUBLIC_URL.TrimEnd('/') + '/health')
 } else { Write-Host 'API publica: configure GENAI_PUBLIC_URL em .env.local para verificar.' }
+$registro = Get-GenAIManagedProcess 'registro'
+if ($null -ne $registro) {
+    $ultima = Get-Content -LiteralPath (Join-Path $script:GenAIRun 'registro.log') -Tail 1 -ErrorAction SilentlyContinue
+    Write-Host "registro no backend: ativo (PID $($registro.Id)). Ultima linha: $ultima"
+}
