@@ -1,0 +1,37 @@
+.topo { background: var(--superficie); border-bottom: 1px solid var(--traco); }
+.topo__interno { width: min(100% - 3rem, 80rem); min-height: 5rem; margin: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; }
+.marca { display: inline-flex; align-items: center; gap: .65rem; color: var(--texto); text-decoration: none; flex-shrink: 0; }
+.marca__simbolo { width: 2.5rem; height: 2.5rem; }
+.marca__ponto { fill: var(--primario); }
+.marca__miolo { fill: var(--superficie); }
+.marca__onda { fill: none; stroke: var(--primario); stroke-width: 2.5; stroke-linecap: round; }
+.marca__onda--2 { opacity: .5; }
+.marca__nome { font-size: 1.5rem; line-height: .9; letter-spacing: -.07em; font-weight: 800; }
+.marca__nome small { display: block; font-size: .65rem; letter-spacing: .16em; line-height: 1.5; font-weight: 650; }
+.marca__ponto-final { color: var(--link); }
+.topo__edicao { color: var(--texto-2); font-size: .8rem; border-left: 1px solid var(--traco); padding-left: 1.5rem; }
+.topo__simulado { color: var(--sim); background: var(--sim-fundo); font-size: .75rem; border-radius: 4px; padding: .3rem .5rem; }
+.trajeto { margin-left: auto; min-width: 0; }
+.trajeto__lista { list-style: none; display: flex; flex-wrap: wrap; gap: .4rem; }
+.estacao { display: flex; align-items: center; gap: .5rem; min-height: 44px; padding: .7rem 1rem; color: var(--texto-2); text-decoration: none; border-radius: 10px; font-size: .9rem; font-weight: 650; transition: background var(--t1), color var(--t1); }
+.estacao:hover { background: var(--superficie-2); color: var(--texto); }
+.estacao--atual { background: var(--superficie-2); color: var(--link); }
+.estacao--atual .estacao__nome { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .4em; }
+.rodape { color: var(--texto-2); border-top: 1px solid var(--traco); font-size: .8rem; }
+.rodape__interno { width: min(100% - 3rem,68rem); margin: auto; padding: 1.5rem 0; display: flex; gap: 1.5rem; align-items: center; justify-content: space-between; }
+.rodape__marca { color: var(--texto); font-weight: 750; white-space: nowrap; }
+.rodape a { display: inline-flex; align-items: center; min-height: 44px; }
+@media (max-width: 63.99em) { .topo__edicao { display: none; } .topo__interno { gap: .7rem; } .estacao { padding: .7rem; } }
+@media (max-width: 47.99em) {
+  app-root { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+  .topo__interno { width: calc(100% - 2rem); min-height: 4rem; justify-content: space-between; }
+  .marca__simbolo { width: 2rem; height: 2rem; }
+  .marca__nome { font-size: 1.3rem; }
+  .trajeto { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; background: var(--superficie); border-top: 1px solid var(--traco); padding: .35rem .25rem calc(.35rem + env(safe-area-inset-bottom)); }
+  .trajeto__lista { gap: 0; display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); }
+  .estacao { min-height: 4rem; padding: .4rem .1rem; flex-direction: column; gap: .35rem; font-size: .7rem; border-radius: 8px; overflow-wrap: normal; }
+  .estacao pf-icone { width: 1.4rem; height: 1.4rem; }
+  .estacao--atual .estacao__nome { text-underline-offset: .25em; }
+  .rodape__interno { width: calc(100% - 2rem); flex-wrap: wrap; gap: .5rem 1rem; padding: 1rem 0; }
+  .rodape__marca { display: none; }
+}

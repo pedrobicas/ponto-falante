@@ -40,7 +40,8 @@ def mock_url():
 
 @pytest.fixture(autouse=True)
 def estado_mock_limpo():
-    mock_mvp.estado.update({"falha": False, "boletim": None})
+    mock_mvp.estado.update({"falha": False, "boletim": None, "modo": "DEMO", "amostras": [], "previsoes": {},
+                            "falha_previsoes": set(), "sem_amostras_api": False})
     yield
 
 

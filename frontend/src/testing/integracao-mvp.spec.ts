@@ -67,7 +67,7 @@ describe('Contratos HTTP do MVP', () => {
 
 describe('Estrutura acessivel do aplicativo', () => {
   it('oferece landmarks, navegacao rotulada e link para pular ao conteudo', async () => {
-    TestBed.configureTestingModule({ imports: [App], providers: [provideRouter([])] });
+    TestBed.configureTestingModule({ imports: [App], providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()] });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     await fixture.whenStable();

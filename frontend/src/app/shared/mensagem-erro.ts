@@ -1,24 +1,24 @@
 import { Component, input, output } from '@angular/core';
 import { Icone } from './icone';
 
-/** Caixa de erro/aviso amigável. Anunciada por leitores de tela (role=alert). */
+/** Aviso de erro/indisponibilidade. Anunciado por leitores de tela (role=alert). */
 @Component({
   selector: 'pf-erro',
   imports: [Icone],
   template: `
-    <div class="caixa caixa--{{ tom() }}" role="alert">
-      <p class="caixa__titulo">
-        <pf-icone [nome]="tom() === 'erro' ? 'erro-circulo' : 'info'" />
-        <span>{{ titulo() }}</span>
-      </p>
-      <p>{{ mensagem() }}</p>
-      <div class="acoes">
-        <ng-content />
-        @if (tentarNovamente()) {
-          <button type="button" class="botao" (click)="repetir.emit()">
-            <pf-icone nome="atualizar" /> Tentar de novo
-          </button>
-        }
+    <div class="aviso aviso--{{ tom() }}" role="alert">
+      <pf-icone class="aviso__icone" [nome]="tom() === 'erro' ? 'alerta' : 'info'" />
+      <div class="aviso__corpo">
+        <p class="aviso__titulo">{{ titulo() }}</p>
+        <p>{{ mensagem() }}</p>
+        <div class="aviso__acoes">
+          @if (tentarNovamente()) {
+            <button type="button" class="botao botao--contorno" (click)="repetir.emit()">
+              <pf-icone nome="atualizar" /> Tentar de novo
+            </button>
+          }
+          <ng-content />
+        </div>
       </div>
     </div>
   `,

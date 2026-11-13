@@ -1,8 +1,13 @@
 # Execute: powershell.exe -NoProfile -File scripts/genai/iniciar.ps1
+param([switch]$SomenteLocal)
+
 . (Join-Path $PSScriptRoot 'comum.ps1')
 Import-GenAIEnv
 $env:OLLAMA_HOST = '127.0.0.1:11434'
 $env:PYTHONDONTWRITEBYTECODE = '1'
+if ($SomenteLocal -and @(Get-Process -Name cloudflared -ErrorAction SilentlyContinue).Count -gt 0) {
+    throw 'SomenteLocal solicitado, mas cloudflared ja esta ativo. Encerre o tunel antes de iniciar em modo local.'
+}
 if ($env:GENAI_AUTH_DESATIVADA -eq '1') {
     if (@(Get-Process -Name cloudflared -ErrorAction SilentlyContinue).Count -gt 0) {
         throw 'cloudflared ja esta ativo; encerre o tunel antes de iniciar com autenticacao desativada.'
@@ -52,9 +57,13 @@ do {
 if (-not (Test-GenAIHealth $health)) { throw 'API nao respondeu em 120 s; consulte run/api.err.log.' }
 Write-Host "API: $($health.Body.status) em http://127.0.0.1:8001/health."
 
+if ($SomenteLocal) {
+    Write-Host 'Modo local: tunel nao iniciado. Configure GENAI_URL=http://127.0.0.1:8001 no Spring Boot local.'
+    return
+}
 if ($env:GENAI_AUTH_DESATIVADA -eq '1') { return }
 if (-not $env:CF_TUNNEL_NAME) {
-    Write-Warning 'Tunel nao iniciado. Crie um tunel nomeado e configure CF_TUNNEL_NAME em scripts/genai/.env.local; veja scripts/genai/README.md.'
+    Write-Host 'API pronta para o Spring Boot local. Tunel opcional nao configurado; veja scripts/genai/README.md.'
     return
 }
 $command = Get-Command cloudflared.exe -ErrorAction SilentlyContinue

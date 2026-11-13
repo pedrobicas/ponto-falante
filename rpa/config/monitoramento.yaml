@@ -14,12 +14,49 @@ gtfs:
   pasta: "data/gtfs_sptrans"
   pasta_ficticia: "data/gtfs_ficticio"
 
+# ---------------------------------------------------------------------------
+# Dado REAL: coleta de amostras de previsão da SPTrans (python -m pf_rpa.coletor)
+# ---------------------------------------------------------------------------
+# Pontos reais conferidos em GET /api/pontos?busca= (fonte OLHO_VIVO) em 12/11/2026.
+coleta:
+  pontos:
+    - "260015039"   # PAULISTA B/C (Av. Paulista / Av. Rebouças)
+    - "260016855"   # PAULISTA C/B (Av. Paulista / R. Antônio Carlos)
+    - "630015016"   # PARADA 2 - FARIA LIMA B/C (Av. Eusébio Matoso / Av. Faria Lima)
+    - "630015011"   # PARADA 2 - FARIA LIMA C/B (Av. Rebouças / Av. Faria Lima)
+    - "340015323"   # SÃO GABRIEL B/C (Av. Nove de Julho)
+    - "340015324"   # SÃO GABRIEL C/B (Av. Nove de Julho)
+  linhas: []                  # vazio = todas as linhas com amostras suficientes nesses pontos
+  execucoes_por_dia: 8        # igual ao agendamento de .github/workflows/rpa-coleta.yml (07h a 21h)
+  timeout_segundos: 45
+  pasta_pendentes: "saida/pendentes"   # amostras que não puderam ser enviadas; reenviadas na próxima coleta
+
+# Boletim ESTIMADO (a partir das amostras reais). Mede espera PREVISTA entre ônibus, nunca atraso.
+regras_estimadas:
+  espera_critica_min: 30      # espera típica prevista acima disso => CRÍTICA
+  espera_atencao_min: 20      # espera típica acima disso, ou maior espera > crítica => ATENÇÃO
+  sem_previsao_atencao_pct: 50  # linha sem ônibus previsto em 50% ou mais das consultas => ATENÇÃO
+  minimo_amostras: 3          # menos consultas com previsão da linha => SEM DADOS
+  minutos_max_previsao: 120   # previsão além disso é descartada
+  cobertura_minima_pct: 50    # menos que isso das consultas esperadas => aviso de amostragem parcial
+
+boletim:
+  # Quando o dia não tem nenhuma amostra real:
+  #   nunca        -> boletim INDISPONÍVEL
+  #   somente_demo -> usa o histórico SIMULADO só se o MVP declarar sptrans=DEMO em /api/status (padrão)
+  #   sempre       -> usa o histórico SIMULADO (só para testes)
+  # Simulação nunca é misturada com amostras reais.
+  fallback_simulado: "somente_demo"
+
+# ---------------------------------------------------------------------------
+# Dado SIMULADO: histórico de demonstração (rede fictícia), usado só no fallback acima
+# ---------------------------------------------------------------------------
 # Escopo monitorado. Listas vazias = monitorar tudo o que vier do histórico.
 monitoramento:
   linhas: ["1001-10", "1002-10", "1003-10", "1004-10", "1005-10"]
   pontos: []
 
-# Regras de decisão (hipóteses iniciais, documentadas no README).
+# Regras de decisão do histórico simulado (hipóteses iniciais, documentadas no README).
 # Uma pessoa da gestora pode ajustar estes limites sem mexer no código.
 regras:
   atraso_critico_min: 10      # atraso médio acima disso => CRÍTICA

@@ -1,0 +1,298 @@
+{
+  "resumo": {
+    "rubrica": "v3.1",
+    "amostra_pareada": 53,
+    "total_dev": 108,
+    "acertos_antigos": 42,
+    "acertos_novos": 43,
+    "acuracia_antiga_pareada": 79.25,
+    "acuracia_nova_pareada": 81.13,
+    "melhoraram": 4,
+    "pioraram": 3,
+    "categorias_antigas": {
+      "recusa_indevida": 3,
+      "correto": 34,
+      "resposta_indevida": 2,
+      "recusa_correta": 8,
+      "incompleto": 3,
+      "erro_factual": 2,
+      "sem_fato": 1
+    },
+    "categorias_novas": {
+      "recusa_indevida": 6,
+      "correto": 34,
+      "resposta_indevida": 1,
+      "recusa_correta": 9,
+      "sem_fato": 1,
+      "erro_factual": 2
+    },
+    "observacao": "Comparação retrospectiva apenas dos IDs comuns no DEV, não é resultado do teste final."
+  },
+  "por_pergunta": [
+    {
+      "id": "d01",
+      "antes": "recusa_indevida",
+      "depois": "recusa_indevida"
+    },
+    {
+      "id": "d02",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "d03",
+      "antes": "correto",
+      "depois": "recusa_indevida"
+    },
+    {
+      "id": "d04",
+      "antes": "resposta_indevida",
+      "depois": "resposta_indevida"
+    },
+    {
+      "id": "d05",
+      "antes": "correto",
+      "depois": "recusa_indevida"
+    },
+    {
+      "id": "d06",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "d07",
+      "antes": "resposta_indevida",
+      "depois": "recusa_correta"
+    },
+    {
+      "id": "d08",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "d09",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "d10",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "d11",
+      "antes": "recusa_correta",
+      "depois": "recusa_correta"
+    },
+    {
+      "id": "d12",
+      "antes": "correto",
+      "depois": "sem_fato"
+    },
+    {
+      "id": "d13",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "d14",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "d15",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "d16",
+      "antes": "recusa_correta",
+      "depois": "recusa_correta"
+    },
+    {
+      "id": "d17",
+      "antes": "incompleto",
+      "depois": "recusa_indevida"
+    },
+    {
+      "id": "d18",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "d19",
+      "antes": "incompleto",
+      "depois": "correto"
+    },
+    {
+      "id": "d20",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "d21",
+      "antes": "recusa_correta",
+      "depois": "recusa_correta"
+    },
+    {
+      "id": "d22",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "d23",
+      "antes": "recusa_indevida",
+      "depois": "correto"
+    },
+    {
+      "id": "d24",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "d25",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "d26",
+      "antes": "recusa_correta",
+      "depois": "recusa_correta"
+    },
+    {
+      "id": "d27",
+      "antes": "recusa_correta",
+      "depois": "recusa_correta"
+    },
+    {
+      "id": "d28",
+      "antes": "recusa_correta",
+      "depois": "recusa_correta"
+    },
+    {
+      "id": "d29",
+      "antes": "recusa_correta",
+      "depois": "recusa_correta"
+    },
+    {
+      "id": "d30",
+      "antes": "recusa_correta",
+      "depois": "recusa_correta"
+    },
+    {
+      "id": "n01",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n02",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n03",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n04",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n05",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n06",
+      "antes": "erro_factual",
+      "depois": "erro_factual"
+    },
+    {
+      "id": "n07",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n08",
+      "antes": "erro_factual",
+      "depois": "erro_factual"
+    },
+    {
+      "id": "n09",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n10",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n11",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n12",
+      "antes": "incompleto",
+      "depois": "recusa_indevida"
+    },
+    {
+      "id": "n13",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n14",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n15",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n16",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n17",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n18",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n19",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n20",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n21",
+      "antes": "correto",
+      "depois": "correto"
+    },
+    {
+      "id": "n22",
+      "antes": "sem_fato",
+      "depois": "correto"
+    },
+    {
+      "id": "n23",
+      "antes": "recusa_indevida",
+      "depois": "recusa_indevida"
+    }
+  ]
+}

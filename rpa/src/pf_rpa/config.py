@@ -27,6 +27,29 @@ class Regras:
 
 
 @dataclass
+class RegrasEstimadas:
+    """Limites do boletim ESTIMADO (amostras reais de previsão). Não medem atraso: medem espera prevista."""
+    espera_critica_min: float = 30       # espera típica prevista entre ônibus acima disso => CRÍTICA
+    espera_atencao_min: float = 20       # espera típica acima disso (ou maior espera > crítica) => ATENÇÃO
+    sem_previsao_atencao_pct: float = 50  # % de consultas sem ônibus previsto da linha => ATENÇÃO
+    minimo_amostras: int = 3             # consultas com previsão da linha; abaixo disso => SEM_DADOS
+    minutos_max_previsao: int = 120      # previsão além disso é descartada como incoerente
+    cobertura_minima_pct: float = 50     # abaixo disso o boletim avisa "amostragem parcial"
+
+
+@dataclass
+class Coleta:
+    pontos: list[str] = field(default_factory=list)   # códigos SPTrans conferidos em /api/pontos
+    linhas: list[str] = field(default_factory=list)   # vazio = todas as linhas com amostras suficientes
+    execucoes_por_dia: int = 8
+    timeout_segundos: float = 45                      # o gateway da Prefeitura às vezes demora
+    pasta_pendentes: Path = Path("saida/pendentes")
+
+
+FALLBACKS = ("nunca", "somente_demo", "sempre")
+
+
+@dataclass
 class Config:
     base: Path                      # pasta raiz do projeto RPA
     mvp_url: str
@@ -42,6 +65,9 @@ class Config:
     pasta_saida: Path = Path("saida")
     pasta_logs: Path = Path("logs")
     horario: str = "06:00"
+    regras_estimadas: RegrasEstimadas = field(default_factory=RegrasEstimadas)
+    coleta: Coleta = field(default_factory=Coleta)
+    fallback_simulado: str = "somente_demo"
 
 
 def carregar(caminho: str | Path) -> Config:
@@ -72,6 +98,24 @@ def carregar(caminho: str | Path) -> Config:
     ):
         raise ErroConfiguracao("Limite de ATENÇÃO não pode ser maior que o de CRÍTICA")
 
+    try:
+        regras_est = RegrasEstimadas(**(bruto.get("regras_estimadas") or {}))
+    except TypeError as e:
+        raise ErroConfiguracao(f"Regra desconhecida em 'regras_estimadas': {e}") from e
+    if regras_est.espera_atencao_min > regras_est.espera_critica_min:
+        raise ErroConfiguracao("Espera de ATENÇÃO não pode ser maior que a de CRÍTICA")
+    col = bruto.get("coleta") or {}
+    coleta = Coleta(
+        pontos=[str(x) for x in (col.get("pontos") or [])],
+        linhas=[str(x) for x in (col.get("linhas") or [])],
+        execucoes_por_dia=int(col.get("execucoes_por_dia", 8)),
+        timeout_segundos=float(col.get("timeout_segundos", 45)),
+        pasta_pendentes=abs_(col.get("pasta_pendentes", "saida/pendentes")),
+    )
+    fallback = str((bruto.get("boletim") or {}).get("fallback_simulado", "somente_demo"))
+    if fallback not in FALLBACKS:
+        raise ErroConfiguracao(f"boletim.fallback_simulado deve ser um de {FALLBACKS}")
+
     return Config(
         base=base,
         mvp_url=os.environ.get("MVP_URL", mvp.get("url", "http://127.0.0.1:8080")).rstrip("/"),
@@ -87,4 +131,7 @@ def carregar(caminho: str | Path) -> Config:
         pasta_saida=abs_(saida.get("pasta", "saida")),
         pasta_logs=abs_(saida.get("pasta_logs", "logs")),
         horario=str((bruto.get("agendamento") or {}).get("horario", "06:00")),
+        regras_estimadas=regras_est,
+        coleta=coleta,
+        fallback_simulado=fallback,
     )

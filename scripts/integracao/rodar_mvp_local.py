@@ -40,7 +40,7 @@ def main():
     else:
         env["PF_SPTRANS_MODO"] = "demo"
         env["SPTRANS_GATEWAY_CHAVE"] = env["SPTRANS_GATEWAY_SEGREDO"] = ""
-    env["GENAI_URL"] = env.get("GENAI_URL", "http://127.0.0.1:8001").replace("host.docker.internal", "127.0.0.1")
+    env["GENAI_URL"] = (env.get("GENAI_URL", "").strip() or "http://127.0.0.1:8001").replace("host.docker.internal", "127.0.0.1")
     npm = "npm.cmd" if os.name == "nt" else "npm"
     mvn = RAIZ / "backend" / ("mvnw.cmd" if os.name == "nt" else "mvnw")
     jar = RAIZ / "backend/target/pontofalante.jar"

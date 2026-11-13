@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  BuscaLinhas,
   BuscaPontos,
   Boletim,
   BoletimResumo,
@@ -22,6 +23,10 @@ export class ApiService {
 
   buscarPontos(busca: string, modo?: Modo | null): Observable<BuscaPontos> {
     return this.http.get<BuscaPontos>('/api/pontos', { params: this.params({ busca }, modo) });
+  }
+
+  buscarLinhas(busca: string, modo?: Modo | null): Observable<BuscaLinhas> {
+    return this.http.get<BuscaLinhas>('/api/linhas', { params: this.params({ busca }, modo) });
   }
 
   previsoes(codigo: number | string, modo?: Modo | null): Observable<PrevisoesPonto> {

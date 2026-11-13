@@ -25,5 +25,6 @@ export function formatarDataHora(iso: string): string {
 }
 
 export function horaCurta(d: Date): string {
-  return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  if (Number.isNaN(d.getTime())) return 'não informado';
+  return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' });
 }

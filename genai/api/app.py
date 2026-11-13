@@ -27,7 +27,7 @@ from pf_genai.indice import Indice
 log = logging.getLogger("pf_genai.api")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 
-_estado: dict = {"indice": None}
+_estado: dict = {"indice": None, "indice_v3": None}
 # Preserva a escolha de estratégia do produto (ver RELATORIO.md, seção 7).
 MODO = os.environ.get("PF_MODO", "agente")
 _requisicoes: dict[str, deque[float]] = {}
@@ -44,7 +44,10 @@ async def ciclo_de_vida(_app):
     if os.environ.get("GENAI_AUTH_DESATIVADA") == "1":
         log.warning("GENAI_AUTH_DESATIVADA=1: autenticação desativada; somente desenvolvimento local.")
     try:
-        indice().buscar("aquecimento", 1)
+        if MODO == "v3":
+            indice_v3().buscar("aquecimento", 1)
+        else:
+            indice().buscar("aquecimento", 1)
     except Exception as e:
         log.error("Falha ao carregar o índice: %s", type(e).__name__)
     yield
@@ -62,6 +65,13 @@ def indice() -> Indice:
     if _estado["indice"] is None:
         _estado["indice"] = Indice.carregar()
     return _estado["indice"]
+
+
+def indice_v3():
+    if _estado["indice_v3"] is None:
+        from pf_genai.busca_v3 import IndiceV3
+        _estado["indice_v3"] = IndiceV3.carregar_ou_criar()
+    return _estado["indice_v3"]
 
 
 async def proteger_chat(request: Request) -> None:
@@ -116,10 +126,11 @@ def _limite_global() -> int:
 
 @app.get("/health")
 def health():
-    ok_indice = _estado["indice"] is not None
+    ok_indice = (_estado["indice_v3"] if MODO == "v3" else _estado["indice"]) is not None
     try:
         modelos = [m.model for m in llm._cliente.list().models]
-        ok_llm = any(m.startswith(llm.MODELO) for m in modelos)
+        alvo = os.environ.get("PF_MODELO_GERADOR", "qwen2.5:7b") if MODO == "v3" else llm.MODELO
+        ok_llm = any(m.startswith(alvo) for m in modelos)
     except Exception:
         ok_llm = False
     status = "ok" if ok_indice and ok_llm else "degradado"
@@ -130,6 +141,11 @@ def health():
 def _gerar(pergunta: str):
     if MODO == "rag":
         return gerador.rag(pergunta, indice())
+    if MODO == "v3":
+        # Agente v3 (intenção, busca v3 com cross-encoder, recusa calibrada, checagens). Ver RELATORIO.md,
+        # "Iteração v3". Modelo via PF_MODELO_GERADOR (padrão qwen2.5:7b); limiar via PF_LIMIAR_V3.
+        from pf_genai import agente_v3
+        return agente_v3.responder(pergunta, indice_v3(), agente_v3.ConfigV3("api_v3"))
     if MODO == "v2":
         # Agente v2 (busca híbrida, reparo de recusa, verificador por afirmação). Modelos via
         # PF_MODELO_GERADOR / PF_MODELO_VERIFICADOR; ver avaliacao/v2 e RELATORIO.md, seção 11.
@@ -138,7 +154,8 @@ def _gerar(pergunta: str):
     return agente.responder(pergunta, indice())
 
 
-@app.post("/chat", response_model=RespostaChat, dependencies=[Depends(proteger_chat)])
+@app.post("/chat", response_model=RespostaChat, response_model_exclude_none=True,
+          dependencies=[Depends(proteger_chat)])
 async def chat(p: PerguntaChat):
     t0 = time.perf_counter()
     try:
@@ -155,8 +172,9 @@ async def chat(p: PerguntaChat):
         if r.resposta is None:
             r.resposta = recusa("baixa")
         ms = int((time.perf_counter() - t0) * 1000)
-        resposta = RespostaChat(**r.resposta.model_dump(), modo={"rag": "rag", "v2": "rag_agente_v2"}.get(MODO, "rag_agente"),
-                               latencia_ms=ms)
+        resposta = RespostaChat(**r.resposta.model_dump(),
+                                modo={"rag": "rag", "v2": "rag_agente_v2", "v3": "rag_agente_v3"}.get(MODO, "rag_agente"),
+                                latencia_ms=ms, intencao=getattr(r, "intencao", None) if MODO == "v3" else None)
     except TimeoutError:
         log.warning("Timeout no /chat | %d ms", int((time.perf_counter() - t0) * 1000))
         return JSONResponse(INDISPONIVEL, status_code=504)

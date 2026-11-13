@@ -1,0 +1,53 @@
+{
+  "conjunto": "dev_v3",
+  "sha256": "9e7554cc93be9486abb29b8f4a8aec4bc595cf8b25ed1d5f7a75ff0aff687b5d",
+  "configs": [
+    "v3_7b",
+    "sem_contexto",
+    "rag_v1"
+  ],
+  "modelo_base": "qwen2.5:7b",
+  "opcoes_llm": {
+    "temperature": 0,
+    "seed": 42,
+    "num_ctx": 8192,
+    "num_predict": 750
+  },
+  "rubrica": "v3.1",
+  "v3": {
+    "v3_7b": {
+      "nome": "v3_7b",
+      "modelo_gerador": "qwen2.5:7b",
+      "k_contexto": 3,
+      "max_contexto_chars": 18000,
+      "expansao": true,
+      "hibrida": true,
+      "rerank": true,
+      "limiar_rerank": 0.0,
+      "filtro_publico": true,
+      "intencao": true,
+      "checagens": true,
+      "tentativas": 2,
+      "extras": {}
+    }
+  },
+  "codigo_sha256": {
+    "__init__.py": "5c9cf93557e2d08d790ea5374266ab08780f03bf171b0498453a051fd0cc8eac",
+    "agente.py": "d26c06a6b786ad423a212780e82386cd9a8775503c72086b3394d2e7159d5d2b",
+    "agente_v2.py": "b6049db9a26d8d5dbcfc1af6a5d3acab86e1c1eff9a58fd417898b4cf2ca1454",
+    "agente_v3.py": "fb0a0476167e50d98de1d66a7a6a5839f94a589bf943cb9aa78c1634545874cc",
+    "avaliacao.py": "846a5eaf1ef27fce35f25565aaa2f7aa967bdd4fd4823266d61af0e28e523945",
+    "avaliacao_v2.py": "2f7a5d9457a56f4a7101720001929c074a9dbcbd2a7c6ca191c8f7a9f064b371",
+    "avaliacao_v3.py": "4b88ef57973b859521869691177312c05b2964c983bb92763344e0583950d867",
+    "busca_v3.py": "9bdae922a3cda68a9abbb736332bf6c85f741b2259bf4bc4d6f961a50fadee09",
+    "esquemas.py": "d3aa0f315733dec8172959d633b56dd13280a7c0faed2cc0def5eb42c905925a",
+    "gerador.py": "93539ca8b2fba49ff7694e78be39c2928d24d3f86e07aae946624ff7e8609a1e",
+    "indice.py": "60ab09bdaaebbe09938c56b4d25000d7c6d19215c1005952c3a79e34bbe5d026",
+    "llm.py": "5981266c3751c633ef0a088434051c6a9f3be8ac567bdecec87aa4b48cecae9a",
+    "trechos.py": "90775664a4173dc6296531f0cdae076138a85d75ffdd45617a33b962c91e5d7a",
+    "trechos_v3.py": "004dcb9c1bd816d00870f53ce5ecf911facb12103addfb2e00c856d7fb0ca9d0"
+  },
+  "inicio_utc": "2026-11-12T10:11:16.883868+00:00",
+  "estado": "concluido",
+  "fim_utc": "2026-11-12T13:01:37.650178+00:00"
+}
