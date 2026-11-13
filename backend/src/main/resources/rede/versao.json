@@ -1,0 +1,14 @@
+{
+  "origem": "GTFS oficial da SPTrans",
+  "url": "https://www.sptrans.com.br/umbraco/Surface/PerfilDesenvolvedor/BaixarGTFS?memberName=sptrans",
+  "data_do_feed": "2026-11-12",
+  "gerado_em": "2026-11-13T16:05:43+00:00",
+  "paradas": 22053,
+  "viagens": 2236,
+  "linhas": 1310,
+  "descartes": {
+    "paradas_sem_coordenada": 0,
+    "viagens_sem_paradas": 1,
+    "paradas_sem_linha_de_onibus": 213
+  }
+}

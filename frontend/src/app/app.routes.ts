@@ -25,6 +25,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/ponto/ponto').then((m) => m.PontoPage),
   },
   {
+    path: 'linha/:letreiro',
+    title: 'Paradas da linha' + SUFIXO,
+    loadComponent: () => import('./features/linha/linha').then((m) => m.LinhaPage),
+  },
+  {
     path: 'assistente',
     title: 'Assistente' + SUFIXO,
     loadComponent: () => import('./features/assistente/assistente').then((m) => m.Assistente),

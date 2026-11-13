@@ -190,6 +190,17 @@ export function fraseOnibus(o: OnibusPrevisto): string {
               Previsões {{ d.fonte === 'SIMULADO' ? 'simuladas' : 'da SPTrans' }}: o ônibus pode adiantar, atrasar ou não passar. Atualiza enquanto a aba estiver ativa.
             </p>
           </section>
+          @if (d.ponto.linhas?.length) {
+            <section class="ponto__linhas" aria-labelledby="linhas-titulo">
+              <h2 id="linhas-titulo">Linhas que param neste ponto</h2>
+              <p class="ajuda">Cadastro oficial da SPTrans. Uma linha pode não aparecer nas previsões se não houver ônibus a caminho agora.</p>
+              <ul class="ponto__linhas-lista">
+                @for (l of d.ponto.linhas!; track l) {
+                  <li><a class="chip" [routerLink]="['/linha', l]">{{ l }}<span class="vo">: ver paradas da linha</span></a></li>
+                }
+              </ul>
+            </section>
+          }
         }
       </div>
     </div>

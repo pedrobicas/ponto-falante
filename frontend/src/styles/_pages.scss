@@ -243,3 +243,16 @@
 .quadro__relogio, .quadro__filtro { flex-wrap: wrap; }
 .quadro__atualizar span, .quadro__filtro label, .quadro__hora { white-space: nowrap; }
 .quadro__filtro .seletor { max-width: 100%; }
+
+// Busca com cadastro oficial: aviso da busca, linhas do ponto, pontos próximos e página da linha.
+.busca__perto { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-top: .75rem; }
+.busca__aviso { margin: 0 0 1rem; padding: .8rem 1rem; }
+.parada__linhas { display: block; margin-top: .15rem; font-variant-numeric: tabular-nums; }
+.linha__titulo { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; }
+.linha__sentidos { margin: 1rem 0; }
+.linha__sentidos legend { font-weight: 650; margin-bottom: .4rem; }
+.linha__subtitulo { font-size: 1.1rem; margin: 1.25rem 0 .25rem; }
+.linha__paradas { list-style: none; padding: 0; margin-top: .75rem; }
+.ponto__linhas { margin-top: 1.5rem; }
+.ponto__linhas h2 { font-size: 1.1rem; margin-bottom: .25rem; }
+.ponto__linhas-lista { display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; padding: 0; margin-top: .75rem; }
