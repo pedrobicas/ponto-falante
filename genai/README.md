@@ -14,10 +14,24 @@ O assistente tira dúvidas de passageiros de ônibus de São Paulo, sobretudo pe
 
 - Ele responde **só com base em documentos oficiais** (SPTrans e leis federais), **cita o trecho** usado e **recusa** quando a base não tem a resposta ("Não encontrei… ligue 156").
 - A resposta é curta porque é lida em voz alta pelo aplicativo.
-- Roda **100% local e gratuito**: Ollama + `qwen2.5:3b`, embeddings `multilingual-e5-large`, índice FAISS.
+- Roda **100% local e gratuito**: Ollama + `qwen2.5:7b` no site (o `qwen2.5:3b` da v1 continua reproduzível), embeddings `multilingual-e5-large`, índice FAISS.
 - O backend Spring Boot do MVP chama este serviço por HTTP (`POST /chat`).
 
 Relatório completo: [RELATORIO.md](RELATORIO.md) · Cinco erros reais: [avaliacao/erros.md](avaliacao/erros.md)
+
+## Resultado mais recente (teste final v3, 46 perguntas inéditas, rodado uma vez em 13/11/2026)
+
+Mesmo `qwen2.5:7b` em todas as configurações. Detalhes, ablações do DEV e 5 erros analisados na seção 12 do
+[RELATORIO.md](RELATORIO.md).
+
+| Configuração | Acerto | Recusa correta | Erros factuais por pergunta |
+|---|---|---|---|
+| Sem contexto | 8,7% | 15,4% | 34,8% |
+| RAG simples | 65,2% | 69,2% | 15,2% |
+| **Agente v1 (usado no site)** | **65,2%** | **84,6%** | **8,7%** |
+| Agente v3 | 58,7% | 76,9% | 13,0% |
+
+A v3 venceu no DEV (88,0%) mas não no teste: o agente v1 segue como padrão por errar menos.
 
 ## Resultado em uma tabela (teste final, 40 perguntas, rodado uma vez)
 
@@ -96,7 +110,7 @@ Variáveis de ambiente (todas opcionais):
 
 | Variável | Para que serve | Padrão |
 |---|---|---|
-| `PF_MODELO` | Modelo do Ollama | `qwen2.5:3b` |
+| `PF_MODELO` | Modelo do Ollama (o site usa `qwen2.5:7b`, definido em `scripts/genai/.env.local`) | `qwen2.5:3b` |
 | `OLLAMA_HOST` | Endereço do Ollama | `http://127.0.0.1:11434` |
 | `PF_EMBEDDINGS` | Modelo de embeddings | `intfloat/multilingual-e5-large` |
 | `PF_LIMIAR` | Limiar de similaridade | `0.86` |
