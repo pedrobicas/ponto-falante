@@ -24,10 +24,7 @@ final class ClienteGenai {
                 .build();
         JdkClientHttpRequestFactory fabrica = new JdkClientHttpRequestFactory(http);
         fabrica.setReadTimeout(Duration.ofMillis(readMs));
-        RestClient.Builder b = RestClient.builder().requestFactory(fabrica);
-        if (props.temGenai()) {
-            b.baseUrl(baseUrl(props));
-        }
-        return b.build();
+        // Sem baseUrl fixa: o endereço vem de EnderecoGenai a cada chamada (pode mudar com o túnel).
+        return RestClient.builder().requestFactory(fabrica).build();
     }
 }

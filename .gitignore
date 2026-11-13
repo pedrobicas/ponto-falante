@@ -52,3 +52,4 @@ Thumbs.db
 output/playwright/
 frontend/output/
 frontend/*.zip
+.execucao.lock
