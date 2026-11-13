@@ -28,7 +28,8 @@ def chamar(url: str, corpo: dict | None = None) -> tuple[int, dict, float]:
     req = urllib.request.Request(url, data=dados, method="POST" if dados else "GET",
                                  headers={"Content-Type": "application/json; charset=utf-8"})
     inicio = time.monotonic()
-    with urllib.request.urlopen(req, timeout=150) as r:
+    # URL do próprio MVP passada pela linha de comando e restrita a http(s) em main(); nunca vem de dado externo.
+    with urllib.request.urlopen(req, timeout=150) as r:  # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
         return r.status, json.loads(r.read().decode("utf-8")), time.monotonic() - inicio
 
 
@@ -37,6 +38,8 @@ def main() -> None:
     ap.add_argument("--url", default="https://ponto-falante.onrender.com")
     args = ap.parse_args()
     base = args.url.rstrip("/")
+    if not base.startswith(("https://", "http://127.0.0.1", "http://localhost")):
+        raise SystemExit("Use https:// (ou http://127.0.0.1 / http://localhost para o MVP local).")
     agora = datetime.now(timezone.utc)
     linhas = [f"Evidência coletada em {agora.isoformat(timespec='seconds')} (UTC) contra {base}", ""]
     codigo, status, _ = chamar(base + "/api/status")
