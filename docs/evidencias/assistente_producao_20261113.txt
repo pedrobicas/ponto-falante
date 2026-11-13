@@ -1,29 +1,29 @@
-Evidência coletada em 2026-11-13T12:48:38+00:00 (UTC) contra https://ponto-falante.onrender.com
+Evidência coletada em 2026-11-13T13:24:15+00:00 (UTC) contra https://ponto-falante.onrender.com
 
 GET /api/status -> HTTP 200
-{"versao": "1.0.0", "sptrans": "REAL", "assistente": "DISPONIVEL", "ultimo_boletim": "2026-11-11", "horario_servidor": "2026-11-13T09:51:56.05096474-03:00", "assistente_tempo_real": true}
+{"versao": "1.0.0", "sptrans": "REAL", "assistente": "DISPONIVEL", "ultimo_boletim": "2026-11-12", "horario_servidor": "2026-11-13T10:27:30.897052529-03:00", "assistente_tempo_real": true}
 
 [tempo real, sem ponto] Quando passa o próximo ônibus da linha 875A?
-  HTTP 200 em 0.7 s | origem=TEMPO_REAL | disponivel=True | nao_consta=False | confianca=alta
+  HTTP 200 em 1.1 s | origem=TEMPO_REAL | disponivel=True | nao_consta=False | confianca=alta
   resposta: Para dizer quando a linha 875A passa, preciso do ponto. Pergunte, por exemplo: quando passa a linha 875A no ponto Paulista?
   fontes: SPTrans Olho Vivo, tempo real
 
 [tempo real, com ponto] Quando passa a linha 875A no ponto Paulista?
-  HTTP 200 em 1.4 s | origem=TEMPO_REAL | disponivel=True | nao_consta=False | confianca=alta
-  resposta: Ponto Paulista B/C. Não há previsão para a linha 875A neste ponto agora.Encontrei também: Paulista C/B (código 260016855).
+  HTTP 200 em 1.5 s | origem=TEMPO_REAL | disponivel=True | nao_consta=False | confianca=alta
+  resposta: Ponto Paulista B/C. Não há previsão para a linha 875A neste ponto agora. Encontrei também: Paulista C/B (código 260016855).
   fontes: SPTrans Olho Vivo, tempo real
 
 [regra (base oficial)] Tenho 66 anos. Preciso pagar a passagem de ônibus em São Paulo?
-  HTTP 200 em 4.2 s | origem=BASE_OFICIAL | disponivel=True | nao_consta=False | confianca=alta
+  HTTP 200 em 26.0 s | origem=BASE_OFICIAL | disponivel=True | nao_consta=False | confianca=alta
   resposta: Não, você não precisa pagar a passagem de ônibus em São Paulo.
   fontes: Lei 10.741/2003 (Estatuto da Pessoa Idosa) · Do Transporte; Perguntas e Respostas SPTrans - Bilhete Único Especial da Pessoa Idosa (65+); Perguntas e Respostas SPTrans - Bilhete Único Especial da Pessoa Idosa (65+)
 
 [regra (base oficial)] Estudante paga meia no ônibus?
-  HTTP 200 em 4.7 s | origem=BASE_OFICIAL | disponivel=True | nao_consta=False | confianca=alta
+  HTTP 200 em 4.9 s | origem=BASE_OFICIAL | disponivel=True | nao_consta=False | confianca=alta
   resposta: Sim, o estudante paga meia no ônibus com o Bilhete Único de Estudante Meia-Tarifa.
   fontes: Perguntas e Respostas SPTrans - Bilhete Único de Estudante
 
 [fora da base] Posso levar meu cachorro no ônibus em Curitiba?
-  HTTP 200 em 1.7 s | origem=BASE_OFICIAL | disponivel=True | nao_consta=True | confianca=alta
+  HTTP 200 em 1.8 s | origem=BASE_OFICIAL | disponivel=True | nao_consta=True | confianca=alta
   resposta: Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156.
   fontes: nenhuma
