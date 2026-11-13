@@ -1,4 +1,6 @@
 # Robô RPA rodando todo dia às 06:00 (horário de Brasília) contra o MVP publicado.
+# Gera o boletim do dia anterior: ESTIMADO a partir das amostras reais gravadas pelo rpa-coleta.yml;
+# sem amostras, INDISPONÍVEL (ou SIMULADO só se o MVP estiver em modo demonstração).
 # Segredos do repositório (Settings → Secrets → Actions): MVP_URL (ex.: https://<app>.onrender.com/api), RPA_API_KEY.
 name: rpa-diario
 
@@ -13,6 +15,11 @@ on:
 
 permissions:
   contents: read
+  actions: read
+
+concurrency:
+  group: rpa-diario
+  cancel-in-progress: false
 
 jobs:
   robo:
@@ -30,6 +37,20 @@ jobs:
         run: |
           if [ -z "$MVP_URL" ] || [ -z "$RPA_API_KEY" ]; then
             echo "::error::Configure os segredos MVP_URL e RPA_API_KEY"; exit 1; fi
+      - name: Recuperar último boletim para contingência
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          anterior=$(gh run list --workflow rpa-diario.yml --branch "$GITHUB_REF_NAME" --status completed --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+          if [ -n "$anterior" ]; then
+            if ! gh run download "$anterior" --name "rpa-$anterior" --dir .previous-boletim; then
+              echo "::warning::Artefato anterior indisponível ou expirado; contingência começará sem boletim anterior."
+            fi
+            if [ -d .previous-boletim/saida ]; then
+              mkdir -p rpa/saida
+              cp -a .previous-boletim/saida/. rpa/saida/
+            fi
+          fi
       - name: Acordar o MVP (plano gratuito dorme após 15 min)
         env:
           MVP_URL: ${{ secrets.MVP_URL }}

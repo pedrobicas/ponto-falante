@@ -1,0 +1,2 @@
+configuracao,acerto_total,correto_respondiveis,incompleto,recusa_indevida,erro_factual_respondiveis,sem_fato,recusa_correta_nao_consta,tempo_real_recusado,erros_factuais_por_pergunta,erros_factuais_entre_emitidas,sem_citacao_entre_emitidas,citacao_pertinente,intencao_correta,falha_operacional,latencia_media_s,latencia_mediana_s,latencia_p90_s,n
+v3_7b,81.5% (88/108),78.8% (63/80),3.8% (3/80),8.8% (7/80),5.0% (4/80),3.8% (3/80),89.3% (25/28),100.0% (6/6),6.5% (7/108),9.3% (7/75),0.0% (0/75),97.2% (70/72),89.8% (97/108),0.0% (0/108),7.36,7.07,11.98,108

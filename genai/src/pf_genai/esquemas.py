@@ -41,3 +41,6 @@ class PerguntaChat(BaseModel):
 class RespostaChat(RespostaIA):
     modo: str | None = None
     latencia_ms: int | None = None
+    # Só no PF_MODO=v3: "regra" (respondeu pela base), "nao_consta" (recusou) ou "tempo_real" (pergunta de
+    # previsão/linhas agora: o backend deve responder pelos dados em tempo real). Omitido nos outros modos.
+    intencao: str | None = None

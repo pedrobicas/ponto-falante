@@ -12,15 +12,16 @@ it('assistente indisponivel aparece como estado amigavel e fontes como itens de 
   const fixture = TestBed.createComponent(Assistente);
   fixture.detectChanges();
   const el = fixture.nativeElement as HTMLElement;
-  expect(el.querySelector('h1')?.textContent).toContain('Assistente');
+  expect(el.querySelector('h1')?.textContent).toContain('Como posso ajudar?');
   expect(el.querySelectorAll('.sugestoes .chip').length).toBeGreaterThan(0);
   (fixture.componentInstance as unknown as { texto: string }).texto = 'Tenho direito a gratuidade?';
   const http = TestBed.inject(HttpTestingController);
   const envio = (fixture.componentInstance as unknown as { enviar(): Promise<void> }).enviar();
+  http.match('/api/status').forEach((r) => r.flush({ sptrans: 'DEMO', assistente: 'INDISPONIVEL' }));
   http.expectOne('/api/chat').flush({ resposta: '', fontes: [], confianca: 'baixa', nao_consta: true, disponivel: false });
   await envio;
   fixture.detectChanges();
-  expect(el.textContent).toContain('descansando');
+  expect(el.textContent).toContain('fora do ar');
   expect(el.textContent).toContain('O resto do aplicativo continua funcionando');
   const resultado = await axe.run(el, { rules: { 'color-contrast': { enabled: false }, region: { enabled: false } } });
   expect(resultado.violations.map((v) => v.id)).toEqual([]);
@@ -44,7 +45,7 @@ it('boletim simulado mostra selo textual e totais por situacao com icone e texto
   await fixture.whenStable();
   fixture.detectChanges();
   const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
-  expect(texto).toContain('Dados simulados');
+  expect(texto).toContain('SIMULADO');
   expect(texto).toContain('Atraso forte');
   expect(texto).toContain('com atraso forte');
   fixture.destroy();

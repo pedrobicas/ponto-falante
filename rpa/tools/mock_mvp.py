@@ -120,3 +120,59 @@ def obter_boletim() -> dict:
 def alternar_falha(ativo: bool = True) -> dict:
     estado["falha"] = ativo
     return {"falha": ativo}
+
+
+# ---------------------------------------------------------------------------
+# Amostras reais de previsão (imita /api/status, /api/pontos/{codigo}/previsoes e /api/rpa/amostras).
+# Nos testes, estado["modo"] = "REAL" e estado["previsoes"] recebe respostas no formato do Spring.
+# ---------------------------------------------------------------------------
+estado.update({"modo": "DEMO", "amostras": [], "previsoes": {}, "falha_previsoes": set(), "sem_amostras_api": False})
+
+
+@app.get("/status")
+def status() -> dict:
+    return {"versao": "mock", "sptrans": estado["modo"]}
+
+
+@app.get("/pontos/{codigo}/previsoes")
+def previsoes(codigo: str) -> dict:
+    if estado["falha"] or codigo in estado["falha_previsoes"]:
+        raise HTTPException(500, "gateway da SPTrans com erro")
+    if codigo not in estado["previsoes"]:
+        raise HTTPException(404, "Não encontramos esse ponto de ônibus.")
+    return estado["previsoes"][codigo]
+
+
+@app.get("/rpa/amostras")
+def listar_amostras(data: str = Query(..., pattern=r"^\d{4}-\d{2}-\d{2}$")) -> list[dict]:
+    if estado["sem_amostras_api"]:
+        raise HTTPException(404, "rota inexistente (backend antigo)")
+    if estado["falha"]:
+        raise HTTPException(503, "MVP simulando indisponibilidade")
+    return [a for a in estado["amostras"] if a["consultado_em"].startswith(data)]
+
+
+@app.post("/rpa/amostras")
+def receber_amostras(corpo: dict, x_api_key: str | None = Header(default=None)) -> dict:
+    chave = os.environ.get("MOCK_API_KEY")
+    if chave and x_api_key != chave:
+        raise HTTPException(401, "chave inválida")
+    if estado["falha"]:
+        raise HTTPException(503, "MVP simulando indisponibilidade")
+    gravadas, duplicadas, rejeitadas = 0, 0, []
+    vistos = {(a["ponto"], a["consultado_em"]) for a in estado["amostras"]}
+    for i, a in enumerate(corpo.get("amostras", [])):
+        if a.get("fonte") != "OLHO_VIVO":
+            rejeitadas.append({"indice": i, "motivo": "fonte_simulada"})
+            continue
+        if (a["ponto"], a["consultado_em"]) in vistos:
+            duplicadas += 1
+            continue
+        vistos.add((a["ponto"], a["consultado_em"]))
+        estado["amostras"].append({"ponto": a["ponto"], "consultado_em": a["consultado_em"],
+                                   "horario_referencia": a.get("horario_referencia"), "fonte": "olhovivo",
+                                   "tipo_registro": "AMOSTRA_PREVISAO", "total_onibus": len(a["onibus"]),
+                                   "onibus": a["onibus"]})
+        gravadas += 1
+    return {"recebidas": len(corpo.get("amostras", [])), "gravadas": gravadas, "duplicadas": duplicadas,
+            "rejeitadas": rejeitadas}

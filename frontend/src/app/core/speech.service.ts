@@ -8,6 +8,12 @@ export class ErroVoz extends Error {
   }
 }
 
+export interface VozDisponivel {
+  uri: string;
+  nome: string;
+  idioma: string;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Livre = any;
 
@@ -19,7 +25,31 @@ export class SpeechService {
 
   readonly falando = signal(false);
   readonly ouvindo = signal(false);
+  /** Vozes em português disponíveis no aparelho (carregam de forma assíncrona em alguns navegadores). */
+  readonly vozes = signal<VozDisponivel[]>([]);
   private reconhecimento: Livre = null;
+
+  constructor() {
+    this.carregarVozes();
+    try {
+      this.win?.speechSynthesis?.addEventListener?.('voiceschanged', () => this.carregarVozes());
+    } catch {
+      /* ignora */
+    }
+  }
+
+  private carregarVozes(): void {
+    try {
+      const todas: Livre[] = this.win?.speechSynthesis?.getVoices?.() ?? [];
+      this.vozes.set(
+        todas
+          .filter((v) => v.lang?.toLowerCase().startsWith('pt'))
+          .map((v) => ({ uri: String(v.voiceURI ?? v.name), nome: String(v.name ?? v.voiceURI), idioma: String(v.lang) })),
+      );
+    } catch {
+      this.vozes.set([]);
+    }
+  }
 
   get suportaSintese(): boolean {
     return !!this.win?.speechSynthesis && typeof this.win.SpeechSynthesisUtterance === 'function';
@@ -65,7 +95,9 @@ export class SpeechService {
   private escolherVoz(): Livre {
     try {
       const vozes: Livre[] = this.win.speechSynthesis.getVoices?.() ?? [];
+      const escolhida = this.prefs.prefs().voz;
       return (
+        (escolhida ? vozes.find((v) => (v.voiceURI ?? v.name) === escolhida) : null) ??
         vozes.find((v) => v.lang?.toLowerCase().replace('_', '-') === 'pt-br') ??
         vozes.find((v) => v.lang?.toLowerCase().startsWith('pt')) ??
         null

@@ -9,6 +9,8 @@ export interface Status {
   assistente: 'DISPONIVEL' | 'INDISPONIVEL';
   ultimo_boletim?: string | null;
   horario_servidor?: string;
+  /** true quando o assistente responde horários em tempo real mesmo com a IA local fora do ar. */
+  assistente_tempo_real?: boolean;
 }
 
 export interface Ponto {
@@ -23,6 +25,21 @@ export interface Ponto {
 export interface BuscaPontos {
   fonte: Fonte;
   pontos: Ponto[];
+}
+
+export interface Linha {
+  codigo?: number | null;
+  letreiro: string;
+  sentido?: number | null;
+  terminal_principal?: string | null;
+  terminal_secundario?: string | null;
+  destino?: string | null;
+  circular?: boolean;
+}
+
+export interface BuscaLinhas {
+  fonte: Fonte;
+  linhas: Linha[];
 }
 
 export interface OnibusPrevisto {
@@ -61,11 +78,28 @@ export interface RespostaChat {
   nao_consta: boolean;
   disponivel: boolean;
   latencia_ms?: number;
+  /** TEMPO_REAL (dados da SPTrans pelo backend), BASE_OFICIAL (IA local com fontes oficiais) ou INDISPONIVEL. */
+  origem?: OrigemResposta | null;
+  dados_simulados?: boolean;
+}
+
+export type OrigemResposta = 'TEMPO_REAL' | 'BASE_OFICIAL' | 'INDISPONIVEL';
+
+/** Origem efetiva: sem o campo, vale BASE_OFICIAL quando disponível e INDISPONIVEL quando não. */
+export function origemDaResposta(r: Pick<RespostaChat, 'origem' | 'disponivel'>): OrigemResposta {
+  if (r.origem === 'TEMPO_REAL' || r.origem === 'BASE_OFICIAL' || r.origem === 'INDISPONIVEL') return r.origem;
+  return r.disponivel ? 'BASE_OFICIAL' : 'INDISPONIVEL';
 }
 
 export type StatusLinha = 'CRITICA' | 'ATENCAO' | 'OK' | 'SEM_DADOS';
+export type NaturezaDados = 'ESTIMADO' | 'SIMULADO' | 'INDISPONIVEL';
 
 export interface LinhaBoletim {
+  classificacao?: NaturezaDados;
+  espera_tipica_min?: number | null;
+  maior_espera_prevista_min?: number | null;
+  proximo_onibus_mediana_min?: number | null;
+  amostras?: number;
   linha: string;
   status: StatusLinha;
   rotulo?: string;
@@ -79,11 +113,24 @@ export interface LinhaBoletim {
 }
 
 export interface Boletim {
+  natureza_dados?: NaturezaDados;
+  metodo?: string;
+  ultima_atualizacao?: string;
+  periodo_referencia?: { inicio?: string | null; fim?: string | null; fuso?: string };
+  amostragem?: {
+    consultas_validas?: number;
+    consultas_esperadas?: number | null;
+    cobertura_pct?: number | null;
+    pontos_com_amostra?: string[];
+    descricao?: string;
+  };
   data_referencia: string;
   gerado_em: string;
   desatualizado: boolean;
   motivo_desatualizado?: string | null;
   dados_simulados?: boolean;
+  fonte_dados?: Record<string, number> | null;
+  estatisticas?: Record<string, number> | null;
   rede?: string | null;
   linhas: LinhaBoletim[];
   resumo_falado: string;
@@ -94,6 +141,7 @@ export interface Boletim {
 }
 
 export interface BoletimResumo {
+  natureza_dados?: NaturezaDados;
   data_referencia: string;
   desatualizado: boolean;
   dados_simulados?: boolean;

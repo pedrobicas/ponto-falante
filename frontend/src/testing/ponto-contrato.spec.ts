@@ -24,7 +24,9 @@ it('apresenta horario estimado sem afirmar chegada ou atribuir simulacao a SPTra
   const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
   fixture.destroy();
   http.verify();
-  expect(texto).toContain('Previsto agora');
+  expect(texto).toContain('previsto para agora');
+  expect(texto).toContain('SIMULADO');
+  expect(texto).not.toMatch(/cheg/i);
   expect(texto).not.toContain('Chegando');
   expect(texto).toContain('horários simulados');
 });

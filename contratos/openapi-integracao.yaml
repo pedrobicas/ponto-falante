@@ -47,6 +47,27 @@ paths:
                 type: array
                 items: {$ref: '#/components/schemas/Passagem'}
 
+  /rpa/amostras:
+    get:
+      summary: NOVO · Amostras reais de previsão gravadas pelo coletor num dia (o robô lê para o boletim ESTIMADO)
+      parameters:
+        - {name: data, in: query, required: true, schema: {type: string, format: date}}
+      responses:
+        "200": {description: "Lista de AmostraPrevisao (ver openapi-mvp.yaml)"}
+        "404": {description: "Backend antigo sem a rota: o robô trata como zero amostras e avisa no boletim"}
+    post:
+      summary: NOVO · Coletor (python -m pf_rpa.coletor) envia amostras reais (X-API-Key = RPA_API_KEY)
+      parameters:
+        - {name: X-API-Key, in: header, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, description: "EnvioAmostras (ver openapi-mvp.yaml)"}
+      responses:
+        "200": {description: "ResultadoEnvioAmostras: recebidas, gravadas, duplicadas, rejeitadas[{indice, motivo}]"}
+        "401": {description: Chave ausente ou inválida}
+
   /boletim:
     get:
       summary: Último boletim de atrasos publicado pelo robô (Angular consome)
@@ -114,8 +135,14 @@ components:
 
     Boletim:
       type: object
-      required: [data_referencia, gerado_em, desatualizado, linhas, resumo_falado]
+      description: "Esquema completo, com natureza_dados ESTIMADO/SIMULADO/INDISPONIVEL e campos NOVOS, em openapi-mvp.yaml"
+      required: [data_referencia, gerado_em, desatualizado, linhas, resumo_falado, dados_simulados, fonte_dados]
       properties:
+        natureza_dados: {type: string, nullable: true, enum: [ESTIMADO, SIMULADO, INDISPONIVEL], description: NOVO}
+        metodo: {type: string, nullable: true, description: NOVO}
+        periodo_referencia: {type: object, description: "NOVO: data, inicio, fim, fuso"}
+        ultima_atualizacao: {type: string, format: date-time, nullable: true, description: NOVO}
+        amostragem: {type: object, description: "NOVO (ESTIMADO): fatos VERIFICADOS da coleta"}
         data_referencia: {type: string, format: date}
         gerado_em: {type: string, format: date-time}
         desatualizado: {type: boolean}
@@ -126,7 +153,7 @@ components:
             olhovivo: {type: integer}
             simulador: {type: integer}
         dados_simulados: {type: boolean}
-        rede: {type: string, nullable: true, enum: [gtfs_sptrans, rede_ficticia]}
+        rede: {type: string, nullable: true, enum: [sptrans_olhovivo, gtfs_sptrans, rede_ficticia]}
         parametros: {type: object, additionalProperties: {type: number}}
         estatisticas:
           type: object
@@ -145,7 +172,15 @@ components:
               linha: {type: string}
               status: {type: string, enum: [CRITICA, ATENCAO, OK, SEM_DADOS]}
               rotulo: {type: string}
-              atraso_medio_min: {type: number, nullable: true}
+              classificacao: {type: string, nullable: true, enum: [ESTIMADO, SIMULADO, INDISPONIVEL], description: NOVO}
+              atraso_medio_min: {type: number, nullable: true, description: "sempre null no ESTIMADO"}
+              espera_tipica_min: {type: number, nullable: true, description: "NOVO (ESTIMADO)"}
+              maior_espera_prevista_min: {type: integer, nullable: true, description: "NOVO (ESTIMADO)"}
+              proximo_onibus_mediana_min: {type: number, nullable: true, description: "NOVO (ESTIMADO)"}
+              sem_previsao_pct: {type: number, nullable: true, description: "NOVO (ESTIMADO)"}
+              amostras: {type: integer, description: "NOVO (ESTIMADO)"}
+              amostras_com_previsao: {type: integer, description: "NOVO (ESTIMADO)"}
+              pontos: {type: array, items: {type: string}, description: "NOVO (ESTIMADO)"}
               intervalo_max_min: {type: integer, nullable: true}
               passagens: {type: integer}
               acessiveis_pct: {type: number, nullable: true}

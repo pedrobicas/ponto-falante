@@ -129,12 +129,53 @@ paths:
               schema: {type: array, items: {$ref: '#/components/schemas/Passagem'}}
           description: Lista no formato do contrato openapi-integracao.yaml (campos em snake_case)
 
+  /api/rpa/amostras:
+    get:
+      tags: [rpa]
+      summary: Amostras REAIS de previsão gravadas pelo coletor do robô num dia (consumido pelo boletim)
+      description: |
+        Uma amostra = uma consulta do coletor a um ponto monitorado (o que a SPTrans previa naquele instante).
+        Previsão não é chegada nem atraso. Público, como /api/historico; veículo anonimizado. Até 2000 por dia.
+      parameters:
+        - {name: data, in: query, required: true, schema: {type: string, format: date}, description: "Data em São Paulo"}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {type: array, items: {$ref: '#/components/schemas/AmostraPrevisao'}}
+          description: Amostras ordenadas por consultado_em
+        "400": {description: Data fora do intervalo aceito}
+    post:
+      tags: [rpa]
+      summary: Coletor do robô envia amostras reais de previsão (idempotente por ponto + consultado_em)
+      description: |
+        Cada amostra é avaliada sozinha: as válidas são gravadas, as outras voltam em `rejeitadas` com o motivo
+        (fonte_simulada, fonte_desconhecida, ponto_invalido, consultado_em_invalido, fora_da_janela,
+        horario_referencia_invalido, onibus_invalido, formato_invalido). Só aceita fonte OLHO_VIVO/olhovivo;
+        consultado_em nas últimas 48 h e no máximo 5 min no futuro. Chave conferida antes de ler o corpo.
+      parameters:
+        - {name: X-API-Key, in: header, required: true, schema: {type: string}, description: RPA_API_KEY}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/EnvioAmostras'}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ResultadoEnvioAmostras'}
+          description: Resultado por amostra
+        "400": {description: Corpo sem lista amostras, lista vazia ou com mais de 60 itens, execucao_id inválido}
+        "401": {description: Chave ausente ou inválida}
+        "503": {description: RPA_API_KEY não configurada no servidor}
+
   /api/boletim:
     get:
       tags: [rpa]
       summary: Último boletim publicado pelo robô
       responses:
-        "200": {description: Conteúdo do boletim (schema Boletim de openapi-integracao.yaml) + recebido_em}
+        "200": {description: "Conteúdo do boletim (schema Boletim abaixo e em openapi-integracao.yaml) + recebido_em", content: {application/json: {schema: {$ref: '#/components/schemas/Boletim'}}}}
         "404": {description: Nenhum boletim ainda}
     post:
       tags: [rpa]
@@ -145,10 +186,10 @@ paths:
         required: true
         content:
           application/json:
-            schema: {type: object, description: "Boletim (openapi-integracao.yaml)", required: [data_referencia, gerado_em, desatualizado, linhas, resumo_falado]}
+            schema: {$ref: '#/components/schemas/Boletim'}
       responses:
         "201": {description: Gravado}
-        "400": {description: JSON inválido ou campos obrigatórios ausentes}
+        "400": {description: "JSON inválido, campos obrigatórios ausentes ou proveniência incoerente (dados_simulados x fonte_dados, natureza_dados x fonte_dados, linhas[].classificacao, linha ESTIMADO com atraso_medio_min)"}
         "401": {description: Chave ausente ou inválida}
 
   /api/boletim/{data}:
@@ -180,6 +221,7 @@ paths:
                     criticas: {type: integer}
                     atencao: {type: integer}
                     recebido_em: {type: string, format: date-time}
+                    natureza_dados: {type: string, nullable: true, enum: [ESTIMADO, SIMULADO, INDISPONIVEL], description: "NOVO; null em boletins antigos"}
           description: ok
 
   # ---------- Contratos para as outras disciplinas ----------
@@ -368,6 +410,144 @@ components:
         fonte: {type: string, enum: [olhovivo, simulador]}
         tipo_registro: {type: string, enum: [SIMULADA, INFERIDA_DA_PREVISAO], description: "INFERIDA = veículo com previsão de 0-1 min que sumiu da previsão seguinte; não é chegada medida por sensor"}
         atualizado_em: {type: string, format: date-time}
+
+    OnibusAmostra:
+      type: object
+      required: [linha, previsto_em, minutos]
+      properties:
+        linha: {type: string, example: "8700-10", description: "letreiro da SPTrans (no envio também aceito como letreiro)"}
+        sentido: {oneOf: [{type: integer}, {type: string}]}
+        destino: {type: string}
+        previsto_em: {type: string, pattern: '^\d{2}:\d{2}$', description: "horário PREVISTO pela SPTrans; não é chegada"}
+        minutos: {type: integer, minimum: 0, maximum: 240}
+        acessivel: {type: boolean}
+        veiculo: {type: string, description: hash do prefixo (anonimizado)}
+
+    AmostraPrevisao:
+      type: object
+      properties:
+        ponto: {type: string, example: "260015039"}
+        consultado_em: {type: string, format: date-time, description: "instante da consulta à SPTrans (segundos, fuso de São Paulo)"}
+        horario_referencia: {type: string, nullable: true, example: "10:00"}
+        fonte: {type: string, enum: [olhovivo]}
+        tipo_registro: {type: string, enum: [AMOSTRA_PREVISAO]}
+        total_onibus: {type: integer}
+        onibus: {type: array, items: {$ref: '#/components/schemas/OnibusAmostra'}}
+
+    EnvioAmostras:
+      type: object
+      required: [amostras]
+      properties:
+        execucao_id: {type: string, maxLength: 64, example: "coleta-20261112T070001"}
+        amostras:
+          type: array
+          minItems: 1
+          maxItems: 60
+          items:
+            type: object
+            required: [ponto, consultado_em, fonte, onibus]
+            properties:
+              ponto: {oneOf: [{type: string}, {type: integer}]}
+              consultado_em: {type: string, format: date-time}
+              horario_referencia: {type: string, nullable: true}
+              fonte: {type: string, enum: [OLHO_VIVO, olhovivo]}
+              tipo: {type: string, enum: [PREVISAO]}
+              onibus: {type: array, maxItems: 200, items: {$ref: '#/components/schemas/OnibusAmostra'}}
+
+    ResultadoEnvioAmostras:
+      type: object
+      properties:
+        recebidas: {type: integer}
+        gravadas: {type: integer}
+        duplicadas: {type: integer}
+        rejeitadas:
+          type: array
+          items:
+            type: object
+            properties:
+              indice: {type: integer}
+              motivo: {type: string}
+
+    LinhaBoletim:
+      type: object
+      required: [linha, status, frase]
+      properties:
+        linha: {type: string}
+        status: {type: string, enum: [CRITICA, ATENCAO, OK, SEM_DADOS]}
+        rotulo: {type: string, description: "ESTIMADO: 'Espera longa (estimada)', 'Espera acima do normal (estimada)', 'Espera normal (estimada)'; SIMULADO: '... (simulado)'"}
+        classificacao: {type: string, nullable: true, enum: [ESTIMADO, SIMULADO, INDISPONIVEL], description: "NOVO. INDISPONIVEL sempre com status SEM_DADOS"}
+        atraso_medio_min: {type: number, nullable: true, description: "Só no SIMULADO. Sempre null no ESTIMADO: previsão não mede atraso"}
+        intervalo_max_min: {type: integer, nullable: true, description: "ESTIMADO: igual a maior_espera_prevista_min"}
+        espera_tipica_min: {type: number, nullable: true, description: "NOVO (ESTIMADO): mediana da maior espera prevista por consulta"}
+        maior_espera_prevista_min: {type: integer, nullable: true, description: "NOVO (ESTIMADO)"}
+        proximo_onibus_mediana_min: {type: number, nullable: true, description: "NOVO (ESTIMADO): mediana dos minutos até o próximo ônibus"}
+        sem_previsao_pct: {type: number, nullable: true, description: "NOVO (ESTIMADO): % das consultas sem ônibus da linha previsto"}
+        amostras: {type: integer, description: "NOVO (ESTIMADO): consultas nos pontos onde a linha apareceu"}
+        amostras_com_previsao: {type: integer, description: "NOVO (ESTIMADO)"}
+        pontos: {type: array, items: {type: string}, description: "NOVO (ESTIMADO)"}
+        passagens: {type: integer, description: "Só no SIMULADO"}
+        acessiveis_pct: {type: number, nullable: true}
+        fontes: {type: array, items: {type: string, enum: [olhovivo, simulador]}}
+        motivo: {type: string}
+        frase: {type: string, description: frase pronta para leitura em voz}
+
+    Boletim:
+      type: object
+      required: [data_referencia, gerado_em, desatualizado, linhas, resumo_falado, dados_simulados, fonte_dados]
+      description: |
+        natureza_dados (NOVO) diz o que o boletim é, sem misturar categorias:
+        ESTIMADO = calculado de amostras REAIS de previsão da SPTrans (espera prevista, nunca atraso);
+        SIMULADO = histórico de demonstração (só com o MVP em modo demonstração e sem amostra real);
+        INDISPONIVEL = sem dados suficientes. O bloco amostragem traz os fatos VERIFICADOS da coleta.
+        Ausente em boletins antigos. O backend rejeita combinações incoerentes.
+      properties:
+        data_referencia: {type: string, format: date}
+        gerado_em: {type: string, format: date-time}
+        desatualizado: {type: boolean}
+        motivo_desatualizado: {type: string, nullable: true}
+        marcado_desatualizado_em: {type: string, format: date-time}
+        natureza_dados: {type: string, nullable: true, enum: [ESTIMADO, SIMULADO, INDISPONIVEL]}
+        metodo: {type: string, nullable: true, description: "NOVO: explicação curta do método, pronta para exibir"}
+        periodo_referencia:
+          type: object
+          description: NOVO
+          properties:
+            data: {type: string, format: date}
+            inicio: {type: string, nullable: true, example: "07:00", description: "primeira consulta (ESTIMADO)"}
+            fim: {type: string, nullable: true, example: "21:00", description: "última consulta (ESTIMADO)"}
+            fuso: {type: string, example: America/Sao_Paulo}
+        ultima_atualizacao: {type: string, format: date-time, nullable: true, description: "NOVO: última consulta real (ESTIMADO) ou geração"}
+        fonte_dados:
+          type: object
+          description: "Contagem por origem. ESTIMADO: consultas reais válidas; SIMULADO: registros simulados"
+          properties:
+            olhovivo: {type: integer}
+            simulador: {type: integer}
+        dados_simulados: {type: boolean}
+        rede: {type: string, nullable: true, enum: [sptrans_olhovivo, gtfs_sptrans, rede_ficticia]}
+        amostragem:
+          type: object
+          description: "NOVO (ESTIMADO): fatos VERIFICADOS da coleta"
+          properties:
+            classificacao: {type: string, enum: [VERIFICADO]}
+            descricao: {type: string}
+            pontos_monitorados: {type: array, items: {type: string}}
+            pontos_com_amostra: {type: array, items: {type: string}}
+            consultas_validas: {type: integer}
+            consultas_esperadas: {type: integer, nullable: true}
+            cobertura_pct: {type: number, nullable: true}
+            primeira_consulta: {type: string, format: date-time}
+            ultima_consulta: {type: string, format: date-time}
+            onibus_previstos: {type: integer}
+        parametros: {type: object, additionalProperties: {type: number}}
+        estatisticas: {type: object, additionalProperties: {type: integer}, description: "recebidos, validos, invalidos, duplicados, fora_escopo; ESTIMADO também fora_periodo, onibus_descartados, linhas_avaliadas, linhas_poucas_amostras"}
+        invalidos_por_motivo: {type: object, additionalProperties: {type: integer}}
+        linhas: {type: array, items: {$ref: '#/components/schemas/LinhaBoletim'}}
+        avisos: {type: array, items: {type: string}}
+        resumo_falado: {type: string}
+        html: {type: string, description: "fragmento HTML acessível (já escapado); o Angular não usa com innerHTML"}
+        revisao_humana: {type: string}
+        recebido_em: {type: string, format: date-time, description: "só no GET"}
 
     DeteccaoVisao:
       type: object

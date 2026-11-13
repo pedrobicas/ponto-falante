@@ -1,19 +1,14 @@
 import { Component, input } from '@angular/core';
 import { Fonte } from '../core/models';
-import { Selo } from './selo';
+import { Origem } from './origem';
 
-/** Mostra de onde vêm os dados. SIMULADO sempre vira "Dados de demonstração". */
+/** Origem dos dados de transporte: SIMULADO nunca aparece como dado da SPTrans. */
 @Component({
   selector: 'pf-selo-fonte',
-  imports: [Selo],
-  template: `
-    @if (fonte() === 'SIMULADO') {
-      <pf-selo tom="aviso" icone="frasco">Dados de demonstração</pf-selo>
-    } @else {
-      <pf-selo tom="ok" icone="certo-circulo">Dados da SPTrans</pf-selo>
-    }
-  `,
+  imports: [Origem],
+  template: `<pf-origem [tipo]="fonte() === 'SIMULADO' ? 'simulado' : 'real'" [forte]="forte()" />`,
 })
 export class SeloFonte {
   readonly fonte = input.required<Fonte>();
+  readonly forte = input(false);
 }

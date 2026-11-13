@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class BoletimService {
@@ -89,7 +90,71 @@ public class BoletimService {
         if (flag.asBoolean() != (simulador > 0)) {
             throw ErroApi.requisicaoInvalida("dados_simulados contradiz fonte_dados.simulador.");
         }
+        validarNatureza(corpo, olhovivo, simulador);
         return flag.asBoolean();
+    }
+
+    static final Set<String> NATUREZAS = Set.of("ESTIMADO", "SIMULADO", "INDISPONIVEL");
+
+    /**
+     * Categorias de honestidade (opcionais, para manter compatível o boletim antigo): natureza_dados no boletim e
+     * classificacao em cada linha. ESTIMADO = calculado a partir de amostras reais de previsão da SPTrans; SIMULADO =
+     * histórico de demonstração; INDISPONIVEL = sem dados suficientes. Uma previsão não é evidência de atraso, então
+     * linha ESTIMADO não pode trazer atraso_medio_min.
+     */
+    private static void validarNatureza(JsonNode corpo, long olhovivo, long simulador) {
+        JsonNode natureza = corpo.path("natureza_dados");
+        if (!natureza.isMissingNode() && !natureza.isNull()) {
+            String n = natureza.asText("");
+            if (!natureza.isTextual() || !NATUREZAS.contains(n)) {
+                throw ErroApi.requisicaoInvalida("natureza_dados deve ser ESTIMADO, SIMULADO ou INDISPONIVEL.");
+            }
+            boolean coerente = switch (n) {
+                case "ESTIMADO" -> olhovivo > 0 && simulador == 0;
+                case "SIMULADO" -> simulador > 0 && olhovivo == 0;
+                default -> olhovivo == 0 && simulador == 0;
+            };
+            if (!coerente) {
+                throw ErroApi.requisicaoInvalida("natureza_dados contradiz fonte_dados.");
+            }
+        }
+        for (JsonNode linha : corpo.path("linhas")) {
+            JsonNode c = linha.path("classificacao");
+            if (c.isMissingNode() || c.isNull()) {
+                continue;
+            }
+            String cl = c.asText("");
+            if (!c.isTextual() || !NATUREZAS.contains(cl)) {
+                throw ErroApi.requisicaoInvalida("linhas[].classificacao deve ser ESTIMADO, SIMULADO ou INDISPONIVEL.");
+            }
+            switch (cl) {
+                case "ESTIMADO" -> {
+                    if (olhovivo == 0) {
+                        throw ErroApi.requisicaoInvalida("Linha ESTIMADO exige amostras reais em fonte_dados.olhovivo.");
+                    }
+                    for (JsonNode f : linha.path("fontes")) {
+                        if (!"olhovivo".equals(f.asText())) {
+                            throw ErroApi.requisicaoInvalida("Linha ESTIMADO só pode citar a fonte olhovivo.");
+                        }
+                    }
+                    JsonNode atraso = linha.path("atraso_medio_min");
+                    if (!atraso.isMissingNode() && !atraso.isNull()) {
+                        throw ErroApi.requisicaoInvalida(
+                                "Linha ESTIMADO não pode trazer atraso_medio_min: previsão não é atraso medido.");
+                    }
+                }
+                case "SIMULADO" -> {
+                    if (simulador == 0) {
+                        throw ErroApi.requisicaoInvalida("Linha SIMULADO exige registros em fonte_dados.simulador.");
+                    }
+                }
+                default -> {
+                    if (!"SEM_DADOS".equals(linha.path("status").asText())) {
+                        throw ErroApi.requisicaoInvalida("Linha INDISPONIVEL deve ter status SEM_DADOS.");
+                    }
+                }
+            }
+        }
     }
 
     private static long contagem(JsonNode fontes, String campo) {
@@ -133,16 +198,20 @@ public class BoletimService {
         return repo.findFirstByOrderByDataReferenciaDesc().map(b -> b.dataReferencia).orElse(null);
     }
 
+    /** naturezaDados: ESTIMADO, SIMULADO, INDISPONIVEL ou null (boletim anterior à classificação). */
     public record Resumo(LocalDate dataReferencia, boolean desatualizado, boolean dadosSimulados, int criticas,
-                         int atencao, OffsetDateTime recebidoEm) {
+                         int atencao, OffsetDateTime recebidoEm, String naturezaDados) {
     }
 
     public List<Resumo> resumos() {
         return repo.findTop30ByOrderByDataReferenciaDesc().stream().map(b -> {
             int criticas = 0;
             int atencao = 0;
+            String natureza = null;
             try {
-                for (JsonNode l : mapper.readTree(b.conteudo).path("linhas")) {
+                JsonNode conteudo = mapper.readTree(b.conteudo);
+                natureza = conteudo.path("natureza_dados").isTextual() ? conteudo.path("natureza_dados").asText() : null;
+                for (JsonNode l : conteudo.path("linhas")) {
                     String status = l.path("status").asText("");
                     if ("CRITICA".equals(status)) {
                         criticas++;
@@ -154,7 +223,7 @@ public class BoletimService {
                 // conteúdo ilegível: conta zero
             }
             return new Resumo(b.dataReferencia, b.desatualizado, b.dadosSimulados, criticas, atencao,
-                    b.recebidoEm.atZoneSameInstant(ConfigWeb.SAO_PAULO).toOffsetDateTime());
+                    b.recebidoEm.atZoneSameInstant(ConfigWeb.SAO_PAULO).toOffsetDateTime(), natureza);
         }).toList();
     }
 

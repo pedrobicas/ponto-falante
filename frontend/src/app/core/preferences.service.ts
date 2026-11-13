@@ -2,29 +2,41 @@ import { DOCUMENT } from '@angular/common';
 import { Injectable, inject, signal } from '@angular/core';
 import { gravarJson, lerJson } from './storage';
 
-export type TamanhoFonte = 'normal' | 'grande' | 'muito-grande';
-export type Tema = 'auto' | 'alto-escuro' | 'alto-claro';
+export type TamanhoFonte = 'normal' | 'grande' | 'muito-grande' | 'maximo';
+export type Tema = 'auto' | 'claro' | 'escuro' | 'alto-claro' | 'alto-escuro';
 
 export interface Preferencias {
   tamanhoFonte: TamanhoFonte;
   tema: Tema;
   velocidadeVoz: number;
+  /** voiceURI escolhida; vazio = primeira voz em português do aparelho. */
+  voz: string;
   anunciarAuto: boolean;
   lerRespostaAuto: boolean;
   reduzirMovimento: boolean;
+  /** Mais espaço entre letras, palavras e linhas (WCAG 1.4.12). */
+  espacamento: boolean;
 }
 
 export const PADRAO: Preferencias = {
   tamanhoFonte: 'normal',
   tema: 'auto',
   velocidadeVoz: 0.9,
+  voz: '',
   anunciarAuto: false,
   lerRespostaAuto: false,
   reduzirMovimento: false,
+  espacamento: false,
 };
 
 const CHAVE = 'pf.preferencias';
-const ESCALAS: Record<TamanhoFonte, string> = { normal: '1', grande: '1.2', 'muito-grande': '1.45' };
+export const ESCALAS: Record<TamanhoFonte, string> = {
+  normal: '1',
+  grande: '1.2',
+  'muito-grande': '1.45',
+  maximo: '1.75',
+};
+const TEMAS: Tema[] = ['auto', 'claro', 'escuro', 'alto-claro', 'alto-escuro'];
 
 @Injectable({ providedIn: 'root' })
 export class PreferencesService {
@@ -55,11 +67,13 @@ export class PreferencesService {
     const v = Number(p.velocidadeVoz);
     return {
       tamanhoFonte: p.tamanhoFonte in ESCALAS ? p.tamanhoFonte : PADRAO.tamanhoFonte,
-      tema: ['auto', 'alto-escuro', 'alto-claro'].includes(p.tema) ? p.tema : PADRAO.tema,
-      velocidadeVoz: Number.isFinite(v) ? Math.min(1.4, Math.max(0.5, v)) : PADRAO.velocidadeVoz,
+      tema: TEMAS.includes(p.tema) ? p.tema : PADRAO.tema,
+      velocidadeVoz: Number.isFinite(v) ? Math.min(1.4, Math.max(0.5, Math.round(v * 10) / 10)) : PADRAO.velocidadeVoz,
+      voz: typeof p.voz === 'string' ? p.voz.slice(0, 200) : '',
       anunciarAuto: !!p.anunciarAuto,
       lerRespostaAuto: !!p.lerRespostaAuto,
       reduzirMovimento: !!p.reduzirMovimento,
+      espacamento: !!p.espacamento,
     };
   }
 
@@ -69,7 +83,12 @@ export class PreferencesService {
     raiz.style.setProperty('--escala-fonte', ESCALAS[p.tamanhoFonte]);
     if (p.tema === 'auto') raiz.removeAttribute('data-tema');
     else raiz.setAttribute('data-tema', p.tema);
-    if (p.reduzirMovimento) raiz.setAttribute('data-movimento', 'reduzido');
-    else raiz.removeAttribute('data-movimento');
+    this.marcar(raiz, 'data-movimento', p.reduzirMovimento ? 'reduzido' : null);
+    this.marcar(raiz, 'data-espacamento', p.espacamento ? 'amplo' : null);
+  }
+
+  private marcar(el: HTMLElement, attr: string, valor: string | null): void {
+    if (valor) el.setAttribute(attr, valor);
+    else el.removeAttribute(attr);
   }
 }

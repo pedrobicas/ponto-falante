@@ -6,15 +6,16 @@ import { Icone } from '../../shared/icone';
   selector: 'pf-nao-encontrada',
   imports: [RouterLink, Icone],
   template: `
-    <section class="cabecalho-pagina">
-      <div class="miolo">
-        <p class="cabecalho-pagina__chapeu"><pf-icone nome="vazio" /> Erro 404</p>
-        <h1>Página não encontrada</h1>
-        <p class="lead">Não achamos esta página. Ela pode ter mudado de lugar.</p>
+    <div class="pagina">
+      <header class="cabecalho">
+        <p class="sobretitulo">Erro 404</p>
+        <h1>Este ponto não existe no mapa</h1>
+        <p class="cabecalho__apoio">A página pode ter mudado de lugar ou o endereço foi digitado errado.</p>
+      </header>
+      <div class="grupo__acoes">
+        <a routerLink="/" class="botao botao--primario botao--grande"><pf-icone nome="casa" /> Voltar ao início</a>
+        <a routerLink="/busca" class="botao botao--contorno botao--grande"><pf-icone nome="busca" /> Buscar um ponto</a>
       </div>
-    </section>
-    <div class="miolo">
-      <a routerLink="/" class="botao botao--primario botao--grande"><pf-icone nome="casa" /> Voltar ao início</a>
     </div>
   `,
 })

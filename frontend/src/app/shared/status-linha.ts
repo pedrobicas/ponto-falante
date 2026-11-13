@@ -14,9 +14,10 @@ const MAPA: Record<StatusLinha, { texto: string; icone: NomeIcone; tom: TomSelo 
 @Component({
   selector: 'pf-status-linha',
   imports: [Selo],
-  template: `<pf-selo [tom]="info().tom" [icone]="info().icone">{{ info().texto }}</pf-selo>`,
+  template: `<pf-selo [tom]="info().tom" [icone]="info().icone">{{ rotulo() || info().texto }}</pf-selo>`,
 })
 export class StatusLinhaPill {
   readonly status = input.required<StatusLinha>();
+  readonly rotulo = input('');
   protected readonly info = computed(() => MAPA[this.status()] ?? MAPA.SEM_DADOS);
 }
