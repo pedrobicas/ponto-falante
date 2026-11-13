@@ -35,3 +35,10 @@
   .rodape__interno { width: calc(100% - 2rem); flex-wrap: wrap; gap: .5rem 1rem; padding: 1rem 0; }
   .rodape__marca { display: none; }
 }
+/* Barra inferior do celular: rótulos com teto fixo para não se sobreporem com letras grandes;
+   o ícone e o nome acessível continuam inteiros. */
+@media (max-width: 47.99em) {
+  .estacao { font-size: min(.7rem, 12px); }
+  .estacao__nome { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .estacao pf-icone { width: min(1.4rem, 24px); height: min(1.4rem, 24px); }
+}

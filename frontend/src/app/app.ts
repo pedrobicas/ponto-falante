@@ -49,7 +49,7 @@ interface Estacao {
                   class="estacao"
                   [routerLink]="e.rota"
                   [queryParams]="modoNavegacao()"
-                  routerLinkActive="estacao--atual"
+                  routerLinkActive="estacao--rota"
                   [routerLinkActiveOptions]="{ exact: e.exata }"
                   [class.estacao--atual]="rla.isActive || (e.rota === '/' && buscaAtiva())"
                   #rla="routerLinkActive"

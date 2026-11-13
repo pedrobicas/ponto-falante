@@ -14,6 +14,7 @@ class FraseFaladaTest {
             "METRÔ BELÉM|Metrô Belém",
             "PAULISTA B/C|Paulista B/C",
             "VILA DI GIORGIO|Vila di Giorgio",
+            "PÇA. DA SÉ|Pça. da Sé",
             "Já em caixa normal|Já em caixa normal"})
     void nomesDaSptransFicamLegiveisParaAVoz(String entrada, String esperado) {
         assertThat(FraseFalada.legivel(entrada)).isEqualTo(esperado);
