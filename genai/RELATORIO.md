@@ -310,6 +310,97 @@ ouvem a resposta sem poder conferi-la, o padrão segue sendo o agente v1, com in
 (mDeBERTa) para checar valores e negações; novo conjunto de desenvolvimento com perguntas compostas; e só então um novo
 teste inédito, escrito por outra pessoa.
 
+## 12. Iteração v3 (12 e 13/11/2026)
+
+A v2 errava em valores parecidos e respondia só metade das perguntas compostas. A v3 (`src/pf_genai/agente_v3.py`)
+foi construída e afinada **só no DEV v3** (`avaliacao/v3/perguntas_dev_v3.jsonl`: 108 perguntas, 80 respondíveis e
+28 que devem ser recusadas, das quais 6 de tempo real). O teste v3 (46 perguntas escritas por um autor separado, sem
+acesso ao código nem ao DEV; ver `avaliacao/v3/LEIAME.md`) ficou congelado por SHA-256 até a rodada final.
+
+**Pipeline v3**
+
+1. Classificação de intenção (regra, tempo real, fora de escopo, injeção). Tempo real é recusado aqui: quem responde
+   previsões é o backend, com a SPTrans.
+2. Base reprocessada em trechos menores com o id v1 de origem (`trechos_v3.py`), para que o gabarito continue valendo.
+3. Busca híbrida (BM25 + vetorial) e reordenação por cross-encoder multilíngue.
+4. Limiar de recusa no score do cross-encoder e filtro de público (idoso 65+, 60-64, PCD, estudante).
+5. Geração em JSON com uma citação literal por fonte usada.
+6. Checagens: cada citação precisa existir no trecho, cada número da resposta precisa aparecer nas citações, e a
+   resposta é cortada para voz (até 3 frases).
+
+**Afinação no DEV (13/11).** A rodada de 12/11 mostrou que 13 das 80 respondíveis eram recusadas. Lendo cada caso:
+o limiar 0,0 cortava perguntas com o trecho certo em 1º lugar (scores -0,53, -1,05 e -2,26), e a checagem "há fonte
+citada sem evidência" recusava respostas corretas em que o modelo listava uma fonte a mais. Duas mudanças, medidas
+uma de cada vez:
+
+- **Poda de fonte sem evidência:** a fonte listada sem citação literal sai da resposta, e os números continuam
+  auditados contra as citações que sobraram (teste `test_poda_remove_fonte_sem_evidencia_mas_audita_numeros`).
+- **Limiar -2,5:** no DEV, com -2,5 só 1 respondível fica abaixo do corte; as 9 "não consta" que passam a chegar ao
+  modelo continuam sendo recusadas por ele (100% de recusa correta). Abaixo disso o ganho é zero e o risco cresce.
+
+| Configuração (DEV v3, rubrica v3.1) | Acerto | Correto (respondíveis) | Recusa indevida | Erro factual (respondíveis) | Recusa correta | Latência média |
+|---|---|---|---|---|---|---|
+| sem_contexto (mesmo 7B, sem base) | 19,4% | 21,2% | 1,2% | 8,8% | 14,3% | 2,5 s |
+| rag_v1 (busca + 7B) | 82,4% | 80,0% | 5,0% | 3,8% | 89,3% | 2,5 s |
+| v3_7b (12/11, limiar 0,0) | 81,5% | 76,2% | 16,2% | 3,8% | 96,4% | 8,5 s |
+| v3_7b + poda | 83,3% | 78,8% | 13,8% | 3,8% | 96,4% | 8,8 s |
+| **v3_final** (poda + limiar -2,5) | **88,0%** | **83,8%** | **6,2%** | 3,8% | **100%** | 8,0 s |
+
+Na v3_final, 94,6% das respostas emitidas têm citação pertinente e nenhuma sai sem citação. Pastas:
+`avaliacao/v3/retomada_dev_20261112/` e `avaliacao/v3/iteracao_dev_20261113/`.
+
+**Teste final v3 (rodada única)**
+
+Rodado **uma vez**, em 13/11/2026, com o mesmo `qwen2.5:7b` (temperatura 0, semente 42) para todas as configurações e as
+configurações escolhidas antes de abrir o conjunto (`avaliacao/v3/teste_final_20261113/`; o marcador
+`avaliacao/v3/teste_v3.execucao.json` impede uma segunda rodada). 46 perguntas: 33 respondíveis e 13 a recusar (5 de
+tempo real). Números da rubrica automática v3.1, sem nenhuma correção manual:
+
+| Configuração | Acerto | Correto (respondíveis) | Recusa indevida | Erro factual (respondíveis) | Recusa correta | Erros factuais por pergunta | Latência média |
+|---|---|---|---|---|---|---|---|
+| sem_contexto | 8,7% | 6,1% | 0,0% | 15,2% | 15,4% | 34,8% | 2,9 s |
+| rag_v1 | **65,2%** | **63,6%** | 9,1% | 9,1% | 69,2% | 15,2% | 2,7 s |
+| **agente_v1** | **65,2%** | 57,6% | 21,2% | **6,1%** | **84,6%** | **8,7%** | 3,8 s |
+| v2_7b | 58,7% | 48,5% | 24,2% | 9,1% | 84,6% | 10,9% | 31,8 s |
+| v3_7b (12/11) | 50,0% | 39,4% | 36,4% | 6,1% | 76,9% | 10,9% | 8,0 s |
+| v3_final | 58,7% | 51,5% | 21,2% | 9,1% | 76,9% | 13,0% | 8,4 s |
+
+**Interpretação**
+
+- **A v3 não generalizou.** No DEV ela passou o RAG simples (88,0% contra 82,4%); no teste inédito ficou abaixo dele e
+  do agente v1 (58,7% contra 65,2%). As mudanças de 13/11 ajudaram no sentido certo (v3_final +8,7 pontos sobre a v3 de
+  12/11, recusa indevida de 36,4% para 21,2%), mas o restante do ganho do DEV era ajuste a perguntas conhecidas.
+- **O contexto é o maior ganho, de longe:** o mesmo 7B sem a base acerta 8,7% e erra fatos em 34,8% das perguntas.
+- **O agente v1 é a configuração mais segura:** menor taxa de erro factual (8,7% por pergunta), maior recusa correta
+  (84,6%) e acerto igual ao do RAG. Para quem ouve a resposta sem poder conferir, ele segue como padrão do produto
+  (`PF_MODO=agente`), agora com o `qwen2.5:7b` (`PF_MODELO`), que é o modelo medido aqui.
+- **Todas as citações são verificáveis:** v3_final com 0% de resposta sem citação e 96,2% de citação pertinente.
+- **A rubrica automática erra contra o sistema em alguns casos.** Lendo as falhas da v3_final depois da rodada (sem
+  alterar nada): t3_02 ("Não, é totalmente gratuito") e t3_18 ("só é possível com 65 anos") estão corretas, mas a
+  guarda de negação contou como erro factual, o mesmo defeito do erro 5 abaixo. O placar fica como saiu; uma
+  adjudicação cega, como a da v2, é o próximo passo para medir esse viés.
+- Padrões de falha no teste: recusa com o trecho certo em 1º (t3_14, t3_46), pergunta com cálculo de prazo que o
+  modelo não faz ("comprei há 14 meses", t3_11) e resposta que fala do assunto sem responder (t3_07).
+
+**5 erros reais da v3_final no DEV**
+
+| # | Pergunta | O que aconteceu | Causa | Correção proposta |
+|---|---|---|---|---|
+| 1 | n48 "bloqueio temporário" ao reusar o vale-transporte no mesmo ônibus | Recusou, com o trecho certo em 1º (score 5,46, muito acima do 2º) | O 7B responde "não consta" quando a pergunta descreve um sintoma e o trecho descreve a regra | Nova tentativa só com o 1º trecho quando ele se destaca; exemplos de pergunta-sintoma no prompt |
+| 2 | n41 "os créditos do Bilhete Único vencem?" | Acertou os 12 meses e acrescentou "o cartão vale até 5 anos" | O 5 está em outro trecho citado; a auditoria confere se o número existe nas citações, não se ele se refere à mesma coisa | Auditar o par número + unidade + sujeito, ou exigir que cada frase tenha a sua citação |
+| 3 | n47 crédito da loja virtual pago por boleto | Respondeu 72 horas; o certo é 2 dias úteis (48 horas) | O trecho certo não foi recuperado; o 1º era de outro canal de recarga, com outro prazo | Termos de canal ("loja virtual", "boleto") com peso maior na busca; separar trechos por canal |
+| 4 | n08 avisar a SPTrans do falecimento da mãe idosa | Disse que é preciso comunicar o óbito; o certo é que a SPTrans sabe pelo SISOB | O trecho do SISOB não veio entre os primeiros, e o modelo completou com senso comum | Ampliar o contexto quando os primeiros trechos não falam do assunto central; recusar em vez de deduzir |
+| 5 | n06 cartão apreendido por uso de terceiro | Respondeu "fica sem o benefício por 180 dias" (correto), mas a rubrica marcou erro factual | A guarda de negação da rubrica viu "sem" perto do fato e contou como negação | Erro da rubrica, não do sistema. Registrado e **não corrigido** para não mexer na régua durante o ciclo |
+
+O caso 5 mostra o limite da rubrica automática: o placar acima pode ter pequenos erros nos dois sentidos, e por isso
+cada falha foi lida à mão antes de qualquer ajuste.
+
+**Configuração do produto.** O site usa `PF_MODO=agente` com `PF_MODELO=qwen2.5:7b` (a configuração mais segura no
+teste). `PF_MODO=v3` continua disponível e usa a `ConfigV3()` padrão, que é a v3_final; o limiar pode ser ajustado por
+`PF_LIMIAR_V3` sem mudar código. Validado em produção em 13/11: "Tenho 66 anos. Preciso pagar a passagem de ônibus em
+São Paulo?" respondida com 3 fontes (Estatuto da Pessoa Idosa e SPTrans), e "cachorro no ônibus em Curitiba" recusada
+com indicação do 156.
+
 ## 10. Links
 
 - Repositório GitHub: https://github.com/pedrobicas/ponto-falante

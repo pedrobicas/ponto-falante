@@ -68,7 +68,10 @@ if ($TunelRapido) {
     $command = Get-Command cloudflared.exe -ErrorAction SilentlyContinue
     if ($null -eq $command) { throw 'Instale cloudflared e disponibilize cloudflared.exe no PATH.' }
     $log = Join-Path $script:GenAIRun 'cloudflared.err.log'
-    if ($null -eq (Get-GenAIManagedProcess 'cloudflared') -and (Test-Path -LiteralPath $log)) { Remove-Item -LiteralPath $log }
+    if ($null -eq (Get-GenAIManagedProcess 'cloudflared') -and (Test-Path -LiteralPath $log)) {
+        try { Remove-Item -LiteralPath $log -ErrorAction Stop }
+        catch { throw 'Um cloudflared nao gerenciado ainda usa run/cloudflared.err.log. Feche-o (Gerenciador de Tarefas) e rode iniciar.ps1 de novo.' }
+    }
     $tunnel = Start-GenAIProcess -Name 'cloudflared' -Executable $command.Source `
         -Arguments @('tunnel', '--no-autoupdate', '--url', 'http://127.0.0.1:8001')
     $deadline = [DateTime]::UtcNow.AddSeconds(45)
