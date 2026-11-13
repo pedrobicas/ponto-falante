@@ -97,7 +97,8 @@ def main() -> None:
     if args.conjunto == "teste_v3":
         if conjunto_hash != "8b8100c417af716175aadbba1142fe7aa638be0a967aedb6370dca9d5b8957ab":
             sys.exit("Hash do teste fechado difere do congelamento.")
-        finais_permitidas = {"sem_contexto", "rag_v1", "agente_v1", "v2_7b", "v3_7b"}
+        # v3_final: candidata escolhida no DEV de 13/11 (7b); v3_7b fica para comparar com a iteração anterior.
+        finais_permitidas = {"sem_contexto", "rag_v1", "agente_v1", "v2_7b", "v3_7b", "v3_final"}
         if args.modelo_base != "qwen2.5:7b" or any(c not in finais_permitidas for c in args.configs):
             sys.exit("Teste final exige modelo 7b; ablações e 3b ficam no DEV.")
         if (av3.PASTA_V3 / "teste_v3.execucao.json").exists():
