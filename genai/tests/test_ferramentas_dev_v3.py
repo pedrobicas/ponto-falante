@@ -16,6 +16,8 @@ def _copia_da_rodada(tmp_path, hashes_atuais: bool) -> Path:
     destino = tmp_path / "rodada"
     shutil.copytree(origem, destino)
     mf = json.loads((destino / "manifesto.json").read_text(encoding="utf-8"))
+    # O checkout pode mudar fim de linha (CRLF/LF): o hash das perguntas acompanha o arquivo local.
+    mf["sha256"] = hashlib.sha256((PASTA / "avaliacao" / "v3" / "perguntas_dev_v3.jsonl").read_bytes()).hexdigest()
     if hashes_atuais:  # simula uma rodada iniciada com o código atual
         mf["codigo_sha256"] = {p: hashlib.sha256((PASTA / "src" / "pf_genai" / p).read_bytes()).hexdigest()
                                for p in mf["codigo_sha256"]}
