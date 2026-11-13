@@ -7,9 +7,9 @@ para o arquivo ou a execução correspondente.
 
 | Suíte | Testes | Comando |
 |---|---|---|
-| Spring Boot (PostgreSQL embutido, contratos Olho Vivo, segurança) | 103 | `backend/mvnw -B verify` |
+| Spring Boot (PostgreSQL embutido, contratos Olho Vivo, segurança) | 106 | `backend/mvnw -B verify` |
 | Angular (unidade + acessibilidade axe) | 40 | `npm test -- --watch=false` |
-| GenAI (RAG, agentes v1/v2/v3, API, segurança, continuidade da avaliação) | 119 | `pytest -q genai/tests` |
+| GenAI (RAG, agentes v1/v2/v3, API, segurança, continuidade da avaliação) | 126 | `pytest -q genai/tests` |
 | RPA (coletor e cenários do boletim) | 45 | `pytest -q rpa` |
 | Integração (MVP + RPA + contratos) | 26 | `pytest -q tests/integracao` |
 
@@ -85,6 +85,10 @@ Em [evidencias/telas](evidencias/telas): início, ponto, assistente, boletim e a
   registro interno 2.
 - Revisão de código 3 (12/11/2026, backend: gateway, assistente de tempo real, boletim):
   registro interno 3. Cinco achados, corrigidos com testes.
+- Revisão de código 4 (13/11/2026, registro do túnel, scripts e poda da v3):
+  registro interno 4. Quatro achados (dois altos),
+  todos corrigidos com testes: desafio HMAC de identidade no registro, registro serializado, disjuntor por geração do
+  endereço e poda desligada no padrão.
 
 ## 8. SPTrans
 

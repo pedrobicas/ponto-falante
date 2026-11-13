@@ -120,3 +120,16 @@ def test_poda_remove_fonte_sem_evidencia_mas_audita_numeros(monkeypatch):
     # o número da fonte podada continua sem prova: recusa
     g["resposta"] = "A entrega leva 20 dias e o cartão vale por 5 anos."
     assert ag.responder("Qual o prazo de entrega e a validade?", indice, cfg).resposta.nao_consta
+
+
+def test_padrao_recusa_fonte_usada_sem_evidencia_mesmo_sem_numero(monkeypatch):
+    # Revisão de código de 13/11: a afirmação qualitativa da fonte sem citação não pode passar.
+    a = achado("A primeira via do cartão é gratuita.")
+    b = achado("A segunda via exige pagamento de tarifa.", "sptrans-bilhete-pcd")
+    g = {"resposta": "A primeira e a segunda via são gratuitas.", "nao_consta": False,
+         "trechos_usados": [a.trecho.trecho_id, b.trecho.trecho_id],
+         "evidencias": [{"trecho_id": a.trecho.trecho_id, "citacao": a.trecho.texto}]}
+    monkeypatch.setattr(ag.llm, "gerar_json", lambda *a, **kw: g)
+    indice = SimpleNamespace(buscar=lambda *args, **kw: [a, b])
+    assert ag.ConfigV3().podar_sem_evidencia is False
+    assert ag.responder("A segunda via é gratuita?", indice, ag.ConfigV3()).resposta.nao_consta

@@ -138,6 +138,24 @@ def health():
                         status_code=200 if status == "ok" else 503)
 
 
+_DESAFIO = re.compile(r"^[0-9a-f]{32,128}$")
+
+
+@app.get("/identidade")
+def identidade(desafio: str = ""):
+    """Prova ao backend que este serviço conhece a GENAI_API_KEY sem enviá-la: HMAC-SHA256 do desafio.
+
+    O backend só aceita registrar um endereço de túnel que responda certo (ver EnderecoGenaiController).
+    """
+    chave = os.environ.get("GENAI_API_KEY")
+    if not chave:
+        raise HTTPException(503, "GENAI_API_KEY não configurada.")
+    if not _DESAFIO.match(desafio):
+        raise HTTPException(400, "Desafio inválido.")
+    prova = hmac.new(chave.encode("utf-8"), f"pf-genai-identidade:{desafio}".encode("utf-8"), "sha256").hexdigest()
+    return {"prova": prova}
+
+
 def _gerar(pergunta: str):
     if MODO == "rag":
         return gerador.rag(pergunta, indice())

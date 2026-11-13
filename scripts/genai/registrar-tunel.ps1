@@ -42,7 +42,7 @@ function Register-Tunel {
             401 { 'chave recusada: GENAI_API_KEY local diferente da do Render' }
             503 { 'GENAI_API_KEY nao configurada no Render' }
             404 { 'backend publicado ainda sem o endpoint /api/genai/endereco' }
-            422 { 'o backend nao conseguiu abrir /health pelo tunel' }
+            422 { 'o backend nao validou o tunel (/health ou desafio de identidade; confira se GENAI_API_KEY e igual a do Render)' }
             default { "falha HTTP $codigo" }
         }
         Write-Warning "$(Get-Date -Format 'HH:mm:ss') registro nao concluido: $dica."

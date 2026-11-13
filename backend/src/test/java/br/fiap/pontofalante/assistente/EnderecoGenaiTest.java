@@ -94,6 +94,77 @@ class EnderecoGenaiTest {
         assertThat(r.getStatus()).isEqualTo(503);
     }
 
+    /** Servidor local que imita a FastAPI: /health e /identidade configuráveis. */
+    private static HttpServer servidor(int statusSaude, String corpoSaude, String chaveDaProva) throws Exception {
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/health", ex -> {
+            byte[] body = corpoSaude.getBytes(StandardCharsets.UTF_8);
+            if (statusSaude == 302) {
+                ex.getResponseHeaders().add("Location", "https://outro.exemplo/health");
+            }
+            ex.getResponseHeaders().add("Content-Type", "application/json");
+            ex.sendResponseHeaders(statusSaude, body.length);
+            ex.getResponseBody().write(body);
+            ex.close();
+        });
+        server.createContext("/identidade", ex -> {
+            String desafio = ex.getRequestURI().getQuery().replace("desafio=", "");
+            byte[] body = ("{\"prova\":\"" + EnderecoGenaiController.prova(chaveDaProva, desafio) + "\"}")
+                    .getBytes(StandardCharsets.UTF_8);
+            ex.getResponseHeaders().add("Content-Type", "application/json");
+            ex.sendResponseHeaders(200, body.length);
+            ex.getResponseBody().write(body);
+            ex.close();
+        });
+        server.start();
+        return server;
+    }
+
+    private static EnderecoGenaiController controlador(PfProps p) {
+        var endereco = new EnderecoGenai(p);
+        return new EnderecoGenaiController(p, endereco, new SaudeGenai(p, endereco),
+                new ChatService(p, new AssistenteTempoReal(null), endereco));
+    }
+
+    @Test void saudeSoValeCom200EStatusOk() throws Exception {
+        var c = controlador(props("", "chave-genai"));
+        for (var caso : new Object[][] {{200, "{\"status\":\"ok\"}", true}, {302, "{\"status\":\"ok\"}", false},
+                {200, "{\"status\":\"degradado\"}", false}, {200, "<html>outro servico</html>", false},
+                {503, "{\"status\":\"degradado\"}", false}}) {
+            HttpServer s = servidor((int) caso[0], (String) caso[1], "chave-genai");
+            try {
+                assertThat(c.saudavel("http://127.0.0.1:" + s.getAddress().getPort()))
+                        .as("health %s %s", caso[0], caso[1]).isEqualTo(caso[2]);
+            } finally {
+                s.stop(0);
+            }
+        }
+    }
+
+    @Test void identidadeExigeProvaComAMesmaChave() throws Exception {
+        var c = controlador(props("", "chave-genai"));
+        HttpServer certo = servidor(200, "{\"status\":\"ok\"}", "chave-genai");
+        HttpServer outro = servidor(200, "{\"status\":\"ok\"}", "outra-chave");
+        try {
+            assertThat(c.provaIdentidade("http://127.0.0.1:" + certo.getAddress().getPort())).isTrue();
+            assertThat(c.provaIdentidade("http://127.0.0.1:" + outro.getAddress().getPort())).isFalse();
+        } finally {
+            certo.stop(0);
+            outro.stop(0);
+        }
+    }
+
+    @Test void falhaDoEnderecoAntigoNaoReabreODisjuntorDoNovo() {
+        PfProps p = props("", "k");
+        var chat = new ChatService(p, new AssistenteTempoReal(null), new EnderecoGenai(p));
+        long antiga = chat.geracaoAtual();
+        chat.fecharCircuito(); // novo endereço registrado
+        chat.abrirCircuito(antiga); // chamada ao túnel antigo termina em erro depois da troca
+        assertThat(chat.circuitoAberto()).isFalse();
+        chat.abrirCircuito(chat.geracaoAtual());
+        assertThat(chat.circuitoAberto()).isTrue();
+    }
+
     private static MockHttpServletRequest pedido(String chave) {
         var req = new MockHttpServletRequest("PUT", "/api/genai/endereco");
         req.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "/api/genai/endereco");

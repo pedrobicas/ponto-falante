@@ -396,8 +396,10 @@ O caso 5 mostra o limite da rubrica automática: o placar acima pode ter pequeno
 cada falha foi lida à mão antes de qualquer ajuste.
 
 **Configuração do produto.** O site usa `PF_MODO=agente` com `PF_MODELO=qwen2.5:7b` (a configuração mais segura no
-teste). `PF_MODO=v3` continua disponível e usa a `ConfigV3()` padrão, que é a v3_final; o limiar pode ser ajustado por
-`PF_LIMIAR_V3` sem mudar código. Validado em produção em 13/11: "Tenho 66 anos. Preciso pagar a passagem de ônibus em
+teste). `PF_MODO=v3` continua disponível, com limiar -2,5 (`PF_LIMIAR_V3`) e **sem** a poda: a revisão de código de 13/11
+mostrou que a poda deixa passar afirmações sem número da fonte
+podada ("a segunda via é gratuita"), e ela saiu do padrão, com teste de regressão. A v3_final do teste fica
+reproduzível em `scripts/rodar_v3.py`. Validado em produção em 13/11: "Tenho 66 anos. Preciso pagar a passagem de ônibus em
 São Paulo?" respondida com 3 fontes (Estatuto da Pessoa Idosa e SPTrans), e "cachorro no ônibus em Curitiba" recusada
 com indicação do 156.
 
