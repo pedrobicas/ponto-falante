@@ -243,3 +243,24 @@ def test_limite_global_de_capacidade(cliente, monkeypatch):
         assert enviar(cliente, headers={"X-PF-Cliente": f"{i:016x}"}).status_code == 200
     r = enviar(cliente, headers={"X-PF-Cliente": "f" * 16})
     assert r.status_code == 429 and "Retry-After" in r.headers
+
+
+def test_identidade_prova_a_chave_sem_revela_la(cliente):
+    import hashlib
+    import hmac as hm
+    desafio = "ab" * 32
+    r = cliente.get("/identidade", params={"desafio": desafio})
+    assert r.status_code == 200
+    esperada = hm.new(CHAVE.encode(), f"pf-genai-identidade:{desafio}".encode(), hashlib.sha256).hexdigest()
+    assert r.json() == {"prova": esperada}
+    assert CHAVE not in r.text
+
+
+@pytest.mark.parametrize("desafio", ["", "curto", "ZZ" * 32, "a" * 200])
+def test_identidade_recusa_desafio_invalido(cliente, desafio):
+    assert cliente.get("/identidade", params={"desafio": desafio}).status_code == 400
+
+
+def test_identidade_sem_chave_fica_indisponivel(cliente, monkeypatch):
+    monkeypatch.delenv("GENAI_API_KEY")
+    assert cliente.get("/identidade", params={"desafio": "ab" * 32}).status_code == 503

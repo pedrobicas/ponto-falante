@@ -37,6 +37,8 @@ public class ChatService {
     private final AssistenteTempoReal tempoReal;
     private final EnderecoGenai endereco;
     private volatile long circuitoAbertoAteNanos;
+    /** Muda a cada endereço registrado: falha de uma chamada ao túnel antigo não reabre o disjuntor do novo. */
+    private final java.util.concurrent.atomic.AtomicLong geracao = new java.util.concurrent.atomic.AtomicLong();
 
     public ChatService(PfProps props, AssistenteTempoReal tempoReal) {
         this(props, tempoReal, new EnderecoGenai(props));
@@ -76,6 +78,7 @@ public class ChatService {
             return new RespostaChat(r.resposta(), r.fontes(), r.confianca(), r.naoConsta(), r.disponivel(),
                     (int) ((System.nanoTime() - inicioTempoReal) / 1_000_000), r.origem());
         }
+        long geracaoDaChamada = geracao.get();
         var base = endereco.base();
         if (base.isEmpty()) {
             return indisponivel();
@@ -102,7 +105,7 @@ public class ChatService {
         } catch (Exception e) {
             // Só o tipo da falha vai para o log; nunca a pergunta.
             log.warn("Assistente (GenAI) indisponível: {}", e.getClass().getSimpleName());
-            circuitoAbertoAteNanos = System.nanoTime() + Duration.ofSeconds(props.genaiCircuitoSegundos()).toNanos();
+            abrirCircuito(geracaoDaChamada);
             return indisponivel();
         }
     }
@@ -129,7 +132,23 @@ public class ChatService {
     }
 
     /** Novo endereço registrado: não esperar o fim do disjuntor aberto pelo túnel antigo. */
-    void fecharCircuito() {
+    synchronized void fecharCircuito() {
+        geracao.incrementAndGet();
         circuitoAbertoAteNanos = System.nanoTime();
+    }
+
+    /** Abre o disjuntor só se a falha veio do endereço atual (mesma geração). */
+    synchronized void abrirCircuito(long geracaoDaChamada) {
+        if (geracaoDaChamada == geracao.get()) {
+            circuitoAbertoAteNanos = System.nanoTime() + Duration.ofSeconds(props.genaiCircuitoSegundos()).toNanos();
+        }
+    }
+
+    long geracaoAtual() {
+        return geracao.get();
+    }
+
+    boolean circuitoAberto() {
+        return System.nanoTime() - circuitoAbertoAteNanos < 0;
     }
 }

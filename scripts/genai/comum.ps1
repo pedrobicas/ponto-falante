@@ -78,7 +78,8 @@ function Start-GenAIProcess {
         $identity = @{
             Id = $process.Id
             StartTimeTicks = $process.StartTime.ToUniversalTime().Ticks.ToString()
-            Path = $process.Path
+            # Process.Path pode vir vazio logo apos o Start-Process; sem ele, parar.ps1 nao reconheceria o processo.
+            Path = $(if ($process.Path) { $process.Path } else { (Get-Command -Name $Executable -ErrorAction Stop).Source })
         }
         if ($Name -eq 'api') { $identity['AuthDisabled'] = ($env:GENAI_AUTH_DESATIVADA -eq '1') }
         $identity | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $script:GenAIRun "$Name.process.json") -Encoding UTF8
