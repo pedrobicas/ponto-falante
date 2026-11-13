@@ -1,0 +1,16 @@
+2026-11-13 08:23:58 | INFO    | pf_rpa.coletor | === Início da coleta coleta-20261113T082358 | 6 pontos | MVP http://127.0.0.1:8099/api | com envio ===
+2026-11-13 08:23:58 | INFO    | pf_rpa.coletor | Ponto 260015039: 53 ônibus previstos em 18 linhas (consultado em 2026-11-13T08:23:58-03:00)
+2026-11-13 08:23:58 | INFO    | pf_rpa.coletor | Ponto 260016855: 25 ônibus previstos em 15 linhas (consultado em 2026-11-13T08:23:58-03:00)
+2026-11-13 08:23:58 | INFO    | pf_rpa.coletor | Ponto 630015016: 13 ônibus previstos em 4 linhas (consultado em 2026-11-13T08:23:58-03:00)
+2026-11-13 08:23:58 | INFO    | pf_rpa.coletor | Ponto 630015011: 9 ônibus previstos em 3 linhas (consultado em 2026-11-13T08:23:58-03:00)
+2026-11-13 08:23:58 | INFO    | pf_rpa.coletor | Ponto 340015323: 36 ônibus previstos em 6 linhas (consultado em 2026-11-13T08:23:58-03:00)
+2026-11-13 08:23:58 | INFO    | pf_rpa.coletor | Ponto 340015324: 7 ônibus previstos em 5 linhas (consultado em 2026-11-13T08:23:58-03:00)
+2026-11-13 08:23:58 | INFO    | pf_rpa.coletor | Envio: 6 gravadas, 0 duplicadas, 0 rejeitadas 
+2026-11-13 08:23:58 | INFO    | pf_rpa.coletor | === Fim da coleta | status=sucesso | código=0 ===
+2026-11-13 08:24:06 | INFO    | pf_rpa.robo | === Início da execução | data de referência 2026-11-13 | MVP http://127.0.0.1:8099/api ===
+2026-11-13 08:24:06 | INFO    | pf_rpa.robo | Amostras reais recebidas: 6
+2026-11-13 08:24:06 | INFO    | pf_rpa.robo | Validação das amostras: 6 válidas, 0 inválidas {}, 0 duplicadas, 0 fora do período, 0 fora do escopo, 0 ônibus descartados
+2026-11-13 08:24:06 | INFO    | pf_rpa.robo | 34 linha(s) com menos de 3 consultas com previsão ficaram fora do boletim
+2026-11-13 08:24:06 | INFO    | pf_rpa.robo | Boletim ESTIMADO salvo em saida\boletim_2026-11-13.json
+2026-11-13 08:24:06 | INFO    | pf_rpa.robo | Boletim publicado no MVP (POST /boletim)
+2026-11-13 08:24:06 | INFO    | pf_rpa.robo | === Fim da execução | status=sucesso | código=0 ===

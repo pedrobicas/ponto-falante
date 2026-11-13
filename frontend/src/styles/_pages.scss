@@ -238,3 +238,8 @@
   .escolhas--quatro { gap: .35rem; }
   .vazio--favoritos { padding: 1.5rem; }
 }
+
+/* Letras grandes (até 175%): quebrar entre blocos, nunca no meio da palavra. */
+.quadro__relogio, .quadro__filtro { flex-wrap: wrap; }
+.quadro__atualizar span, .quadro__filtro label, .quadro__hora { white-space: nowrap; }
+.quadro__filtro .seletor { max-width: 100%; }

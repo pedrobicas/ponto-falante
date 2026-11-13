@@ -77,7 +77,8 @@ public final class FraseFalada {
                 continue;
             }
             // Preposições curtas ficam minúsculas; abreviações com ponto ("D.", "Pq.") mantêm a maiúscula.
-            boolean pequena = palavra.length() <= 2 && !palavra.matches(".*\\d.*") && !palavra.endsWith(".");
+            // Lista fechada: nomes curtos como "Sé" continuam com maiúscula.
+            boolean pequena = PREPOSICOES.contains(palavra);
             sb.append(pequena && sb.length() > 0 ? palavra
                     : Character.toUpperCase(palavra.charAt(0)) + palavra.substring(1));
         }
@@ -85,4 +86,7 @@ public final class FraseFalada {
         return java.util.regex.Pattern.compile("/(\\p{L})").matcher(sb.toString())
                 .replaceAll(m -> "/" + m.group(1).toUpperCase(Locale.ROOT));
     }
+
+    private static final java.util.Set<String> PREPOSICOES = java.util.Set.of(
+            "a", "o", "e", "as", "os", "da", "de", "do", "das", "dos", "na", "no", "nas", "nos", "em", "à", "ao", "di", "du", "del", "y");
 }

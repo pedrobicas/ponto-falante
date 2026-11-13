@@ -70,12 +70,12 @@ function numero(v: number | null | undefined, casas = 1): string {
             <div><dt>Última atualização</dt><dd>{{ dataHora(b.ultima_atualizacao || b.recebido_em || b.gerado_em) }}</dd></div>
             <div><dt>Fonte dos dados</dt><dd>{{ fonteTexto() }}</dd></div>
             <div>
-              <dt>Situação</dt>
+              <dt>Situação do boletim</dt>
               <dd>
                 @if (b.desatualizado) {
                   <span class="marca-texto marca-texto--aviso"><pf-icone nome="alerta" /> Desatualizado</span>
                 } @else {
-                  <span class="marca-texto"><pf-icone nome="certo-circulo" /> Em dia</span>
+                  <span class="marca-texto"><pf-icone nome="certo-circulo" /> Atualizado</span>
                 }
               </dd>
             </div>

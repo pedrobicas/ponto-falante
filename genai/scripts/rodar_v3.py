@@ -37,6 +37,9 @@ CONFIGS_V3 = {
     "v3_7b_sem_filtro_publico": replace(BASE_V3, nome="v3_7b_sem_filtro_publico", filtro_publico=False),
     "v3_7b_sem_checagens": replace(BASE_V3, nome="v3_7b_sem_checagens", checagens=False),
     "v3_7b_k5": replace(BASE_V3, nome="v3_7b_k5", k_contexto=5),
+    # iteração 13/11 (DEV): limiar recalibrado e poda de fonte sem evidência literal
+    "v3_7b_poda": replace(BASE_V3, nome="v3_7b_poda", podar_sem_evidencia=True),
+    "v3_7b_poda_l25": replace(BASE_V3, nome="v3_7b_poda_l25", podar_sem_evidencia=True, limiar_rerank=-2.5),
 }
 OUTRAS = ["sem_contexto", "rag_v1", "agente_v1", "v2_7b"]
 

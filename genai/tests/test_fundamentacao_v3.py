@@ -104,3 +104,19 @@ def test_json_valido_com_formato_errado_falha_controladamente(monkeypatch, g):
     monkeypatch.setattr(ag.llm, "gerar_json", lambda *a, **kw: g)
     r = ag.responder("Posso usar o cartão?", SimpleNamespace(buscar=lambda *a, **kw: [achado("O cartão é pessoal.")]))
     assert r.resposta.nao_consta
+
+
+def test_poda_remove_fonte_sem_evidencia_mas_audita_numeros(monkeypatch):
+    a = achado("A entrega leva 20 dias.")
+    b = achado("O cartão tem validade de 5 anos.", "sptrans-bilhete-pcd")
+    g = {"resposta": "A entrega leva 20 dias.", "nao_consta": False,
+         "trechos_usados": [a.trecho.trecho_id, b.trecho.trecho_id],
+         "evidencias": [{"trecho_id": a.trecho.trecho_id, "citacao": a.trecho.texto}]}
+    monkeypatch.setattr(ag.llm, "gerar_json", lambda *a, **kw: g)
+    indice = SimpleNamespace(buscar=lambda *args, **kw: [a, b])
+    cfg = ag.ConfigV3(podar_sem_evidencia=True)
+    r = ag.responder("Qual o prazo de entrega?", indice, cfg).resposta
+    assert not r.nao_consta and [f.trecho_id for f in r.fontes] == [a.trecho.trecho_id]
+    # o número da fonte podada continua sem prova: recusa
+    g["resposta"] = "A entrega leva 20 dias e o cartão vale por 5 anos."
+    assert ag.responder("Qual o prazo de entrega e a validade?", indice, cfg).resposta.nao_consta

@@ -54,6 +54,9 @@ class ConfigV3:
     intencao: bool = True
     checagens: bool = True
     tentativas: int = 2
+    # Fonte listada em trechos_usados sem citação literal sai da resposta (em vez de recusar tudo).
+    # Números continuam auditados só contra as evidências que sobraram.
+    podar_sem_evidencia: bool = False
     extras: dict = field(default_factory=dict)
 
 
@@ -200,7 +203,7 @@ def _validar_formato(g) -> bool:
             and all(isinstance(i, str) for i in g["trechos_usados"]))
 
 
-def _evidencias(g: dict, usados: list[str], mapa: dict) -> tuple[list[str], list[str]]:
+def _evidencias(g: dict, usados: list[str], mapa: dict, podar: bool = False) -> tuple[list[str], list[str]]:
     evidencias = g.get("evidencias")
     # Compatibilidade com a geração v3 inicial, somente para UMA fonte.
     if evidencias is None and len(usados) == 1 and isinstance(g.get("evidencia"), str):
@@ -216,7 +219,9 @@ def _evidencias(g: dict, usados: list[str], mapa: dict) -> tuple[list[str], list
             return [], ["a evidência deve ser copiada integralmente do corpo da fonte indicada"]
         textos.append(c)
         cobertos.add(i)
-    return textos, ([] if cobertos == set(usados) else ["há fonte citada sem evidência individual"])
+    if cobertos == set(usados) or (podar and cobertos):
+        return textos, []
+    return textos, ["há fonte citada sem evidência individual"]
 
 
 def _numeros_sem_evidencia(texto: str, evidencias: list[str], pergunta: str) -> list[str]:
@@ -334,7 +339,15 @@ def responder(pergunta: str, indice: IndiceV3, cfg: ConfigV3 | None = None) -> R
             aviso = "\n\nATENÇÃO: cite somente ids presentes nos trechos fornecidos."
             continue
         if cfg.checagens:
-            textos, problemas = _evidencias(g, usados, mapa)
+            textos, problemas = _evidencias(g, usados, mapa, cfg.podar_sem_evidencia)
+            if cfg.podar_sem_evidencia and not problemas:
+                com_evidencia = {e["trecho_id"] for e in g.get("evidencias") or [] if isinstance(e, dict)}
+                if g.get("evidencias") is None and len(usados) == 1:
+                    com_evidencia = set(usados)
+                podadas = [i for i in usados if i not in com_evidencia]
+                if podadas:
+                    passos.append(f"tentativa {tentativa}: fontes sem evidência removidas {podadas}")
+                    usados = [i for i in usados if i in com_evidencia]
             sem = _numeros_sem_evidencia(texto, textos, consulta)
             if sem:
                 problemas.append(f"os números {sem} não aparecem nos trechos citados")

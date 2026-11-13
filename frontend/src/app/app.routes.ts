@@ -35,6 +35,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/boletim/boletim').then((m) => m.BoletimPage),
   },
   {
+    path: 'ajustes',
+    redirectTo: 'acessibilidade',
+  },
+  {
     path: 'acessibilidade',
     title: 'Ajustes de acessibilidade' + SUFIXO,
     loadComponent: () => import('./features/acessibilidade/acessibilidade').then((m) => m.Acessibilidade),
