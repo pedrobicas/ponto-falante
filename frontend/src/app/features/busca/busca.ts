@@ -52,7 +52,7 @@ export type TipoBusca = 'pontos' | 'linhas';
               enterkeyhint="search"
               autocomplete="off"
               maxlength="80"
-              [placeholder]="tipoAtual() === 'linhas' ? 'Ex.: 8000 ou Lapa' : 'Ex.: Paulista'"
+              [placeholder]="tipoAtual() === 'linhas' ? 'Ex.: 8000 ou Lapa' : 'Ex.: Av. Paulista, 1000'"
               [(ngModel)]="texto"
               (ngModelChange)="erroCampo.set('')"
               [attr.aria-invalid]="erroCampo() ? 'true' : null"
@@ -61,12 +61,22 @@ export type TipoBusca = 'pontos' | 'linhas';
             <button type="submit" class="botao botao--primario">Buscar</button>
           </div>
           <p id="termo-ajuda" class="vo">
-            {{ tipoAtual() === 'linhas' ? 'Digite o número que aparece no letreiro, como 8000-10, ou o bairro de destino.' : 'O código do ponto fica na placa do ponto, como 990001.' }}
+            {{ tipoAtual() === 'linhas' ? 'Digite o número que aparece no letreiro, como 8000-10, ou o bairro de destino.' : 'Você pode digitar o nome da rua com o número, o nome do ponto ou o código que fica na placa do ponto.' }}
           </p>
           @if (erroCampo()) {
             <p id="termo-erro" class="erro-campo"><pf-icone nome="alerta" /> {{ erroCampo() }}</p>
           }
         </div>
+        @if (tipoAtual() === 'pontos' && modo() !== 'demo') {
+          <div class="busca__perto">
+            <button type="button" class="botao botao--contorno" (click)="pertoDeMim()" [disabled]="localizando()">
+              <pf-icone nome="ponto" /> {{ localizando() ? 'Obtendo sua localização…' : 'Pontos perto de mim' }}
+            </button>
+            @if (erroLocal()) {
+              <p class="erro-campo" role="alert"><pf-icone nome="alerta" /> {{ erroLocal() }}</p>
+            }
+          </div>
+        }
       </form>
 
       <section class="resultados" aria-labelledby="resultados-titulo" [attr.aria-busy]="buscando()">
@@ -85,31 +95,41 @@ export type TipoBusca = 'pontos' | 'linhas';
               <a class="botao botao--primario" routerLink="/busca" [queryParams]="{ q: termo(), tipo: tipoAtual(), modo: 'demo' }">Ver demonstração</a>
             }
           </pf-erro>
-        } @else if (termo() && resultadoTipo() === tipoAtual()) {
+        } @else if ((termo() || perto()) && resultadoTipo() === tipoAtual()) {
           @if (contagem() === 0) {
             <div class="vazio">
-              <p class="vazio__titulo">Nada encontrado para “{{ termo() }}”.</p>
+              <p class="vazio__titulo">{{ perto() ? 'Nenhum ponto perto de você.' : 'Nada encontrado para “' + termo() + '”.' }}</p>
+              @if (aviso()) {
+                <p>{{ aviso() }}</p>
+              }
               <ul class="vazio__dicas">
-                <li>Confira a grafia ou use só uma parte do nome, como “Paulista”.</li>
                 @if (tipoAtual() === 'pontos') {
-                  <li>Se você sabe o código da placa, digite só os números.</li>
+                  <li>Digite só o nome da rua, como “Paulista”, ou a rua com o número.</li>
+                  <li>Se você sabe o código da placa do ponto, digite só os números.</li>
                 } @else {
+                  <li>Confira a grafia ou use só uma parte do nome, como “Lapa”.</li>
                   <li>Digite só o número da linha, sem o final, como “8000”.</li>
                 }
               </ul>
-              <button type="button" class="botao botao--contorno" (click)="trocarTipo(tipoAtual() === 'pontos' ? 'linhas' : 'pontos')">
-                <pf-icone nome="troca" /> Procurar “{{ termo() }}” em {{ tipoAtual() === 'pontos' ? 'linhas' : 'pontos' }}
-              </button>
+              @if (!perto()) {
+                <button type="button" class="botao botao--contorno" (click)="trocarTipo(tipoAtual() === 'pontos' ? 'linhas' : 'pontos')">
+                  <pf-icone nome="troca" /> Procurar “{{ termo() }}” em {{ tipoAtual() === 'pontos' ? 'linhas' : 'pontos' }}
+                </button>
+              }
             </div>
           } @else {
             <div class="resultados__topo">
               <p class="resultados__conta" aria-hidden="true">
-                <strong>{{ contagem() }}</strong> {{ rotuloContagem() }} para “{{ termo() }}”
+                <strong>{{ contagem() }}</strong> {{ rotuloContagem() }} {{ perto() ? 'perto de você' : 'para “' + termo() + '”' }}
               </p>
               @if (fonte(); as f) {
                 <pf-selo-fonte [fonte]="f" />
               }
             </div>
+
+            @if (aviso()) {
+              <p class="aviso-linha busca__aviso"><pf-icone nome="alerta" /> <span>{{ aviso() }}</span></p>
+            }
 
             @if (tipoAtual() === 'pontos') {
               <ul class="paradas paradas--resultado">
@@ -120,11 +140,17 @@ export type TipoBusca = 'pontos' | 'linhas';
                       <span class="parada__texto">
                         <span class="parada__nome">{{ p.nome }}</span>
                         <span class="parada__meta">
+                          @if (p.distancia_metros !== null && p.distancia_metros !== undefined) {
+                            <strong>a {{ p.distancia_metros }} m</strong> ·
+                          }
                           @if (p.endereco) {
                             {{ p.endereco }} ·
                           }
                           Ponto {{ p.codigo }}
                         </span>
+                        @if (p.linhas?.length) {
+                          <span class="parada__meta parada__linhas"><span class="vo">Linhas que param aqui: </span>{{ resumoLinhas(p.linhas!) }}</span>
+                        }
                       </span>
                       <pf-icone class="parada__seta" nome="chevron" />
                     </a>
@@ -148,9 +174,15 @@ export type TipoBusca = 'pontos' | 'linhas';
                         <p class="linha-item__meta">{{ origemDa(l) }} → {{ l.destino || l.terminal_secundario }}</p>
                       }
                     </div>
-                    <a class="botao-texto" routerLink="/busca" [queryParams]="{ linha: l.letreiro, modo: modo() === 'demo' ? 'demo' : null }">
-                      Escolher ponto<span class="vo"> para consultar a linha {{ l.letreiro }} sentido {{ l.destino || l.terminal_secundario }}</span><pf-icone nome="chevron" />
-                    </a>
+                    @if (modo() === 'demo') {
+                      <a class="botao-texto" routerLink="/busca" [queryParams]="{ linha: l.letreiro, modo: 'demo' }">
+                        Escolher ponto<span class="vo"> para consultar a linha {{ l.letreiro }} sentido {{ l.destino || l.terminal_secundario }}</span><pf-icone nome="chevron" />
+                      </a>
+                    } @else {
+                      <a class="botao-texto" [routerLink]="['/linha', l.letreiro]" [queryParams]="{ sentido: l.sentido }">
+                        Ver paradas<span class="vo"> da linha {{ l.letreiro }} sentido {{ l.destino || l.terminal_secundario }}</span><pf-icone nome="chevron" />
+                      </a>
+                    }
                   </li>
                 }
               </ul>
@@ -196,6 +228,11 @@ export class Busca {
   protected readonly fonte = signal<Fonte | null>(null);
   protected readonly resultadoTipo = signal<TipoBusca | null>(null);
   protected readonly anuncio = signal('');
+  protected readonly aviso = signal<string | null>(null);
+  /** Resultado atual veio da localização do aparelho (que nunca vai para a URL nem é guardada). */
+  protected readonly perto = signal(false);
+  protected readonly localizando = signal(false);
+  protected readonly erroLocal = signal('');
   private pedido = 0;
 
   protected readonly contagem = computed(() =>
@@ -220,6 +257,8 @@ export class Busca {
           this.pedido++;
           this.buscando.set(false);
           this.anuncio.set('');
+          this.perto.set(false);
+          this.aviso.set(null);
           this.resultadoTipo.set(null);
           this.erro.set(null);
           setTimeout(() => this.campo()?.nativeElement.focus(), 0);
@@ -236,6 +275,64 @@ export class Busca {
 
   private encontrados(n: number, tipo: TipoBusca): string {
     return (tipo === 'linhas' ? 'encontrada' : 'encontrado') + (n === 1 ? '' : 's');
+  }
+
+  protected resumoLinhas(linhas: string[]): string {
+    const max = 6;
+    return linhas.slice(0, max).join(' · ') + (linhas.length > max ? ` · mais ${linhas.length - max}` : '');
+  }
+
+  protected pertoDeMim(): void {
+    this.erroLocal.set('');
+    if (!('geolocation' in navigator)) {
+      this.erroLocal.set('Este aparelho não informa a localização. Busque pelo nome da rua.');
+      return;
+    }
+    const pedido = ++this.pedido;
+    this.localizando.set(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        this.localizando.set(false);
+        if (pedido === this.pedido) void this.executarPerto(pos.coords.latitude, pos.coords.longitude);
+      },
+      (err) => {
+        this.localizando.set(false);
+        this.erroLocal.set(
+          err.code === err.PERMISSION_DENIED
+            ? 'A localização não foi autorizada. Você pode buscar pelo nome da rua ou pelo código do ponto.'
+            : 'Não consegui obter sua localização agora. Tente de novo ou busque pelo nome da rua.',
+        );
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 },
+    );
+  }
+
+  private async executarPerto(lat: number, lon: number): Promise<void> {
+    const pedido = ++this.pedido;
+    this.buscando.set(true);
+    this.erro.set(null);
+    this.anuncio.set('');
+    this.tipoAtual.set('pontos');
+    try {
+      let r = await firstValueFrom(this.api.pontosProximos(lat, lon, 400));
+      if (pedido === this.pedido && r.pontos.length === 0 && !r.aviso?.includes('fora da área')) {
+        r = await firstValueFrom(this.api.pontosProximos(lat, lon, 1000));
+      }
+      if (pedido !== this.pedido) return;
+      this.perto.set(true);
+      this.pontos.set(r.pontos);
+      this.fonte.set(r.fonte);
+      this.aviso.set(r.aviso ?? null);
+      this.resultadoTipo.set('pontos');
+      const n = r.pontos.length;
+      this.anuncio.set(n === 0 ? (r.aviso ?? 'Nenhum ponto perto de você.') : `${n} ${n === 1 ? 'ponto' : 'pontos'} perto de você, do mais próximo ao mais distante.`);
+    } catch (e) {
+      if (pedido !== this.pedido) return;
+      this.resultadoTipo.set(null);
+      this.erro.set(e instanceof ErroApi ? e : new ErroApi(-1, 'Algo deu errado. Tente de novo.'));
+    } finally {
+      if (pedido === this.pedido) this.buscando.set(false);
+    }
   }
 
   protected origemDa(l: Linha): string {
@@ -292,6 +389,8 @@ export class Busca {
     this.buscando.set(true);
     this.erro.set(null);
     this.anuncio.set('');
+    this.perto.set(false);
+    this.aviso.set(null);
     try {
       if (tipo === 'linhas') {
         const r = await firstValueFrom(this.api.buscarLinhas(termo, modo));
@@ -303,6 +402,7 @@ export class Busca {
         if (pedido !== this.pedido) return;
         this.pontos.set(r.pontos);
         this.fonte.set(r.fonte);
+        this.aviso.set(r.aviso ?? null);
       }
       this.resultadoTipo.set(tipo);
       this.buscasRecentes.adicionar(termo);
@@ -310,8 +410,8 @@ export class Busca {
       const simulado = this.fonte() === 'SIMULADO' ? ' Dados simulados.' : '';
       this.anuncio.set(
         n === 0
-          ? `Nenhum resultado para ${termo}.`
-          : `${n} ${this.rotuloContagem()} ${this.encontrados(n, tipo)} para ${termo}.${simulado}`,
+          ? `Nenhum resultado para ${termo}. ${this.aviso() ?? ''}`
+          : `${n} ${this.rotuloContagem()} ${this.encontrados(n, tipo)} para ${termo}.${simulado} ${this.aviso() ?? ''}`,
       );
     } catch (e) {
       if (pedido !== this.pedido) return;

@@ -6,6 +6,7 @@ import {
   BuscaPontos,
   Boletim,
   BoletimResumo,
+  Itinerario,
   Modo,
   PrevisoesPonto,
   RespostaChat,
@@ -27,6 +28,15 @@ export class ApiService {
 
   buscarLinhas(busca: string, modo?: Modo | null): Observable<BuscaLinhas> {
     return this.http.get<BuscaLinhas>('/api/linhas', { params: this.params({ busca }, modo) });
+  }
+
+  /** Localização vai no corpo (POST), nunca na URL. */
+  pontosProximos(lat: number, lon: number, raio = 400): Observable<BuscaPontos> {
+    return this.http.post<BuscaPontos>('/api/pontos/proximos', { lat, lon, raio });
+  }
+
+  itinerario(letreiro: string): Observable<Itinerario> {
+    return this.http.get<Itinerario>(`/api/linhas/${encodeURIComponent(letreiro)}/paradas`);
   }
 
   previsoes(codigo: number | string, modo?: Modo | null): Observable<PrevisoesPonto> {

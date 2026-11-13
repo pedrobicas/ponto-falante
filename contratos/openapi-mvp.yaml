@@ -41,7 +41,12 @@ paths:
   /api/pontos:
     get:
       tags: [transporte]
-      summary: Busca pontos de ônibus por nome, rua ou código
+      summary: Busca pontos de ônibus por nome, endereço ou código
+      description: >
+        No modo real a busca usa o cadastro oficial da SPTrans (GTFS), porque a busca de paradas da Olho Vivo só
+        enxerga cerca de 360 paradas com nome. Aceita abreviações, falta de acento e erros simples de digitação;
+        o número do endereço ordena pelos pontos de numeração mais próxima. Um código devolve só o ponto do código.
+        No máximo 20 resultados.
       parameters:
         - {name: busca, in: query, required: true, schema: {type: string, minLength: 2, maxLength: 80}}
         - {name: modo, in: query, required: false, schema: {type: string, enum: [auto, demo], default: auto}}
@@ -55,9 +60,60 @@ paths:
                 properties:
                   fonte: {$ref: '#/components/schemas/Fonte'}
                   pontos: {type: array, items: {$ref: '#/components/schemas/Ponto'}}
+                  aviso: {type: string, nullable: true, description: "Explicação curta para o passageiro (busca aproximada, código inexistente)"}
           description: Lista (pode ser vazia)
         "400": {description: Busca vazia ou curta demais, content: {application/json: {schema: {$ref: '#/components/schemas/Erro'}}}}
         "503": {description: SPTrans indisponível e modo demo não pedido, content: {application/json: {schema: {$ref: '#/components/schemas/Erro'}}}}
+
+  /api/pontos/proximos:
+    post:
+      tags: [transporte]
+      summary: Pontos perto de uma coordenada, do mais próximo ao mais distante
+      description: A localização vai no corpo para não ficar em URL nem em log de acesso; nada é gravado.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lat, lon]
+              properties:
+                lat: {type: number}
+                lon: {type: number}
+                raio: {type: integer, minimum: 100, maximum: 1500, default: 400, description: metros}
+                modo: {type: string, enum: [auto, demo]}
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [fonte, pontos]
+                properties:
+                  fonte: {$ref: '#/components/schemas/Fonte'}
+                  pontos: {type: array, items: {$ref: '#/components/schemas/Ponto'}}
+                  aviso: {type: string, nullable: true}
+          description: Lista com distancia_metros (vazia, com aviso, fora da área ou no modo demonstração)
+        "400": {description: Localização inválida, content: {application/json: {schema: {$ref: '#/components/schemas/Erro'}}}}
+
+  /api/pontos/{codigo}/linhas:
+    get:
+      tags: [transporte]
+      summary: Linhas que param no ponto, com sentido e destino (cadastro GTFS)
+      parameters:
+        - {name: codigo, in: path, required: true, schema: {type: integer, format: int64}}
+      responses:
+        "200": {description: "fonte, codigo, linhas[{letreiro, sentido, destino, nome_linha}] e aviso"}
+
+  /api/linhas/{letreiro}/paradas:
+    get:
+      tags: [transporte]
+      summary: Paradas da linha, em ordem, nos dois sentidos (cadastro GTFS)
+      parameters:
+        - {name: letreiro, in: path, required: true, schema: {type: string, example: "5317-10"}}
+      responses:
+        "200": {description: "fonte, letreiro, sentidos[{letreiro, sentido, destino, nome_linha, paradas[Ponto]}]"}
+        "404": {description: Linha fora do cadastro ou número com mais de uma linha, content: {application/json: {schema: {$ref: '#/components/schemas/Erro'}}}}
 
   /api/pontos/{codigo}/previsoes:
     get:
@@ -78,7 +134,8 @@ paths:
   /api/linhas:
     get:
       tags: [transporte]
-      summary: Busca linhas por número ou nome
+      summary: Busca linhas por número, nome ou destino
+      description: Número consulta a Olho Vivo; nome ou destino usa o cadastro GTFS (codigo vem nulo nesse caso).
       parameters:
         - {name: busca, in: query, required: true, schema: {type: string, minLength: 1, maxLength: 80}}
         - {name: modo, in: query, required: false, schema: {type: string, enum: [auto, demo], default: auto}}
@@ -331,7 +388,7 @@ paths:
 
 components:
   schemas:
-    Fonte: {type: string, enum: [OLHO_VIVO, SIMULADO]}
+    Fonte: {type: string, enum: [OLHO_VIVO, GTFS_SPTRANS, SIMULADO], description: "OLHO_VIVO: tempo real; GTFS_SPTRANS: cadastro oficial de paradas e itinerários; SIMULADO: demonstração"}
 
     Erro:
       type: object
@@ -360,6 +417,8 @@ components:
         latitude: {type: number, nullable: true}
         longitude: {type: number, nullable: true}
         fonte: {$ref: '#/components/schemas/Fonte'}
+        linhas: {type: array, nullable: true, items: {type: string}, description: "Letreiros que param no ponto (cadastro)"}
+        distancia_metros: {type: integer, nullable: true, description: "Só em buscas por proximidade"}
 
     Linha:
       type: object

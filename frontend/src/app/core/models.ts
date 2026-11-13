@@ -1,6 +1,7 @@
 /** Modelos tipados a partir de contratos/openapi-mvp.yaml e openapi-integracao.yaml. */
 
-export type Fonte = 'OLHO_VIVO' | 'SIMULADO';
+/** OLHO_VIVO: tempo real. GTFS_SPTRANS: cadastro oficial de paradas e itinerários. SIMULADO: demonstração. */
+export type Fonte = 'OLHO_VIVO' | 'GTFS_SPTRANS' | 'SIMULADO';
 export type Modo = 'auto' | 'demo';
 
 export interface Status {
@@ -20,11 +21,32 @@ export interface Ponto {
   latitude?: number | null;
   longitude?: number | null;
   fonte: Fonte;
+  /** Letreiros que param no ponto, segundo o cadastro da SPTrans. */
+  linhas?: string[] | null;
+  /** Só em buscas por proximidade. */
+  distancia_metros?: number | null;
 }
 
 export interface BuscaPontos {
   fonte: Fonte;
   pontos: Ponto[];
+  /** Explicação curta: busca aproximada, código inexistente ou limite da fonte. */
+  aviso?: string | null;
+}
+
+export interface SentidoLinha {
+  letreiro: string;
+  sentido: number;
+  destino: string;
+  nome_linha: string;
+  paradas: Ponto[];
+}
+
+export interface Itinerario {
+  fonte: Fonte;
+  letreiro: string;
+  sentidos: SentidoLinha[];
+  aviso?: string | null;
 }
 
 export interface Linha {
