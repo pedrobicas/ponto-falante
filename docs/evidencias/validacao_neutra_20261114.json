@@ -1,0 +1,127 @@
+{
+  "data": "2026-11-14",
+  "ambiente": "local isolado, porta 8101; SPTrans e GenAI reais",
+  "testes": {
+    "java": 180,
+    "genai_unitarios": 155,
+    "rpa": 46,
+    "integracao_scripts": 34,
+    "angular": 47
+  },
+  "avaliacao_final_genai_reexecutada": false,
+  "gtfs_oficial_alterado": false,
+  "telas_assistente": [
+    {
+      "nome": "linha-desktop",
+      "overflow": false,
+      "falhas": []
+    },
+    {
+      "nome": "linha-mobile",
+      "overflow": false,
+      "falhas": []
+    },
+    {
+      "nome": "linha-mobile-175",
+      "overflow": false,
+      "falhas": []
+    },
+    {
+      "nome": "chat-desktop",
+      "overflow": false,
+      "falhas": []
+    },
+    {
+      "nome": "chat-mobile",
+      "overflow": false,
+      "falhas": []
+    },
+    {
+      "nome": "chat-mobile-175",
+      "overflow": false,
+      "falhas": []
+    },
+    {
+      "nome": "chat-indisponivel",
+      "overflow": false,
+      "falhas": []
+    }
+  ],
+  "telas_boletim": [
+    {
+      "nome": "desktop",
+      "overflow": false,
+      "falhas": []
+    },
+    {
+      "nome": "mobile-175",
+      "overflow": false,
+      "falhas": []
+    },
+    {
+      "nome": "chat-mobile",
+      "overflow": false,
+      "falhas": []
+    },
+    {
+      "nome": "falha-backend",
+      "overflow": false,
+      "falhas": []
+    }
+  ],
+  "conversa": [
+    {
+      "pergunta": "Quais linhas passam no ponto 70016916?",
+      "origem": "CADASTRO",
+      "disponivel": true,
+      "latencia_ms": 480
+    },
+    {
+      "pergunta": "sentido 1 da linha 875A-10",
+      "origem": "CADASTRO",
+      "disponivel": true,
+      "latencia_ms": 1
+    },
+    {
+      "pergunta": "e no sentido contrário?",
+      "origem": "TEMPO_REAL",
+      "disponivel": true,
+      "latencia_ms": 262
+    },
+    {
+      "pergunta": "e o próximo?",
+      "origem": "TEMPO_REAL",
+      "disponivel": true,
+      "latencia_ms": 1
+    },
+    {
+      "pergunta": "Quais linhas passam no ponto 70016916?",
+      "origem": "CADASTRO",
+      "disponivel": true,
+      "latencia_ms": 0
+    },
+    {
+      "pergunta": "e o próximo?",
+      "origem": "TEMPO_REAL",
+      "disponivel": true,
+      "latencia_ms": 0
+    },
+    {
+      "pergunta": "Tenho 69 anos. Posso usar o ônibus municipal com RG?",
+      "origem": "BASE_OFICIAL",
+      "disponivel": true,
+      "latencia_ms": 5192
+    }
+  ],
+  "voz_assistente": {
+    "idioma": "pt-BR",
+    "caracteres": 120
+  },
+  "boletim_chat": {
+    "origem": "BOLETIM",
+    "natureza": "INDISPONIVEL"
+  },
+  "voz_boletim": "pt-BR",
+  "erros_javascript": [],
+  "rpa_publicacao": "boletim INDISPONIVEL publicado e relido do banco local isolado, sem amostras reais"
+}

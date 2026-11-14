@@ -25,11 +25,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Regressão da busca com o cadastro oficial (GTFS de 12/11/2026 empacotado no JAR). Casos reais relatados em 13/11:
- * "Rua Augusta, 1000" não achava nada e o código 160015580 trazia cerca de 360 pontos sem relação.
+ * Regressão da busca com o cadastro oficial (GTFS de 12/11/2026 empacotado no JAR).
+ * Exemplos públicos da Avenida Paulista cobrem busca por endereço, abreviações e código exato.
  */
 class BuscaRedeTest {
-    static final long Paulista_1711 = 160015580L;
+    static final long PAULISTA_1374 = 70016916L;
     static RedeGtfs rede;
     static TransporteService servico;
 
@@ -58,22 +58,22 @@ class BuscaRedeTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Rua Augusta, 1000", "Rua da Consolação, 1000", "Paulista, 1000",
-            "Rua Augusta, 1000", "nossa senhora do sabra, 1711", "Avenida Paulista, 1000"})
+    @ValueSource(strings = {"Av. Paulista, 1374", "av paulista 1374", "paulista 1374",
+            "AVENIDA PAULISTA 1374", "paulsta, 1374", "Av. Paulísta 1374"})
     void enderecoComAbreviacaoAcentoOuErroAchaOPontoCerto(String termo) {
         RespostaPontos r = servico.buscarPontos(termo, null);
         assertThat(r.pontos()).isNotEmpty();
-        assertThat(r.pontos().get(0).codigo()).as(termo).isEqualTo(Paulista_1711);
+        assertThat(r.pontos().get(0).codigo()).as(termo).isEqualTo(PAULISTA_1374);
         assertThat(r.pontos().get(0).fonte()).isEqualTo(Fonte.GTFS_SPTRANS);
         assertThat(r.pontos().get(0).linhas()).isNotEmpty();
         assertThat(r.aviso()).isNull();
     }
 
     @Test void codigoDevolveSoOPontoDoCodigo() {
-        RespostaPontos r = servico.buscarPontos("160015580", null);
+        RespostaPontos r = servico.buscarPontos("70016916", null);
         assertThat(r.pontos()).singleElement().satisfies(p -> {
-            assertThat(p.codigo()).isEqualTo(Paulista_1711);
-            assertThat(p.nome()).contains("Paulista, 1000");
+            assertThat(p.codigo()).isEqualTo(PAULISTA_1374);
+            assertThat(p.nome()).contains("Paulista, 1374");
         });
     }
 
@@ -81,18 +81,18 @@ class BuscaRedeTest {
         RespostaPontos r = servico.buscarPontos("999999999", null);
         assertThat(r.pontos()).isEmpty();
         assertThat(r.aviso()).contains("Não existe ponto com o código 999999999");
-        assertThat(servico.buscarPontos("1711", null).pontos()).isEmpty();
+        assertThat(servico.buscarPontos("1374", null).pontos()).isEmpty();
     }
 
     @Test void codigoIncompletoSugereOsQueComecamIgual() {
-        RespostaPontos r = servico.buscarPontos("1600155", null);
-        assertThat(r.pontos()).isNotEmpty().allSatisfy(p -> assertThat(String.valueOf(p.codigo())).startsWith("1600155"));
+        RespostaPontos r = servico.buscarPontos("700169", null);
+        assertThat(r.pontos()).isNotEmpty().allSatisfy(p -> assertThat(String.valueOf(p.codigo())).startsWith("700169"));
         assertThat(r.aviso()).contains("começam com os mesmos números");
     }
 
     @Test void numeroSemPontoExatoOrdenaPelaNumeracaoMaisProximaEAvisa() {
-        RespostaPontos r = servico.buscarPontos("Rua Augusta, 1000", null);
-        assertThat(r.pontos().get(0).codigo()).isEqualTo(Paulista_1711);
+        RespostaPontos r = servico.buscarPontos("Av. Paulista, 1370", null);
+        assertThat(r.pontos().get(0).codigo()).isEqualTo(PAULISTA_1374);
         assertThat(r.aviso()).contains("numeração mais próxima");
         assertThat(r.pontos()).hasSizeLessThanOrEqualTo(TransporteService.LIMITE_RESULTADOS);
     }
@@ -104,15 +104,15 @@ class BuscaRedeTest {
     }
 
     @Test void pontosProximosVemOrdenadosPorDistancia() {
-        RespostaPontos r = servico.pontosProximos(-23.669878, -46.688667, 400, null);
-        assertThat(r.pontos().get(0).codigo()).isEqualTo(Paulista_1711);
+        RespostaPontos r = servico.pontosProximos(-23.562931, -46.654428, 400, null);
+        assertThat(r.pontos().get(0).codigo()).isEqualTo(PAULISTA_1374);
         assertThat(r.pontos().get(0).distanciaMetros()).isZero();
         assertThat(r.pontos()).extracting(Ponto::distanciaMetros).isSorted();
         assertThat(servico.pontosProximos(-22.9, -43.2, 400, null).aviso()).contains("fora da área");
     }
 
     @Test void linhaPorNumeroTemDoisSentidosComParadasEmOrdem() {
-        var it = servico.itinerario("5317-10", null);
+        var it = servico.itinerario("875A-10", null);
         assertThat(it.sentidos()).hasSize(2);
         assertThat(it.sentidos().get(0).paradas()).hasSizeGreaterThan(10);
         assertThat(it.sentidos()).extracting(Modelos.SentidoLinha::destino).doesNotHaveDuplicates();
@@ -120,13 +120,13 @@ class BuscaRedeTest {
     }
 
     @Test void linhaPorNomeOuDestinoVemDoCadastro() {
-        var r = servico.buscarLinhas("sesc orion", null);
+        var r = servico.buscarLinhas("aeroporto perdizes", null);
         assertThat(r.linhas()).isNotEmpty();
-        assertThat(r.linhas()).anySatisfy(l -> assertThat(l.letreiro()).isEqualTo("5317-10"));
+        assertThat(r.linhas()).anySatisfy(l -> assertThat(l.letreiro()).isEqualTo("875A-10"));
     }
 
     @Test void linhasDoPontoListamLetreiroESentido() {
-        var r = servico.linhasDoPonto(Paulista_1711, null);
+        var r = servico.linhasDoPonto(PAULISTA_1374, null);
         assertThat(r.linhas()).isNotEmpty().allSatisfy(l -> assertThat(l.destino()).isNotBlank());
         assertThat(servico.linhasDoPonto(1L, null).aviso()).contains("não aparece");
     }
@@ -138,8 +138,8 @@ class BuscaRedeTest {
     }
 
     @Test void normalizacaoExpandeAbreviacoes() {
-        assertThat(RedeGtfs.tokens("Rua da Consolação, 1000"))
-                .containsExactly("avenida", "nossa", "senhora", "Paulista", "1711");
-        assertThat(RedeGtfs.distancia("sabra", "Paulista", 1)).isEqualTo(1);
+        assertThat(RedeGtfs.tokens("Av. Nsa. Sra. de Fátima, 100"))
+                .containsExactly("avenida", "nossa", "senhora", "fatima", "100");
+        assertThat(RedeGtfs.distancia("paulsta", "paulista", 1)).isEqualTo(1);
     }
 }

@@ -110,7 +110,7 @@ paths:
       tags: [transporte]
       summary: Paradas da linha, em ordem, nos dois sentidos (cadastro GTFS)
       parameters:
-        - {name: letreiro, in: path, required: true, schema: {type: string, example: "5317-10"}}
+        - {name: letreiro, in: path, required: true, schema: {type: string, example: "875A-10"}}
       responses:
         "200": {description: "fonte, letreiro, sentidos[{letreiro, sentido, destino, nome_linha, paradas[Ponto]}]"}
         "404": {description: Linha fora do cadastro ou número com mais de uma linha, content: {application/json: {schema: {$ref: '#/components/schemas/Erro'}}}}
@@ -469,7 +469,8 @@ components:
         ponto: {type: integer, format: int64, minimum: 1, maximum: 999999999999, nullable: true}
         linha: {type: string, pattern: '^[0-9]{3,4}[A-Za-z]?(-[0-9]{1,2})?$', nullable: true}
         sentido: {type: integer, enum: [1, 2], nullable: true}
-        pendencia: {type: string, enum: [PONTO_PREVISAO, PONTO_LINHAS, LINHA, PONTO], nullable: true}
+        pendencia: {type: string, enum: [PONTO_PREVISAO, PONTO_LINHAS, PONTO_EMBARQUE, LINHA, PONTO], nullable: true}
+        veiculo_anterior: {type: string, pattern: '^[a-f0-9]{10}$', nullable: true, description: 'Hash salgado do ônibus de referência, usado apenas para consultar o seguinte em uma nova previsão. Sem horário ou prefixo bruto.'}
         tema: {type: string, enum: [BILHETE, GRATUIDADE, ACESSIBILIDADE], nullable: true}
         publico: {type: string, enum: [IDOSO, PCD, ESTUDANTE], nullable: true}
         idade: {type: integer, minimum: 0, maximum: 120, nullable: true}

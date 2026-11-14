@@ -407,7 +407,8 @@ com indicação do 156.
 
 **Arquitetura de ferramentas.** Perguntas de horário, ponto, linha, sentido e trajeto direto não passam pelo modelo:
 o backend responde com a SPTrans em tempo real e com o cadastro oficial (GTFS), e devolve um contexto só com entidades
-(ponto, linha, sentido) que o navegador reenvia na pergunta seguinte. "Quanto falta para a 5317-10?", "e o próximo?" e
+(ponto, linha, sentido e hash salgado do ônibus de referência) que o navegador reenvia na pergunta seguinte, sem guardar horários.
+Nos exemplos públicos atuais, "Quanto falta para a 875A-10?", "e o próximo?" e
 "e no sentido contrário?" funcionam por esse contexto. O modelo responde só regras, com fontes. Perguntas sobre
 ocorrências usam o boletim do robô, com a natureza do dado declarada.
 

@@ -69,7 +69,7 @@ class BoletimNoChatTest {
 
     @Test void boletimInterrompePendenciaDePontoEPreservaClassificacao() {
         var r = chat(boletim("SIMULADO")).perguntar("O que diz o boletim?", null,
-                new Chat.Contexto(null, "5317-10", 2, "PONTO_PREVISAO", null));
+                new Chat.Contexto(null, "875A-10", 2, "PONTO_PREVISAO", null));
         assertThat(r.origem()).isEqualTo("BOLETIM");
         assertThat(r.naturezaDados()).isEqualTo("SIMULADO");
         assertThat(r.contexto().linha()).isNull();
@@ -84,7 +84,7 @@ class BoletimNoChatTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"Estou com problema no meu Bilhete Único", "Tenho 66 anos, posso andar gratuitamente?",
-            "Quanto falta para a 5317-10?", "problema na recarga do cartão no ônibus"})
+            "Quanto falta para a 875A-10?", "problema na recarga do cartão no ônibus"})
     void perguntasDeRegraOuPrevisaoNaoViramBoletim(String pergunta) {
         assertThat(chat(boletim("ESTIMADO")).respostaDoBoletim(pergunta)).isEmpty();
     }

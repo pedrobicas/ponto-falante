@@ -74,7 +74,7 @@ public class TransporteController {
     @GetMapping("/linhas/{letreiro}/paradas")
     public RespostaItinerario itinerario(@PathVariable String letreiro, @RequestParam(required = false) String modo) {
         if (!letreiro.matches("[0-9A-Za-z\\-]{2,12}")) {
-            throw ErroApi.requisicaoInvalida("Informe a linha como aparece no letreiro, por exemplo 5317-10.");
+            throw ErroApi.requisicaoInvalida("Informe a linha como aparece no letreiro, por exemplo 875A-10.");
         }
         return service.itinerario(letreiro, modo);
     }

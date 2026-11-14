@@ -197,7 +197,7 @@ public class TransporteService {
             }
         }
         if (linhas.isEmpty() && rede.disponivel()) {
-            // Nome ou destino ("Paulista", "terminal santo amaro"): a Olho Vivo só busca pelo letreiro.
+            // Nome ou destino ("paulista", "terminal santo amaro"): a Olho Vivo só busca pelo letreiro.
             List<Linha> doCadastro = new ArrayList<>();
             for (Viagem v : rede.buscarLinhas(termo, LIMITE_RESULTADOS * 2)) {
                 String[] pontas = v.nomeLinha().split(" - ", 2);

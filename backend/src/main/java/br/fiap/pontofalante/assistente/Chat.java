@@ -27,10 +27,14 @@ public final class Chat {
             @Min(1) @Max(999999999999L) Long ponto,
             @Pattern(regexp = "[0-9]{3,4}[A-Za-z]?(-[0-9]{1,2})?") String linha,
             @Min(1) @Max(2) Integer sentido,
-            @Pattern(regexp = "PONTO_PREVISAO|PONTO_LINHAS|LINHA|PONTO") String pendencia,
+            @Pattern(regexp = "PONTO_PREVISAO|PONTO_LINHAS|PONTO_EMBARQUE|LINHA|PONTO") String pendencia,
             @Pattern(regexp = "BILHETE|GRATUIDADE|ACESSIBILIDADE") String tema,
             @Pattern(regexp = "IDOSO|PCD|ESTUDANTE") String publico,
-            @Min(0) @Max(120) Integer idade) {
+            @Min(0) @Max(120) Integer idade,
+            @Pattern(regexp = "[a-f0-9]{10}") String veiculoAnterior) {
+        public Contexto(Long ponto, String linha, Integer sentido, String pendencia, String tema, String publico, Integer idade) {
+            this(ponto, linha, sentido, pendencia, tema, publico, idade, null);
+        }
         public Contexto(Long ponto, String linha, Integer sentido, String pendencia, String tema) {
             this(ponto, linha, sentido, pendencia, tema, null, null);
         }

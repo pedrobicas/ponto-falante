@@ -1,5 +1,20 @@
 # Revisão dos critérios oficiais · GenAI e RPA
 
+## Atualização de 14/11/2026
+
+Conferido no PDF oficial: GenAI, pp. 29–31; RPA, pp. 46–50. Prazo de ambas as disciplinas:
+**19/11/2026 às 23h55**, pelo Teams. Os resultados finais da GenAI permanecem congelados.
+
+- Relatório técnico RPA em PDF, BPMN, integrantes/RMs, logs e cenários: disponíveis em `rpa/docs/` e `rpa/logs/`.
+- Exemplos públicos de busca e conversa migrados para a Avenida Paulista; transcrição histórica sanitizada.
+- Roteiros prontos: `genai/ROTEIRO_VIDEO.md` e `rpa/docs/roteiro_video.md` (RPA limitado a 3 minutos).
+- **Ainda faltam:** gravar/hospedar os dois vídeos, inserir seus links nos relatórios e regenerar o PDF RPA;
+  disponibilizar repositório público e enviar os links no Teams.
+- O repositório atual é privado e o histórico antigo conserva versões anteriores dos exemplos. Para a entrega pública,
+  preparar uma cópia do estado sanitizado com histórico novo; não tornar esse histórico antigo público nem reescrevê-lo.
+
+As seções anteriores abaixo são históricas; o PDF RPA já foi gerado e não é mais uma pendência de criação.
+
 ## Situação em 13/11/2026 (substitui as pendências da revisão de 11/11 abaixo)
 
 | Item | Situação | Onde comprovar |
