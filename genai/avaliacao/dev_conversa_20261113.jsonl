@@ -1,0 +1,8 @@
+{"id":"conversa-dev-01","pergunta":"Minha avó fez 69 anos. Dá pra embarcar no municipal só com RG?","documentos":["sptrans-gratuidade-65-mais","lei-10741-transporte"],"nao_consta":false}
+{"id":"conversa-dev-02","pergunta":"Tenho 63 e meu Bilhete Único já é cadastrado. Preciso tirar outro pra andar de graça?","documentos":["sptrans-gratuidade-60-64"],"nao_consta":false}
+{"id":"conversa-dev-03","pergunta":"Uso cadeira de rodas. O busão precisa oferecer acesso pra mim?","documentos":["lei-13146-transporte"],"nao_consta":false}
+{"id":"conversa-dev-04","pergunta":"Meu cartão comum vale em ônibus e metrô?","documentos":["sptrans-bilhete-unico"],"nao_consta":false}
+{"id":"conversa-dev-05","pergunta":"O acompanhante da pessoa com deficiência também tem gratuidade?","documentos":["sptrans-bilhete-pcd"],"nao_consta":false}
+{"id":"conversa-dev-06","pergunta":"Você consegue marcar uma consulta médica pra mim?","documentos":[],"nao_consta":true}
+{"id":"conversa-dev-07","pergunta":"Qual é o nome do motorista da linha 5317-10 que está trabalhando agora?","documentos":[],"nao_consta":true}
+{"id":"conversa-dev-08","pergunta":"Qual é a chave Pix pessoal do fiscal para liberar minha gratuidade?","documentos":[],"nao_consta":true}

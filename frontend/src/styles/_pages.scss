@@ -70,7 +70,7 @@
 .partida--mudou { animation: mudou 700ms ease-out; }
 @keyframes mudou { from { box-shadow: inset 4px 0 var(--link); } to { box-shadow: inset 0 0 transparent; } }
 /* Assistant remains in document flow: no fixed composer covering content. */
-.assistente { max-width: 48rem; }
+.assistente { max-width: 52rem; }
 .assistente__cabecalho { margin-bottom: 1.5rem; }
 .disponibilidade { display: flex; flex-wrap: wrap; align-items: baseline; gap: .55rem; font-size: .85rem; color: var(--texto-2); margin-top: 1rem; }
 .disponibilidade > p { flex: 1; min-width: 12rem; }
@@ -91,7 +91,7 @@
 .fala__titulo { font-size: 1.15rem; font-weight: 700; margin-bottom: .6rem; }
 .fala--erro { color: var(--critico); }
 .fala--erro .botao { margin-top: .75rem; }
-.fala__acoes { display: flex; align-items: center; gap: .8rem; margin-top: 1rem; }
+.fala__acoes { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; margin: 1rem 0; }
 .processando { color: var(--texto-2); }
 .processando__pontos { display: inline-flex; gap: .2rem; margin-right: .5rem; }
 .processando__pontos i { width: .3rem; height: .3rem; background: currentColor; border-radius: 50%; }
@@ -101,7 +101,8 @@
 .citacoes { font-size: .8rem; margin-top: .5rem; }
 .citacoes__lista { padding-left: 1.25rem; color: var(--texto-2); }
 .citacoes__trecho { margin-left: .4rem; }
-.compositor { margin-top: 1rem; border-top: 1px solid var(--traco); padding-top: 1rem; }
+.compositor { margin-top: 1rem; border-top: 1px solid var(--traco); padding: .75rem 0; background: var(--fundo); }
+.compositor__contexto { font-size: .8rem; color: var(--texto-2); margin-bottom: .5rem; overflow-wrap: anywhere; }
 .compositor__caixa { display: flex; gap: .5rem; align-items: flex-end; border: 1px solid var(--traco-forte); border-radius: 14px; padding: .65rem; background: var(--superficie); }
 .compositor__caixa textarea { flex: 1; width: 100%; resize: vertical; min-height: 52px; max-height: 240px; border: 0; padding: .65rem .3rem; background: transparent; outline: none; }
 .compositor__botoes { display: flex; align-items: center; gap: .2rem; }
@@ -117,7 +118,7 @@
 .boletim { max-width: 60rem; }
 .ficha { margin-bottom: 1.75rem; }
 .ficha__titulo { display: flex; align-items: center; flex-wrap: wrap; gap: .7rem; margin-bottom: 1rem; font-size: 1.1rem; }
-.ficha__dados { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem 2rem; margin-bottom: 1rem; }
+.ficha__dados { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,20rem),1fr)); gap: 1rem 2rem; margin-bottom: 1rem; }
 .ficha dt,.registro dt { color: var(--texto-2); font-size: .8rem; }
 .ficha dd { font-size: .9rem; }
 .marca-texto { display: inline-flex; align-items: center; gap: .3rem; }
@@ -253,6 +254,13 @@
 .linha__sentidos legend { font-weight: 650; margin-bottom: .4rem; }
 .linha__subtitulo { font-size: 1.1rem; margin: 1.25rem 0 .25rem; }
 .linha__paradas { list-style: none; padding: 0; margin-top: .75rem; }
+.linha__filtro { margin: 1rem 0; display: grid; gap: .4rem; }
+.linha__filtro label { font-weight: 650; }
+.linha__selecionada { border: 2px solid var(--link); border-radius: 14px; padding: 1rem; margin: 1rem 0; background: var(--superficie); }
+.linha__previsao { margin-top: .5rem; }
+.linha__paradas .parada__link { width: 100%; text-align: left; border: 0; background: transparent; font: inherit; cursor: pointer; }
+.parada--selecionada { border-left: 4px solid var(--link); background: var(--superficie-2); }
+.parada__ordem { min-width: 2rem; color: var(--link); font-variant-numeric: tabular-nums; text-align: center; }
 .ponto__linhas { margin-top: 1.5rem; }
 .ponto__linhas h2 { font-size: 1.1rem; margin-bottom: .25rem; }
 .ponto__linhas-lista { display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; padding: 0; margin-top: .75rem; }

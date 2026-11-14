@@ -1,0 +1,36 @@
+{
+  "conjunto": "dev_v3",
+  "sha256": "9e7554cc93be9486abb29b8f4a8aec4bc595cf8b25ed1d5f7a75ff0aff687b5d",
+  "configs": [
+    "agente_v1"
+  ],
+  "modelo_base": "qwen2.5:7b",
+  "opcoes_llm": {
+    "temperature": 0,
+    "seed": 42,
+    "num_ctx": 8192,
+    "num_predict": 750
+  },
+  "rubrica": "v3.1",
+  "v3": {},
+  "codigo_sha256": {
+    "__init__.py": "5c9cf93557e2d08d790ea5374266ab08780f03bf171b0498453a051fd0cc8eac",
+    "agente.py": "d3f49ee489e170e80e07040361266c3a671a26340235819e7f9f59d88049b6d6",
+    "agente_v2.py": "b6049db9a26d8d5dbcfc1af6a5d3acab86e1c1eff9a58fd417898b4cf2ca1454",
+    "agente_v3.py": "2b17081bb1edb353365a13c9bd1ff6bb726905f039b08bf9473a340289e3d5a5",
+    "avaliacao.py": "846a5eaf1ef27fce35f25565aaa2f7aa967bdd4fd4823266d61af0e28e523945",
+    "avaliacao_v2.py": "2f7a5d9457a56f4a7101720001929c074a9dbcbd2a7c6ca191c8f7a9f064b371",
+    "avaliacao_v3.py": "4b88ef57973b859521869691177312c05b2964c983bb92763344e0583950d867",
+    "busca_conversa.py": "082b08a48c5d70d3aa5c958cd42aec4c91e154198556a1833fd7157ab7ec21db",
+    "busca_v3.py": "9bdae922a3cda68a9abbb736332bf6c85f741b2259bf4bc4d6f961a50fadee09",
+    "esquemas.py": "51345754cc44bd85085545326d89ebcde3fcf49c942c8ac3cedc70330e80bde5",
+    "gerador.py": "93539ca8b2fba49ff7694e78be39c2928d24d3f86e07aae946624ff7e8609a1e",
+    "indice.py": "b0d6427160c0878eefadc6d8dc622e3e89390dece9e8a6ea7b8c2481fda56be3",
+    "llm.py": "5981266c3751c633ef0a088434051c6a9f3be8ac567bdecec87aa4b48cecae9a",
+    "trechos.py": "90775664a4173dc6296531f0cdae076138a85d75ffdd45617a33b962c91e5d7a",
+    "trechos_v3.py": "004dcb9c1bd816d00870f53ce5ecf911facb12103addfb2e00c856d7fb0ca9d0"
+  },
+  "inicio_utc": "2026-11-14T02:27:57.869120+00:00",
+  "estado": "concluido",
+  "fim_utc": "2026-11-14T02:36:39.612253+00:00"
+}

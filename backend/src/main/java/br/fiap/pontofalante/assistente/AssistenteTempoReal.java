@@ -54,7 +54,8 @@ public class AssistenteTempoReal {
             "proximo", "proximos", "proxima", "passa", "passam", "passando", "chega", "chegam", "chegar", "demora",
             "demoram", "falta", "faltam", "previsao", "previsto", "vem", "vai", "passar", "tempo", "real", "agora",
             "aqui", "ai", "la", "hoje", "por favor", "favor", "quero", "saber", "sabe", "dizer", "diga", "fala", "fale",
-            "tem", "ha", "algum", "alguma", "com", "ao", "estou", "to", "tô", "ja", "ainda", "mais", "minutos");
+            "tem", "ha", "algum", "alguma", "com", "ao", "estou", "to", "tô", "ja", "ainda", "mais", "minutos",
+            "onde", "fica", "ficam", "encontro", "encontrar", "linhas", "nesse", "nessa", "querover");
 
     private final TransporteService transporte;
 
@@ -64,6 +65,15 @@ public class AssistenteTempoReal {
 
     /** Pergunta de tempo real respondida pelo backend; vazio quando a pergunta deve ir para a GenAI. */
     public Optional<RespostaChat> responder(String pergunta) {
+        return responder(pergunta, null);
+    }
+
+    public Optional<RespostaChat> responder(String pergunta, Chat.Contexto contexto) {
+        var conversa = new ConversaTransporte(transporte, this).responder(pergunta, contexto);
+        return conversa.isPresent() ? conversa : responderLegado(pergunta);
+    }
+
+    private Optional<RespostaChat> responderLegado(String pergunta) {
         if (pergunta == null || pergunta.isBlank()) {
             return Optional.empty();
         }
@@ -103,7 +113,11 @@ public class AssistenteTempoReal {
         return Optional.empty();
     }
 
-    private RespostaChat previsoes(String original, String t, String filtroLinha) {
+    RespostaChat previsoes(String original, String t, String filtroLinha) {
+        return previsoes(original, t, filtroLinha, null);
+    }
+
+    RespostaChat previsoes(String original, String t, String filtroLinha, Integer sentido) {
         ProvedorTransporte provedor = transporte.escolher(null);
         Ponto ponto;
         List<Ponto> alternativas = List.of();
@@ -136,6 +150,8 @@ public class AssistenteTempoReal {
         if (filtroLinha != null) {
             onibus.removeIf(o -> !mesmaLinha(o.letreiro(), filtroLinha));
         }
+        if (sentido != null) onibus.removeIf(o -> !sentido.equals(o.sentido()));
+        onibus.sort(java.util.Comparator.comparingInt(OnibusPrevisto::minutos));
         boolean simulado = p.fonte() == Fonte.SIMULADO;
         StringBuilder sb = new StringBuilder();
         if (simulado) {
@@ -186,8 +202,8 @@ public class AssistenteTempoReal {
      * A busca da SPTrans é por trecho contínuo do nome; "paulista trianon" não acha "PAULISTA - TRIANON". Sem resultado,
      * busca pela palavra mais longa e ordena pelos pontos que contêm mais palavras da pergunta.
      */
-    private static List<Ponto> buscarPontos(ProvedorTransporte provedor, String termo) {
-        List<Ponto> pontos = provedor.buscarPontos(termo);
+    List<Ponto> buscarPontos(ProvedorTransporte provedor, String termo) {
+        List<Ponto> pontos = transporte.buscarPontos(termo, null).pontos();
         String[] palavras = normalizar(termo).split(" ");
         if (!pontos.isEmpty() || palavras.length < 2) {
             return pontos;
@@ -201,7 +217,7 @@ public class AssistenteTempoReal {
         if (maior.length() < 3) {
             return pontos;
         }
-        List<Ponto> candidatos = new ArrayList<>(provedor.buscarPontos(maior));
+        List<Ponto> candidatos = new ArrayList<>(transporte.buscarPontos(maior, null).pontos());
         candidatos.sort((a, b) -> Integer.compare(acertos(b, palavras), acertos(a, palavras)));
         int melhor = candidatos.isEmpty() ? 0 : acertos(candidatos.getFirst(), palavras);
         candidatos.removeIf(p -> acertos(p, palavras) < melhor || melhor < 2);
@@ -221,7 +237,7 @@ public class AssistenteTempoReal {
 
     private RespostaChat dadosDaLinha(String linha) {
         ProvedorTransporte provedor = transporte.escolher(null);
-        List<Linha> linhas = provedor.buscarLinhas(linha);
+        List<Linha> linhas = transporte.buscarLinhas(linha, null).linhas();
         if (linhas.isEmpty()) {
             return resposta("Não encontrei a linha " + linha + ".", provedor.fonte(), false);
         }
@@ -264,7 +280,7 @@ public class AssistenteTempoReal {
     private static RespostaChat resposta(String texto, Fonte fonte, boolean falha) {
         List<FonteCitada> fontes = fonte == null ? List.of()
                 : List.of(new FonteCitada(fonte == Fonte.SIMULADO ? "Dados simulados (demonstração)"
-                : "SPTrans Olho Vivo, tempo real", ""));
+                : "SPTrans Olho Vivo, tempo real", "", fonte == Fonte.SIMULADO ? null : "https://www.sptrans.com.br/olho-vivo/"));
         return new RespostaChat(texto, fontes, falha ? "baixa" : "alta", false, true, null, ORIGEM);
     }
 
@@ -274,8 +290,7 @@ public class AssistenteTempoReal {
         List<String> palavras = new ArrayList<>();
         for (String p : semPontuacao.split("\\s+")) {
             String n = normalizar(p);
-            if (p.isBlank() || VAZIAS.contains(n) || (linha != null && n.equalsIgnoreCase(linha))
-                    || n.matches("\\d{3,4}[a-z]?(-\\d{1,2})?")) {
+            if (p.isBlank() || VAZIAS.contains(n) || (linha != null && n.equalsIgnoreCase(linha))) {
                 continue;
             }
             palavras.add(p);

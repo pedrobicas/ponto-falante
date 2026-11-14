@@ -91,9 +91,23 @@ export interface PerguntaChat {
 export interface FonteResposta {
   documento: string;
   trecho_id: string;
+  url?: string | null;
 }
 
+export interface ContextoChat {
+  ponto?: number | null;
+  linha?: string | null;
+  sentido?: number | null;
+  pendencia?: string | null;
+  tema?: string | null;
+  publico?: string | null;
+  idade?: number | null;
+}
+
+export interface AcaoChat { titulo: string; pergunta?: string | null; rota?: string | null; }
+
 export interface RespostaChat {
+  natureza_dados?: NaturezaDados | null;
   resposta: string;
   fontes: FonteResposta[];
   confianca: 'alta' | 'media' | 'baixa';
@@ -103,13 +117,15 @@ export interface RespostaChat {
   /** TEMPO_REAL (dados da SPTrans pelo backend), BASE_OFICIAL (IA local com fontes oficiais) ou INDISPONIVEL. */
   origem?: OrigemResposta | null;
   dados_simulados?: boolean;
+  contexto?: ContextoChat | null;
+  acoes?: AcaoChat[];
 }
 
-export type OrigemResposta = 'TEMPO_REAL' | 'BASE_OFICIAL' | 'INDISPONIVEL';
+export type OrigemResposta = 'TEMPO_REAL' | 'CADASTRO' | 'BOLETIM' | 'BASE_OFICIAL' | 'INDISPONIVEL';
 
 /** Origem efetiva: sem o campo, vale BASE_OFICIAL quando disponível e INDISPONIVEL quando não. */
 export function origemDaResposta(r: Pick<RespostaChat, 'origem' | 'disponivel'>): OrigemResposta {
-  if (r.origem === 'TEMPO_REAL' || r.origem === 'BASE_OFICIAL' || r.origem === 'INDISPONIVEL') return r.origem;
+  if (r.origem === 'TEMPO_REAL' || r.origem === 'CADASTRO' || r.origem === 'BOLETIM' || r.origem === 'BASE_OFICIAL' || r.origem === 'INDISPONIVEL') return r.origem;
   return r.disponivel ? 'BASE_OFICIAL' : 'INDISPONIVEL';
 }
 

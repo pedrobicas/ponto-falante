@@ -9,14 +9,9 @@ import { ErroVoz, SpeechService } from '../../core/speech.service';
 import { StatusService } from '../../core/status.service';
 import { Icone } from '../../shared/icone';
 import { Origem } from '../../shared/origem';
+import { ConversaService, Mensagem } from '../../core/conversa.service';
+export type { Mensagem } from '../../core/conversa.service';
 
-export interface Mensagem {
-  id: number;
-  pergunta: string;
-  estado: 'enviando' | 'ok' | 'erro';
-  resposta?: RespostaChat;
-  erro?: string;
-}
 
 export const LIMITE = 500;
 
@@ -33,7 +28,7 @@ export function confiancaEmPalavras(c: RespostaChat['confianca']): string {
 
 /** Resposta de tempo real montada com dados de demonstração precisa do selo SIMULADO. */
 export function respostaSimulada(r: RespostaChat, sptransDemo: boolean): boolean {
-  if (origemDaResposta(r) !== 'TEMPO_REAL') return false;
+  if (!['TEMPO_REAL', 'CADASTRO'].includes(origemDaResposta(r))) return false;
   return !!r.dados_simulados || sptransDemo || r.fontes.some((f) => /simulad|demonstra/i.test(f.documento));
 }
 
@@ -44,8 +39,8 @@ export function respostaSimulada(r: RespostaChat, sptransDemo: boolean): boolean
     <div class="pagina assistente">
       <header class="cabecalho assistente__cabecalho">
         <p class="sobretitulo"><pf-icone nome="conversa" /> Assistente</p>
-        <h1>Como posso ajudar?</h1>
-        <p class="cabecalho__apoio">Tire dúvidas sobre ônibus, Bilhete Único e acessibilidade.</p>
+        <h1>Seu caminho começa aqui.</h1>
+        <p class="cabecalho__apoio">Encontre seu ônibus. Confira o sentido. Entenda seus direitos.</p>
         <div class="disponibilidade disponibilidade--{{ status.assistente() }}" role="status">
           <span class="disponibilidade__luz" aria-hidden="true"></span>
           <p>
@@ -70,7 +65,7 @@ export function respostaSimulada(r: RespostaChat, sptransDemo: boolean): boolean
         </div>
       </header>
 
-      <section class="conversa" aria-label="Conversa com o assistente" role="log" aria-live="polite" aria-relevant="additions text">
+      <section class="conversa" aria-label="Conversa com o assistente" role="log" aria-live="polite" aria-relevant="additions text" [attr.aria-busy]="enviando()">
         @if (mensagens().length === 0) {
           <div class="conversa__inicio">
             
@@ -102,7 +97,7 @@ export function respostaSimulada(r: RespostaChat, sptransDemo: boolean): boolean
               @case ('enviando') {
                 <div class="fala fala--assistente fala--processando">
                   <p class="fala__autor">Assistente</p>
-                  <p class="processando"><span class="processando__pontos" aria-hidden="true"><i></i><i></i><i></i></span>Processando a pergunta…</p>
+                  <p class="processando"><span class="processando__pontos" aria-hidden="true"><i></i><i></i><i></i></span>{{ esperaLonga() ? 'A consulta está levando mais tempo. Você pode continuar usando o aplicativo.' : 'Consultando as fontes para você…' }}</p>
                 </div>
               }
               @case ('erro') {
@@ -116,29 +111,34 @@ export function respostaSimulada(r: RespostaChat, sptransDemo: boolean): boolean
               }
               @case ('ok') {
                 @if (m.resposta; as r) {
-                  @if (origem(r) === 'INDISPONIVEL') {
+                  @if (!r.disponivel || origem(r) === 'INDISPONIVEL') {
                     <div class="fala fala--assistente fala--indisponivel">
                       <div class="fala__cabeca">
                         <p class="fala__autor">Assistente</p>
                         <pf-origem tipo="indisponivel" rotulo="Indisponível" semDescricao />
                       </div>
-                      <p class="fala__titulo">O assistente está fora do ar agora</p>
+                      <p class="fala__titulo">{{ origem(r) === 'TEMPO_REAL' ? 'A SPTrans não respondeu agora' : 'O assistente está fora do ar agora' }}</p>
                       <p class="fala__texto">{{ r.resposta || 'Tente de novo em alguns minutos.' }}</p>
                       <p class="fala__texto">
                         O resto do aplicativo continua funcionando:
                         <a routerLink="/busca">veja os próximos ônibus</a> ou <a routerLink="/boletim">o boletim</a>.
                       </p>
+                      <button type="button" class="botao botao--contorno botao--pequeno" (click)="reenviar(m)" [disabled]="enviando()">Tentar de novo</button>
                     </div>
                   } @else {
                     <div class="fala fala--assistente">
                       <div class="fala__cabeca">
                         <p class="fala__autor">Assistente</p>
-                        @if (origem(r) === 'TEMPO_REAL') {
+                        @if (origem(r) === 'TEMPO_REAL' || origem(r) === 'CADASTRO') {
                           @if (simulada(r)) {
                             <pf-origem tipo="simulado" rotulo="SIMULADO · tempo real de demonstração" [forte]="true" />
+                          } @else if (origem(r) === 'CADASTRO') {
+                            <pf-origem tipo="base-oficial" rotulo="Cadastro SPTrans" />
                           } @else {
                             <pf-origem tipo="tempo-real" />
                           }
+                        } @else if (origem(r) === 'BOLETIM') {
+                          <pf-origem [tipo]="r.natureza_dados === 'SIMULADO' ? 'simulado' : r.natureza_dados === 'ESTIMADO' ? 'estimado' : 'indisponivel'" />
                         } @else {
                           <pf-origem tipo="base-oficial" />
                         }
@@ -163,7 +163,9 @@ export function respostaSimulada(r: RespostaChat, sptransDemo: boolean): boolean
                           <ol class="citacoes__lista" [attr.aria-labelledby]="'fontes-' + m.id">
                             @for (f of r.fontes; track f.documento + f.trecho_id) {
                               <li>
-                                <span class="citacoes__doc">{{ f.documento }}</span>
+                                @if (fonteSegura(f.url)) {
+                                  <a class="citacoes__doc" [href]="f.url" target="_blank" rel="noopener noreferrer">{{ f.documento }} <span class="vo">(abre em outra aba)</span></a>
+                                } @else { <span class="citacoes__doc">{{ f.documento }}</span> }
                                 @if (f.trecho_id) {
                                   <span class="citacoes__trecho">trecho {{ f.trecho_id }}</span>
                                 }
@@ -184,6 +186,17 @@ export function respostaSimulada(r: RespostaChat, sptransDemo: boolean): boolean
                           </button>
                         }
                       </div>
+                      @if ($last && r.acoes?.length) {
+                        <div class="sugestoes__lista" role="group" aria-label="Continuar a conversa">
+                          @for (a of r.acoes; track a.titulo) {
+                            @if (a.pergunta) {
+                              <button class="chip" type="button" [disabled]="enviando()" (click)="usarSugestao(a.pergunta)">{{ a.titulo }}</button>
+                            } @else if (rotaSegura(a.rota)) {
+                              <a class="chip" [routerLink]="a.rota!.split('?')[0]" [queryParams]="parametros(a.rota!)">{{ a.titulo }}</a>
+                            }
+                          }
+                        </div>
+                      }
                     </div>
                   }
                 }
@@ -192,8 +205,14 @@ export function respostaSimulada(r: RespostaChat, sptransDemo: boolean): boolean
           </article>
         }
       </section>
+      <div #fimConversa></div>
 
       <form class="compositor" (ngSubmit)="enviar()" novalidate>
+        @if (conversa.contexto(); as c) {
+          @if (c.ponto || c.linha) {
+            <p class="compositor__contexto">Nesta conversa: @if (c.linha) { linha {{ c.linha }} } @if (c.ponto) { @if (c.linha) { · } ponto {{ c.ponto }} } @if (c.sentido) { · sentido {{ c.sentido }} }</p>
+          }
+        }
         <label for="pergunta" class="compositor__rotulo">Sua pergunta</label>
         <div class="compositor__caixa" [class.compositor__caixa--erro]="erroCampo()" [class.compositor__caixa--ouvindo]="fala.ouvindo()">
           <textarea
@@ -239,7 +258,7 @@ export function respostaSimulada(r: RespostaChat, sptransDemo: boolean): boolean
         }
         <div class="compositor__rodape">
           <p id="pergunta-ajuda" class="ajuda">
-            Enter envia; Shift+Enter quebra a linha. As perguntas não são guardadas.
+            Enter envia; Shift+Enter quebra a linha. Histórico só nesta sessão, apagado ao recarregar.
             <span class="compositor__conta" [class.compositor__conta--limite]="texto.length > limite - 50">{{ texto.length }}/{{ limite }}</span>
           </p>
           <label class="interruptor interruptor--compacto">
@@ -257,28 +276,30 @@ export function respostaSimulada(r: RespostaChat, sptransDemo: boolean): boolean
 })
 export class Assistente {
   private readonly api = inject(ApiService);
+  protected readonly conversa = inject(ConversaService);
   protected readonly prefs = inject(PreferencesService);
   protected readonly status = inject(StatusService);
   protected readonly fala = inject(SpeechService);
   private readonly campo = viewChild<ElementRef<HTMLTextAreaElement>>('campo');
+  private readonly fimConversa = viewChild<ElementRef<HTMLElement>>('fimConversa');
 
   /** ?pergunta= vindo de outra tela (ex.: busca de linhas). */
   readonly pergunta = input<string | undefined>();
 
   protected readonly limite = LIMITE;
-  protected readonly sugestoesTempoReal = ['Qual o destino da linha 8000-10?'];
+  protected readonly sugestoesTempoReal = ['Quais linhas passam no ponto 160015580?', 'Quando vem a 5317-10?', 'Qual o destino da linha 5317-10?', 'Onde fica o ponto da Rua Augusta, 1000?'];
   protected readonly sugestoesGerais = [
     'Tenho 65 anos, preciso pagar o ônibus?',
     'Como funciona o Bilhete Único?',
     'Como o ônibus ajuda quem usa cadeira de rodas?',
   ];
   protected texto = '';
-  protected readonly mensagens = signal<Mensagem[]>([]);
+  protected readonly mensagens = this.conversa.mensagens;
   protected readonly enviando = computed(() => this.mensagens().some((m) => m.estado === 'enviando'));
   protected readonly erroCampo = signal('');
   protected readonly lerAuto = computed(() => this.prefs.prefs().lerRespostaAuto);
   protected readonly lendo = signal<number | null>(null);
-  private contador = 0;
+  protected readonly esperaLonga = signal(false);
   private sessao = 0;
 
   constructor() {
@@ -289,6 +310,7 @@ export class Assistente {
     });
     inject(DestroyRef).onDestroy(() => {
       this.sessao++;
+      this.mensagens.update(l => l.map(m => m.estado === 'enviando' ? { ...m, estado: 'erro', erro: 'Consulta interrompida ao sair. Tente novamente.' } : m));
       this.fala.parar();
       this.fala.pararEscuta();
     });
@@ -342,7 +364,7 @@ export class Assistente {
     this.sessao++;
     this.pararLeitura();
     this.fala.pararEscuta();
-    this.mensagens.set([]);
+    this.conversa.limpar();
     this.campo()?.nativeElement.focus();
   }
 
@@ -368,8 +390,9 @@ export class Assistente {
   }
 
   protected reenviar(m: Mensagem): void {
+    if (this.enviando()) return;
     this.mensagens.update((l) => l.filter((x) => x.id !== m.id));
-    void this.perguntar(m.pergunta);
+    void this.perguntar(m.pergunta, m.contexto);
   }
 
   protected async enviar(): Promise<void> {
@@ -390,16 +413,24 @@ export class Assistente {
     await this.perguntar(pergunta);
   }
 
-  private async perguntar(pergunta: string): Promise<void> {
+  protected fonteSegura(url?: string | null): boolean { return !!url && /^https:\/\/[a-z0-9.-]+\//i.test(url); }
+  protected rotaSegura(rota?: string | null): boolean { return !!rota && /^\/(ponto\/\d+|linha\/[\w-]+)(\?sentido=[12])?$|^\/busca\?perto=1$|^\/boletim$/.test(rota); }
+  protected parametros(rota: string): Record<string, string> { return Object.fromEntries(new URLSearchParams(rota.split('?')[1])); }
+
+  private async perguntar(pergunta: string, contexto = this.conversa.contexto()): Promise<void> {
     const sessao = this.sessao;
-    const id = ++this.contador;
-    this.mensagens.update((l) => [...l, { id, pergunta, estado: 'enviando' }]);
+    const id = ++this.conversa.contador;
+    this.esperaLonga.set(false);
+    const espera = setTimeout(() => this.esperaLonga.set(true), 8000);
+    this.mensagens.update((l) => [...l.slice(-39), { id, pergunta, estado: 'enviando', contexto }]);
+    setTimeout(() => this.fimConversa()?.nativeElement.scrollIntoView?.({ block: 'nearest' }), 0);
     const atualizar = (m: Partial<Mensagem>) =>
       this.mensagens.update((l) => l.map((x) => (x.id === id ? { ...x, ...m } : x)));
     try {
-      const resposta = await firstValueFrom(this.api.perguntar(pergunta));
+      const resposta = await firstValueFrom(this.api.perguntar(pergunta, contexto));
       if (sessao !== this.sessao) return;
       atualizar({ estado: 'ok', resposta });
+      this.conversa.contexto.set(resposta.contexto ?? null);
       if (origemDaResposta(resposta) !== 'INDISPONIVEL' && this.lerAuto() && this.fala.falar(resposta.resposta)) {
         this.lendo.set(id);
       }
@@ -413,6 +444,8 @@ export class Assistente {
             ? 'Muitas perguntas seguidas. Espere um minuto e tente de novo.'
             : 'Não foi possível falar com o assistente agora. O resto do aplicativo continua funcionando.';
       atualizar({ estado: 'erro', erro });
+    } finally {
+      clearTimeout(espera);
     }
   }
 }

@@ -112,13 +112,17 @@ public class BoletimService {
             boolean coerente = switch (n) {
                 case "ESTIMADO" -> olhovivo > 0 && simulador == 0;
                 case "SIMULADO" -> simulador > 0 && olhovivo == 0;
-                default -> olhovivo == 0 && simulador == 0;
+                // Consultas reais podem não conter previsões suficientes para uma decisão.
+                default -> simulador == 0;
             };
             if (!coerente) {
                 throw ErroApi.requisicaoInvalida("natureza_dados contradiz fonte_dados.");
             }
         }
         for (JsonNode linha : corpo.path("linhas")) {
+            if ("INDISPONIVEL".equals(natureza.asText()) && !"SEM_DADOS".equals(linha.path("status").asText())) {
+                throw ErroApi.requisicaoInvalida("Boletim INDISPONIVEL só pode conter linhas SEM_DADOS.");
+            }
             JsonNode c = linha.path("classificacao");
             if (c.isMissingNode() || c.isNull()) {
                 continue;

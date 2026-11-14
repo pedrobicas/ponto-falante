@@ -29,7 +29,7 @@ public class ChatController {
             throw new ErroApi(HttpStatus.TOO_MANY_REQUESTS, "MUITAS_PERGUNTAS",
                     "Você fez muitas perguntas seguidas. Espere um minuto e tente de novo.");
         }
-        return service.perguntar(corpo.pergunta(), service.idCliente(ipDoCliente(req)));
+        return service.perguntar(corpo.pergunta(), service.idCliente(ipDoCliente(req)), corpo.contexto());
     }
 
     /**

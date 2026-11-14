@@ -12,6 +12,7 @@ RESPOSTA_NAO_CONSTA = ("Não encontrei essa informação nas fontes oficiais que
 class Fonte(BaseModel):
     documento: str
     trecho_id: str
+    url: str | None = None
 
 
 class RespostaIA(BaseModel):

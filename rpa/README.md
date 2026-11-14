@@ -45,7 +45,7 @@ Fluxo completo em [`docs/fluxo.bpmn`](docs/fluxo.bpmn) (abre em https://demo.bpm
 | SEM DADOS | menos de 3 consultas com previsão da linha (o robô não decide no escuro) |
 
    Se menos de 50% das janelas de coleta do dia foram cobertas, o boletim avisa "amostragem parcial".
-7. **Sem amostra real:** o boletim sai como **INDISPONÍVEL** e não inventa números. Só quando o próprio MVP está em modo demonstração o robô usa o histórico **SIMULADO** da rede fictícia, com rótulo na tela e na voz. Real e simulado nunca se misturam.
+7. **Sem dados suficientes para decidir:** o boletim sai como **INDISPONÍVEL**, mesmo quando houve consultas reais. Nesse caso, preserva a contagem e a classificação `VERIFICADO` da coleta, mas não afirma que a operação está normal nem inventa esperas ou atrasos. Só quando o próprio MVP está em modo demonstração o robô usa o histórico **SIMULADO** da rede fictícia, com rótulo na tela e na voz. Real e simulado nunca se misturam.
 8. **Saída:** boletim JSON + HTML acessível com `resumo_falado`, publicado com `POST /boletim` (cabeçalho `X-API-Key`). O MVP mostra em `GET /boletim` e a tela marca **Estimado**, **Simulado** ou **Indisponível**.
 9. **Exceções** (nenhuma falha silenciosa):
 
@@ -72,6 +72,8 @@ Robô    --POST /boletim (X-API-Key)--> Spring Boot --GET /boletim--> Angular (l
 ```
 
 O boletim sempre informa de onde vieram os dados (`fonte_dados`: SPTrans Olho Vivo com o número de consultas, ou simulador) e a categoria (`ESTIMADO`, `SIMULADO`, `INDISPONIVEL`). O backend recusa boletim cuja proveniência não confere com as amostras gravadas.
+
+A assistente consulta esse mesmo boletim, conserva a categoria no campo `natureza_dados` e avisa quando a referência é de outro dia. O selo da resposta distingue estimativa, simulação e indisponibilidade. O fluxo completo de tela, voz, histórico e falha de conexão pode ser validado com `scripts/integracao/validar_boletim_chat.js` pelo Playwright CLI, após a publicação local pelo robô.
 
 Agendamento gratuito no GitHub Actions: `.github/workflows/rpa-coleta.yml` (coletor, 8 vezes por dia) e `.github/workflows/rpa-diario.yml` (boletim, 09:00 UTC). Os segredos `MVP_URL` e `RPA_API_KEY` ficam só nos Secrets do repositório.
 

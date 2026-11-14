@@ -45,8 +45,8 @@ export class ApiService {
     });
   }
 
-  perguntar(pergunta: string): Observable<RespostaChat> {
-    return this.http.post<RespostaChat>('/api/chat', { pergunta });
+  perguntar(pergunta: string, contexto?: import('./models').ContextoChat | null): Observable<RespostaChat> {
+    return this.http.post<RespostaChat>('/api/chat', contexto ? { pergunta, contexto } : { pergunta });
   }
 
   boletim(): Observable<Boletim> {

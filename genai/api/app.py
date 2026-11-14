@@ -15,7 +15,7 @@ import time
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
-from threading import Lock
+from threading import Lock, BoundedSemaphore
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -37,6 +37,7 @@ _trava_limite = Lock()
 _agora = time.monotonic
 # Mantem no maximo quatro geracoes ativas, inclusive depois de um timeout HTTP.
 _executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="genai")
+_vagas = BoundedSemaphore(4)
 
 
 @asynccontextmanager
@@ -182,11 +183,21 @@ async def chat(p: PerguntaChat):
             raise ValueError
     except ValueError:
         raise HTTPException(503, "GENAI_TIMEOUT_S deve ser um número positivo e finito de segundos.") from None
+    # Não enfileirar gerações que já vão expirar. Uma chamada expirada continua ocupando a vaga
+    # até a thread realmente terminar; cancelar o HTTP não libera artificialmente a GPU.
+    if not _vagas.acquire(blocking=False):
+        raise HTTPException(429, "O assistente está ocupado. Tente novamente em instantes.", headers={"Retry-After": "5"})
+    try:
+        trabalho = _executor.submit(_gerar, p.pergunta.strip())
+    except Exception:
+        _vagas.release()
+        raise HTTPException(503, "Não foi possível iniciar a consulta.") from None
+    trabalho.add_done_callback(lambda _: _vagas.release())
     try:
         # Inclui fila da thread, carga do índice e todas as etapas do agente/RAG.
         # Python não interrompe a thread síncrona: após o prazo, seu resultado é descartado.
         async with asyncio.timeout(timeout_s):
-            r = await asyncio.get_running_loop().run_in_executor(_executor, _gerar, p.pergunta.strip())
+            r = await asyncio.wrap_future(trabalho)
         if r.resposta is None:
             r.resposta = recusa("baixa")
         ms = int((time.perf_counter() - t0) * 1000)

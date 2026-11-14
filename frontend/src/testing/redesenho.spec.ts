@@ -64,7 +64,7 @@ describe('Assistente', () => {
     c.texto = pergunta;
     const envio = c.enviar();
     fixture.detectChanges();
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Processando');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Consultando as fontes');
     http.expectOne('/api/chat').flush(resposta);
     await envio;
     fixture.detectChanges();

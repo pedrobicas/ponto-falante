@@ -12,7 +12,7 @@ it('assistente indisponivel aparece como estado amigavel e fontes como itens de 
   const fixture = TestBed.createComponent(Assistente);
   fixture.detectChanges();
   const el = fixture.nativeElement as HTMLElement;
-  expect(el.querySelector('h1')?.textContent).toContain('Como posso ajudar?');
+  expect(el.querySelector('h1')?.textContent).toContain('Seu caminho começa aqui.');
   expect(el.querySelectorAll('.sugestoes .chip').length).toBeGreaterThan(0);
   (fixture.componentInstance as unknown as { texto: string }).texto = 'Tenho direito a gratuidade?';
   const http = TestBed.inject(HttpTestingController);

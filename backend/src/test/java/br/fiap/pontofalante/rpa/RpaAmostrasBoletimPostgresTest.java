@@ -172,8 +172,8 @@ class RpaAmostrasBoletimPostgresTest {
             "ESTIMADO|{\"olhovivo\":40,\"simulador\":0}|[{\"linha\":\"8700-10\",\"status\":\"CRITICA\",\"classificacao\":\"ESTIMADO\",\"atraso_medio_min\":12.0}]",
             // ESTIMADO não se mistura com simulação
             "ESTIMADO|{\"olhovivo\":40,\"simulador\":5}|[]",
-            // INDISPONIVEL não tem registros
-            "INDISPONIVEL|{\"olhovivo\":40,\"simulador\":0}|[]",
+            // INDISPONIVEL não pode afirmar situação normal, mesmo com consultas reais
+            "INDISPONIVEL|{\"olhovivo\":40,\"simulador\":0}|[{\"linha\":\"8700-10\",\"status\":\"OK\"}]",
             // linha sem dados não pode ter decisão
             "ESTIMADO|{\"olhovivo\":40,\"simulador\":0}|[{\"linha\":\"8700-10\",\"status\":\"CRITICA\",\"classificacao\":\"INDISPONIVEL\"}]",
             // linha ESTIMADO citando simulador
@@ -184,5 +184,12 @@ class RpaAmostrasBoletimPostgresTest {
         String[] p = caso.split("\\|");
         mvc.perform(post("/api/boletim").header("X-API-Key", CHAVE).contentType("application/json")
                 .content(boletim("2026-10-02", p[0], p[1], p[2]))).andExpect(status().isBadRequest());
+    }
+
+    @Test void consultasReaisPodemSerInsuficientesParaClassificarOperacao() throws Exception {
+        mvc.perform(post("/api/boletim").header("X-API-Key", CHAVE).contentType("application/json")
+                .content(boletim("2026-10-03", "INDISPONIVEL", "{\"olhovivo\":1,\"simulador\":0}",
+                        "[{\"linha\":\"8700-10\",\"status\":\"SEM_DADOS\",\"classificacao\":\"INDISPONIVEL\",\"fontes\":[\"olhovivo\"]}]")))
+                .andExpect(status().isCreated());
     }
 }

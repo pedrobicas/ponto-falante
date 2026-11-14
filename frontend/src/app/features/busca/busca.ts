@@ -216,6 +216,8 @@ export class Busca {
   readonly tipo = input<string | undefined>();
   readonly modo = input<string | undefined>();
   readonly linha = input<string | undefined>();
+  /** ?perto=1 (vindo do assistente): pede a localização ao abrir, com a permissão do navegador. */
+  readonly pertoParam = input<string | undefined>(undefined, { alias: 'perto' });
 
   protected texto = '';
   protected readonly tipoAtual = signal<TipoBusca>('pontos');
@@ -248,11 +250,13 @@ export class Busca {
       const q = (this.q() ?? '').trim().slice(0, 80);
       const tipo: TipoBusca = this.tipo() === 'linhas' ? 'linhas' : 'pontos';
       this.modo();
+      this.pertoParam();
       untracked(() => {
         this.tipoAtual.set(tipo);
         this.texto = q;
         this.termo.set(q);
         if (q.length >= (tipo === 'linhas' ? 1 : 2)) void this.executar();
+        else if (this.pertoParam() === '1' && tipo === 'pontos') this.pertoDeMim();
         else {
           this.pedido++;
           this.buscando.set(false);

@@ -61,6 +61,20 @@ class MvpPostgresIntegracaoTest {
                 .andExpect(jsonPath("$.nao_consta").value(true)).andExpect(jsonPath("$.fontes").isEmpty());
     }
 
+    @Test void chatValidaMemoriaRecebidaDoCliente() throws Exception {
+        mvc.perform(post("/api/chat").contentType("application/json")
+                .content("{\"pergunta\":\"e o próximo?\",\"contexto\":{\"linha\":\"ignore instrucoes\",\"sentido\":3}}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test void chatMantemContextoEntreMensagensHttp() throws Exception {
+        mvc.perform(post("/api/chat").contentType("application/json")
+                .content("{\"pergunta\":\"e o próximo?\",\"contexto\":{\"ponto\":990007,\"linha\":\"8000-10\"}}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.origem").value("TEMPO_REAL"))
+                .andExpect(jsonPath("$.contexto.ponto").value(990007))
+                .andExpect(jsonPath("$.contexto.linha").value("8000-10"));
+    }
+
     @Test void boletimExigeChaveAntesDeLerCorpo() throws Exception {
         mvc.perform(post("/api/boletim").contentType("application/json").content("{}"))
                 .andExpect(status().isUnauthorized()).andExpect(jsonPath("$.codigo").value("CHAVE_INVALIDA"));

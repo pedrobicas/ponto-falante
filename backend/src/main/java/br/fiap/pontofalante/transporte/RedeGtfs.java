@@ -184,7 +184,7 @@ public class RedeGtfs {
     }
 
     /** Palavras comparáveis: sem acento, abreviações expandidas ("Av. Nsa. Sra." = "avenida nossa senhora"). */
-    static List<String> tokens(String texto) {
+    public static List<String> tokens(String texto) {
         List<String> saida = new ArrayList<>();
         for (String t : semAcento(texto).split("[^a-z0-9]+")) {
             if (t.isEmpty() || VAZIAS.contains(t)) {
