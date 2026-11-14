@@ -2,7 +2,7 @@
 
 Plataforma de acessibilidade para quem usa ônibus em São Paulo, pensada para pessoas com deficiência visual e idosos:
 próximos ônibus previstos para um ponto, anúncio por voz, assistente que responde dúvidas sobre gratuidades e
-bilhetes com base em fontes oficiais, e um boletim diário de atrasos gerado por um robô (RPA).
+bilhetes com base em fontes oficiais, e um boletim diário de espera prevista gerado por um robô (RPA).
 
 Global Solution FIAP 2026.2 · Engenharia de Software.
 
@@ -24,11 +24,18 @@ Global Solution FIAP 2026.2 · Engenharia de Software.
 | Interface Angular (acessível, voz, 4 temas) | Publicada, servida pelo Spring Boot |
 | Spring Boot + PostgreSQL (Flyway) | Publicado no Render (plano gratuito) |
 | Previsões de ônibus | **Real**: dados da Olho Vivo (SPTrans) pelo gateway oficial da Prefeitura (apilib, OAuth2), marcados como "Dados da SPTrans" e sempre como previsão. O login direto da Olho Vivo recusa qualquer chave hoje ([diagnóstico](docs/DIAGNOSTICO_SPTRANS.md)). Sem credenciais, o sistema volta ao modo demonstração com o selo **SIMULADO**. |
-| Boletim de atrasos (RPA) | **Real**: GitHub Actions roda o robô todo dia às 6h (Brasília), lê o histórico do MVP e publica o boletim. Hoje o histórico é simulado e o boletim diz isso. |
+| Boletim de espera prevista (RPA) | O coletor consulta pontos públicos da SPTrans em 8 janelas diárias; o robô diário está agendado para 6h (Brasília). O boletim declara **ESTIMADO**, **SIMULADO** ou **INDISPONIVEL**, data e cobertura. GitHub Actions pode atrasar ou pular janelas; previsão não mede atraso observado. |
 | Assistente (GenAI) | Implementado e avaliado; roda no PC da equipe (Ollama + FastAPI) e só fica disponível no site quando o túnel Cloudflare estiver ligado. Sem ele, o chat avisa que está indisponível e o resto funciona. |
 | Integrações visão computacional, Big Data e ESP32 | Endpoints e contratos prontos, protegidos por chave ([contrato](contratos/openapi-mvp.yaml)) |
 
 Regras do produto: dado simulado nunca aparece como real; previsão nunca aparece como chegada observada.
+
+Exemplos públicos: Avenida Paulista, 1374 (ponto `70016916`) e linha `875A-10`, conferidos no GTFS empacotado.
+O cadastro oficial completo permanece intacto. Exemplos e evidências de demonstração não devem usar referências
+à residência dos integrantes. A lista da assistente, os testes e os roteiros seguem essa regra.
+
+Entrega FIAP: [critérios e pendências](docs/REVISAO_CRITERIOS.md), [roteiro GenAI](genai/ROTEIRO_VIDEO.md)
+e [roteiro RPA](rpa/docs/roteiro_video.md). Não repetir os conjuntos finais fechados para gravar uma demonstração.
 
 ## Arquitetura
 

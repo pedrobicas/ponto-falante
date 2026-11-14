@@ -102,6 +102,7 @@ export interface ContextoChat {
   tema?: string | null;
   publico?: string | null;
   idade?: number | null;
+  veiculo_anterior?: string | null;
 }
 
 export interface AcaoChat { titulo: string; pergunta?: string | null; rota?: string | null; }

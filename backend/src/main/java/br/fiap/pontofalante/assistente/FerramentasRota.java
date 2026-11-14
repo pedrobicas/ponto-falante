@@ -56,7 +56,7 @@ final class FerramentasRota {
 
     static String viaPerguntada(String t) {
         Matcher m = VIA.matcher(t);
-        // "quais linhas passam no ponto 160015580" pergunta pelo ponto, não por uma via.
+        // "quais linhas passam no ponto 70016916" pergunta pelo ponto, não por uma via.
         return m.find() && !m.group(1).matches("^(ponto|parada|pto)\\b.*|.*\\d{6,}.*") ? m.group(1) : null;
     }
 

@@ -287,7 +287,7 @@ export class Assistente {
   readonly pergunta = input<string | undefined>();
 
   protected readonly limite = LIMITE;
-  protected readonly sugestoesTempoReal = ['Quais linhas passam no ponto 160015580?', 'Quando vem a 5317-10?', 'Qual o destino da linha 5317-10?', 'Onde fica o ponto da Rua Augusta, 1000?'];
+  protected readonly sugestoesTempoReal = ['Quais linhas passam no ponto 70016916?', 'Quando vem a 875A-10?', 'Qual o destino da linha 875A-10?', 'Onde fica o ponto da Av. Paulista, 1374?'];
   protected readonly sugestoesGerais = [
     'Tenho 65 anos, preciso pagar o ônibus?',
     'Como funciona o Bilhete Único?',

@@ -16,13 +16,13 @@ it('envia contexto devolvido pelo servidor, mantém histórico na navegação e 
   const http = TestBed.inject(HttpTestingController);
   http.match('/api/status').forEach(r => r.flush({ sptrans: 'REAL', assistente: 'DISPONIVEL' }));
   const c = f.componentInstance as any;
-  c.texto = '5317-10'; const primeira = c.enviar();
-  http.expectOne('/api/chat').flush({ resposta: 'Escolha o sentido.', fontes: [], confianca: 'alta', nao_consta: false, disponivel: true, origem: 'CADASTRO', contexto: { linha: '5317-10', sentido: 1 } });
+  c.texto = '875A-10'; const primeira = c.enviar();
+  http.expectOne('/api/chat').flush({ resposta: 'Escolha o sentido.', fontes: [], confianca: 'alta', nao_consta: false, disponivel: true, origem: 'CADASTRO', contexto: { linha: '875A-10', sentido: 1 } });
   await primeira;
   c.texto = 'e o próximo?'; const segunda = c.enviar();
   const req = http.expectOne('/api/chat');
-  expect(req.request.body.contexto).toEqual({ linha: '5317-10', sentido: 1 });
-  req.flush({ resposta: 'Qual ponto?', fontes: [], confianca: 'alta', nao_consta: false, disponivel: true, contexto: { linha: '5317-10', pendencia: 'PONTO_PREVISAO' } });
+  expect(req.request.body.contexto).toEqual({ linha: '875A-10', sentido: 1 });
+  req.flush({ resposta: 'Qual ponto?', fontes: [], confianca: 'alta', nao_consta: false, disponivel: true, contexto: { linha: '875A-10', pendencia: 'PONTO_PREVISAO' } });
   await segunda; f.destroy();
   const nova = TestBed.createComponent(Assistente); nova.detectChanges();
   expect(nova.nativeElement.textContent).toContain('Qual ponto?');
@@ -37,20 +37,20 @@ it('ações de sentido contrário e próximo ônibus enviam o contexto atualizad
   const http = TestBed.inject(HttpTestingController);
   http.match('/api/status').forEach(r => r.flush({ sptrans: 'REAL', assistente: 'DISPONIVEL' }));
   const memoria = TestBed.inject(ConversaService);
-  memoria.contexto.set({ ponto: 160015580, linha: '5317-10', sentido: 1 });
+  memoria.contexto.set({ ponto: 70016916, linha: '875A-10', sentido: 1 });
   const c = f.componentInstance as any;
   c.texto = 'e no sentido contrário?'; const volta = c.enviar();
-  http.expectOne('/api/chat').flush({ resposta: 'Escolha uma parada da volta.', fontes: [], confianca: 'alta', nao_consta: false, disponivel: true, origem: 'CADASTRO', contexto: { ponto: null, linha: '5317-10', sentido: 2 }, acoes: [{ titulo: 'Próximo ônibus', pergunta: 'e o próximo?' }] });
+  http.expectOne('/api/chat').flush({ resposta: 'Escolha uma parada da volta.', fontes: [], confianca: 'alta', nao_consta: false, disponivel: true, origem: 'CADASTRO', contexto: { ponto: null, linha: '875A-10', sentido: 2 }, acoes: [{ titulo: 'Próximo ônibus', pergunta: 'e o próximo?' }] });
   await volta; f.detectChanges();
   const botao = Array.from(f.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>).find(b => b.textContent?.trim() === 'Próximo ônibus')!;
   botao.click(); f.detectChanges();
   const req = http.expectOne('/api/chat');
-  expect(req.request.body).toEqual({ pergunta: 'e o próximo?', contexto: { ponto: null, linha: '5317-10', sentido: 2 } });
+  expect(req.request.body).toEqual({ pergunta: 'e o próximo?', contexto: { ponto: null, linha: '875A-10', sentido: 2 } });
   expect(f.nativeElement.querySelector('button[type=submit]').disabled).toBe(true);
-  req.flush({ resposta: 'Qual ponto da volta?', fontes: [], confianca: 'alta', nao_consta: false, disponivel: true, contexto: { ponto: null, linha: '5317-10', sentido: 2, pendencia: 'PONTO_PREVISAO' } });
+  req.flush({ resposta: 'Qual ponto da volta?', fontes: [], confianca: 'alta', nao_consta: false, disponivel: true, contexto: { ponto: null, linha: '875A-10', sentido: 2, pendencia: 'PONTO_PREVISAO' } });
   await f.whenStable(); f.detectChanges();
   expect(f.nativeElement.textContent).toContain('Qual ponto da volta?');
-  expect(f.nativeElement.querySelector('.compositor__contexto').textContent).not.toContain('160015580');
+  expect(f.nativeElement.querySelector('.compositor__contexto').textContent).not.toContain('70016916');
 });
 
 it.each(['SIMULADO', 'INDISPONIVEL'])('boletim %s no chat não recebe selo de estimativa oficial', async (natureza) => {
@@ -69,10 +69,10 @@ it.each(['SIMULADO', 'INDISPONIVEL'])('boletim %s no chat não recebe selo de es
 
 async function linha() {
   TestBed.configureTestingModule({ imports: [LinhaPage], providers: providers() });
-  const f = TestBed.createComponent(LinhaPage); f.componentRef.setInput('letreiro', '5317-10'); f.detectChanges();
+  const f = TestBed.createComponent(LinhaPage); f.componentRef.setInput('letreiro', '875A-10'); f.detectChanges();
   const http = TestBed.inject(HttpTestingController);
-  const paradas = Array.from({ length: 73 }, (_, i) => ({ codigo: 160000000 + i, nome: i === 30 ? 'Paulista, 1000' : `Rua ${i}`, fonte: 'GTFS_SPTRANS' }));
-  http.expectOne('/api/linhas/5317-10/paradas').flush({ fonte: 'GTFS_SPTRANS', letreiro: '5317-10', sentidos: [{ sentido: 1, destino: 'Praça do Correio', nome_linha: 'Linha', paradas }, { sentido: 2, destino: 'Bairro', nome_linha: 'Linha', paradas: paradas.slice().reverse() }] });
+  const paradas = Array.from({ length: 73 }, (_, i) => ({ codigo: 160000000 + i, nome: i === 30 ? 'Av. Paulista, 1374' : i === 31 ? 'Rua da Consolação, 100' : `Rua ${i}`, fonte: 'GTFS_SPTRANS' }));
+  http.expectOne('/api/linhas/875A-10/paradas').flush({ fonte: 'GTFS_SPTRANS', letreiro: '875A-10', sentidos: [{ sentido: 1, destino: 'Perdizes', nome_linha: 'Linha', paradas }, { sentido: 2, destino: 'Aeroporto', nome_linha: 'Linha', paradas: paradas.slice().reverse() }] });
   await f.whenStable(); f.detectChanges();
   return { f, http, c: f.componentInstance as any };
 }
@@ -80,7 +80,10 @@ async function linha() {
 it('filtra todas as 73 paradas sem acentos, conserva posição e oferece expansão', async () => {
   const { f, c } = await linha();
   expect(f.nativeElement.querySelectorAll('.parada').length).toBe(15);
-  c.filtrar('Paulista, 1000'); f.detectChanges();
+  c.filtrar('consolacao 100'); f.detectChanges();
+  expect(f.nativeElement.querySelectorAll('.parada').length).toBe(1);
+  expect(f.nativeElement.querySelector('.parada__ordem').textContent).toBe('32');
+  c.filtrar('paulista 1374'); f.detectChanges();
   expect(f.nativeElement.querySelectorAll('.parada').length).toBe(1);
   expect(f.nativeElement.querySelector('.parada__ordem').textContent).toBe('31');
   c.filtrar('inexistente'); f.detectChanges();
@@ -94,7 +97,7 @@ it('seleção consulta previsões e ignora resposta atrasada de outro sentido', 
   const promessa = c.selecionar(c.atual().paradas[0]);
   const req = http.expectOne('/api/pontos/160000000/previsoes');
   c.escolher(2);
-  req.flush({ onibus: [{ letreiro: '5317-10', sentido: 1, minutos: 1 }], fonte: 'OLHO_VIVO' });
+  req.flush({ onibus: [{ letreiro: '875A-10', sentido: 1, minutos: 1 }], fonte: 'OLHO_VIVO' });
   await promessa; f.detectChanges();
   expect(c.selecionada()).toBeNull(); expect(c.previsao()).toBeNull();
   expect(f.nativeElement.querySelector('.linha__selecionada')).toBeNull();
@@ -103,7 +106,7 @@ it('seleção consulta previsões e ignora resposta atrasada de outro sentido', 
 it('previsões mostram só a linha e sentido selecionados e distinguem falha de ausência', async () => {
   const { f, c, http } = await linha();
   const promessa = c.selecionar(c.atual().paradas[0]);
-  http.expectOne('/api/pontos/160000000/previsoes').flush({ onibus: [{ letreiro: '5317-10', sentido: 1, minutos: 5 }, { letreiro: '5317-10', sentido: 2, minutos: 1 }], fonte: 'OLHO_VIVO', horario_referencia: '10:30' });
+  http.expectOne('/api/pontos/160000000/previsoes').flush({ onibus: [{ letreiro: '875A-10', sentido: 1, minutos: 5 }, { letreiro: '875A-10', sentido: 2, minutos: 1 }], fonte: 'OLHO_VIVO', horario_referencia: '10:30' });
   await promessa; f.detectChanges(); expect(c.onibus()).toHaveLength(1);
   const atualizar = c.selecionar(c.selecionada());
   http.expectOne('/api/pontos/160000000/previsoes').flush({}, { status: 503, statusText: 'Indisponível' });

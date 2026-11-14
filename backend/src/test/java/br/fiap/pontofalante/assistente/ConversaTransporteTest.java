@@ -19,6 +19,7 @@ class ConversaTransporteTest {
     static RedeGtfs rede;
     static int consultas;
     static boolean falhar;
+    static boolean referenciaSaiu;
     @BeforeAll static void preparar() {
         var props = new Binder(new MapConfigurationPropertySource(Map.of("pf.salt", "test", "pf.sptrans-token", "test")))
                 .bind("pf", Bindable.of(PfProps.class)).get();
@@ -31,15 +32,16 @@ class ConversaTransporteTest {
                 consultas++;
                 if (falhar) throw new TransporteIndisponivelException();
                 return new DadosPrevisao(new Ponto(codigo, "", null, null, null, Fonte.OLHO_VIVO), "10:20", List.of(
-                        new OnibusPrevisto("5317-10", "Praça do Correio", 1, "10:29", 9, true, "a"),
-                        new OnibusPrevisto("5317-10", "Praça do Correio", 1, "10:23", 3, true, "b"),
-                        new OnibusPrevisto("5317-10", "Santuário", 2, "10:21", 1, true, "c")));
+                        new OnibusPrevisto("875A-10", "Perdizes", 1, "10:29", 9, true, "aaaaaaaaaa"),
+                        new OnibusPrevisto("875A-10", "Perdizes", 1, "10:23", 3, true, "bbbbbbbbbb"),
+                        new OnibusPrevisto("875A-10", "Aeroporto", 2, "10:21", 1, true, "cccccccccc"))
+                        .stream().filter(o -> !referenciaSaiu || !o.veiculo().equals("bbbbbbbbbb")).toList());
             }
         };
         rede = new RedeGtfs();
         a = new AssistenteTempoReal(new TransporteService(props, provider, new DemoProvider(clock, hash), clock, rede));
     }
-    @BeforeEach void reset() { consultas = 0; falhar = false; }
+    @BeforeEach void reset() { consultas = 0; falhar = false; referenciaSaiu = false; }
 
 
     @ParameterizedTest @ValueSource(strings={"pontos perto de mim", "tem ponto aqui perto?", "onde estou?"})
@@ -51,7 +53,7 @@ class ConversaTransporteTest {
     }
 
     @Test void novoPontoPorNomeNoSeguimentoNaoReutilizaPontoAnterior() {
-        var c = new Chat.Contexto(160015580L, null, null, null, null);
+        var c = new Chat.Contexto(70016916L, null, null, null, null);
         var r = a.responder("E no ponto da Paulista?", c).orElseThrow();
         assertThat(r.resposta()).contains("mais de um ponto");
         assertThat(r.contexto().ponto()).isNull();
@@ -60,8 +62,8 @@ class ConversaTransporteTest {
     }
 
     @Test void codigoInformalConsultaGtfsEContinuaComPrevisaoNova() {
-        var r = a.responder("160015580").orElseThrow();
-        assertThat(r.resposta()).contains("1711", "5317-10");
+        var r = a.responder("70016916").orElseThrow();
+        assertThat(r.resposta()).contains("1374", "875A-10");
         assertThat(r.origem()).isEqualTo("CADASTRO");
         assertThat(consultas).isZero();
         var proximo = a.responder("e o próximo?", r.contexto()).orElseThrow();
@@ -72,11 +74,11 @@ class ConversaTransporteTest {
     }
 
     @Test void perguntaIncompletaLembraLinhaERecebePonto() {
-        var r = a.responder("quando vem a 5317-10?").orElseThrow();
+        var r = a.responder("quando vem a 875A-10?").orElseThrow();
         assertThat(r.contexto().pendencia()).isEqualTo("PONTO_PREVISAO");
-        var p = a.responder("160015580", r.contexto()).orElseThrow();
-        assertThat(p.contexto().linha()).isEqualTo("5317-10");
-        assertThat(p.resposta()).contains("1711", "previsto em");
+        var p = a.responder("70016916", r.contexto()).orElseThrow();
+        assertThat(p.contexto().linha()).isEqualTo("875A-10");
+        assertThat(p.resposta()).contains("1374", "previsto em");
     }
 
     @Test void nomeAmbiguoNuncaEscolhePrimeiroNemConsultaPrevisao() {
@@ -90,20 +92,20 @@ class ConversaTransporteTest {
     }
 
     @Test void enderecoPreservaNumero() {
-        assertThat(AssistenteTempoReal.termoDeBusca("Onde fica o ponto Paulista, 1000?", null)).contains("1711").doesNotContain("onde", "fica");
+        assertThat(AssistenteTempoReal.termoDeBusca("Onde fica o ponto Paulista, 1374?", null)).contains("1374").doesNotContain("onde", "fica");
     }
 
     @Test void destinoEscolhaVoltaEPrevisaoNaoReutilizamPontoDaIda() {
-        var r = a.responder("5317-10").orElseThrow();
+        var r = a.responder("875A-10").orElseThrow();
         assertThat(r.acoes()).hasSize(2);
-        var s = a.responder("sentido 1 da linha 5317-10", r.contexto()).orElseThrow();
-        assertThat(s.resposta()).contains("73 paradas");
-        var volta = a.responder("e no sentido contrário?", new Chat.Contexto(160015580L, "5317-10", 1, null, null)).orElseThrow();
+        var s = a.responder("sentido 1 da linha 875A-10", r.contexto()).orElseThrow();
+        assertThat(s.resposta()).contains("70 paradas");
+        var volta = a.responder("e no sentido contrário?", new Chat.Contexto(70016916L, "875A-10", 1, null, null)).orElseThrow();
         assertThat(volta.contexto().sentido()).isEqualTo(2);
         // A volta nunca reutiliza o ponto da ida: consulta o ponto do outro sentido que o cadastro lista para a linha.
         Long pontoDaVolta = volta.contexto().ponto();
-        assertThat(pontoDaVolta).isNotNull().isNotEqualTo(160015580L);
-        assertThat(FerramentasRota.sentidoNoPonto(new RedeGtfs(), "5317-10", pontoDaVolta)).isEqualTo(2);
+        assertThat(pontoDaVolta).isNotNull().isNotEqualTo(70016916L);
+        assertThat(FerramentasRota.sentidoNoPonto(new RedeGtfs(), "875A-10", pontoDaVolta)).isEqualTo(2);
         assertThat(volta.resposta()).contains("sentido contrário").contains("metros");
         assertThat(consultas).isEqualTo(1);
         var p = a.responder("e o próximo?", volta.contexto()).orElseThrow();
@@ -112,15 +114,15 @@ class ConversaTransporteTest {
     }
 
     @Test void sentidoFiltraPrevisao() {
-        var r = a.responder("e o próximo?", new Chat.Contexto(160015580L, "5317-10", 1, null, null)).orElseThrow();
-        assertThat(r.resposta()).contains("3 minutos").doesNotContain("1 minuto", "Santuário");
+        var r = a.responder("e o próximo?", new Chat.Contexto(70016916L, "875A-10", 1, null, null)).orElseThrow();
+        assertThat(r.resposta()).contains("3 minutos").doesNotContain("1 minuto", "Aeroporto");
     }
 
-    @ParameterizedTest @ValueSource(strings={"próximo ônibus no ponto 160015580", "previsão no ponto 160015580 no sentido 2"})
+    @ParameterizedTest @ValueSource(strings={"próximo ônibus no ponto 70016916", "previsão no ponto 70016916 no sentido 2"})
     void pontoInformadoJuntoDaPrevisaoNaoDescartaLinhaESentido(String pergunta) {
-        var volta = a.responder("e no sentido contrário?", new Chat.Contexto(160015580L, "5317-10", 1, null, null)).orElseThrow();
+        var volta = a.responder("e no sentido contrário?", new Chat.Contexto(70016916L, "875A-10", 1, null, null)).orElseThrow();
         var r = a.responder(pergunta, volta.contexto()).orElseThrow();
-        assertThat(r.contexto().linha()).isEqualTo("5317-10");
+        assertThat(r.contexto().linha()).isEqualTo("875A-10");
         assertThat(r.contexto().sentido()).isEqualTo(2);
         assertThat(r.contexto().ponto()).isNull();
         assertThat(r.resposta()).contains("não aparece neste ponto");
@@ -129,32 +131,32 @@ class ConversaTransporteTest {
     }
 
     @Test void sequenciaCompletaReiniciaConsultaGeralAposVolta() {
-        var ida = a.responder("sentido 1 da linha 5317-10", new Chat.Contexto(160015580L, null, null, null, null)).orElseThrow();
+        var ida = a.responder("sentido 1 da linha 875A-10", new Chat.Contexto(70016916L, null, null, null, null)).orElseThrow();
         var volta = a.responder("e no sentido contrário?", ida.contexto()).orElseThrow();
         var faltaPonto = a.responder("e o próximo?", volta.contexto()).orElseThrow();
-        assertThat(faltaPonto.contexto().ponto()).isNotNull().isNotEqualTo(160015580L);
+        assertThat(faltaPonto.contexto().ponto()).isNotNull().isNotEqualTo(70016916L);
         assertThat(faltaPonto.contexto().sentido()).isEqualTo(2);
         assertThat(consultas).isEqualTo(2);
         consultas = 0;
-        var geral = a.responder("Quais linhas passam no ponto 160015580?", faltaPonto.contexto()).orElseThrow();
+        var geral = a.responder("Quais linhas passam no ponto 70016916?", faltaPonto.contexto()).orElseThrow();
         assertThat(geral.contexto().linha()).isNull();
         assertThat(geral.contexto().sentido()).isNull();
         var previsao = a.responder("e o próximo?", geral.contexto()).orElseThrow();
-        assertThat(previsao.contexto().ponto()).isEqualTo(160015580L);
+        assertThat(previsao.contexto().ponto()).isEqualTo(70016916L);
         assertThat(previsao.resposta()).contains("previsto em");
         assertThat(consultas).isEqualTo(1);
     }
 
-    @ParameterizedTest @ValueSource(strings={"Quais linhas passam no ponto 160015580?", "E quais linhas passam no ponto 160015580?"})
+    @ParameterizedTest @ValueSource(strings={"Quais linhas passam no ponto 70016916?", "E quais linhas passam no ponto 70016916?"})
     void novaPerguntaDeLinhasNaoHerdaSentidoDaPendenciaAnterior(String pergunta) {
-        var r = a.responder(pergunta, new Chat.Contexto(null, "5317-10", 2, "PONTO_PREVISAO", null)).orElseThrow();
+        var r = a.responder(pergunta, new Chat.Contexto(null, "875A-10", 2, "PONTO_PREVISAO", null)).orElseThrow();
         assertThat(r.contexto().linha()).isNull();
         assertThat(r.contexto().sentido()).isNull();
         assertThat(a.responder("e o próximo?", r.contexto()).orElseThrow().resposta()).contains("previsto em");
     }
 
     @Test void pontoDoSentidoErradoNaoViraAusenciaDeOnibus() {
-        var r = a.responder("e o próximo?", new Chat.Contexto(160015580L, "5317-10", 2, null, null)).orElseThrow();
+        var r = a.responder("e o próximo?", new Chat.Contexto(70016916L, "875A-10", 2, null, null)).orElseThrow();
         assertThat(r.resposta()).contains("não aparece neste ponto");
         assertThat(r.contexto().ponto()).isNull();
         assertThat(consultas).isZero();
@@ -162,9 +164,9 @@ class ConversaTransporteTest {
 
     @Test void falhaPreservaContextoSemInventarAusencia() {
         falhar = true;
-        var r = a.responder("próximo no ponto 160015580").orElseThrow();
+        var r = a.responder("próximo no ponto 70016916").orElseThrow();
         assertThat(r.disponivel()).isFalse();
-        assertThat(r.contexto().ponto()).isEqualTo(160015580L);
+        assertThat(r.contexto().ponto()).isEqualTo(70016916L);
         assertThat(r.resposta()).doesNotContain("Não há ônibus");
     }
 
@@ -173,7 +175,7 @@ class ConversaTransporteTest {
 
     @ParameterizedTest @ValueSource(strings={"Tenho 69 anos. Posso usar o ônibus municipal com RG?", "Sou estudante, quando posso usar o benefício?", "Quanto custa a passagem?"})
     void perguntaDeDireitosNaoRespondePendenciaDePonto(String pergunta) {
-        assertThat(a.responder(pergunta, new Chat.Contexto(null, "5317-10", 2, "PONTO_PREVISAO", null))).isEmpty();
+        assertThat(a.responder(pergunta, new Chat.Contexto(null, "875A-10", 2, "PONTO_PREVISAO", null))).isEmpty();
         assertThat(consultas).isZero();
     }
 
@@ -196,7 +198,7 @@ class ConversaTransporteTest {
     }
 
     @Test void contextoDeRegraNaoCarregaEntidadesDeTransporte() {
-        var c = ChatService.contextoRegra("Tenho 68 anos, pago?", new Chat.Contexto(160015580L,"5317-10",1,null,null));
+        var c = ChatService.contextoRegra("Tenho 68 anos, pago?", new Chat.Contexto(70016916L,"875A-10",1,null,null));
         assertThat(c.tema()).isEqualTo("GRATUIDADE");
         assertThat(c.idade()).isEqualTo(68);
         assertThat(c.publico()).isEqualTo("IDOSO");
@@ -208,34 +210,34 @@ class ConversaTransporteTest {
     }
 
     @Test void linhaDiretaParaOCentroSaindoDoEndereco() {
-        var r = a.responder("Qual ônibus vai para o Centro saindo da Rua Augusta, 1000?").orElseThrow();
+        var r = a.responder("Qual ônibus vai para o Centro saindo da Paulista, 1374?").orElseThrow();
         assertThat(r.origem()).isEqualTo("CADASTRO");
-        assertThat(r.resposta()).contains("5317-10").contains("sem baldeação").contains("Praça da Sé");
+        assertThat(r.resposta()).contains("875A-10").contains("sem baldeação").contains("Praça da Sé");
         // A linha para no próprio ponto dito: não manda a pessoa andar até o vizinho.
-        assertThat(r.resposta()).doesNotContain("embarque em");
-        assertThat(r.contexto().ponto()).isEqualTo(160015580L);
+        assertThat(r.resposta()).contains("875A-10, sentido Perdizes, passa em");
+        assertThat(r.contexto().ponto()).isEqualTo(70016916L);
         assertThat(consultas).isZero();
-        var falta = a.responder("Quanto falta para a 5317-10?", r.contexto()).orElseThrow();
+        var falta = a.responder("Quanto falta para a 875A-10?", r.contexto()).orElseThrow();
         assertThat(falta.origem()).isEqualTo("TEMPO_REAL");
-        assertThat(falta.contexto().linha()).isEqualTo("5317-10");
+        assertThat(falta.contexto().linha()).isEqualTo("875A-10");
         assertThat(falta.contexto().sentido()).isEqualTo(1);
-        assertThat(falta.contexto().ponto()).isEqualTo(160015580L);
+        assertThat(falta.contexto().ponto()).isEqualTo(70016916L);
         var volta = a.responder("E no sentido contrário?", falta.contexto()).orElseThrow();
         assertThat(volta.contexto().sentido()).isEqualTo(2);
-        assertThat(volta.contexto().ponto()).isNotEqualTo(160015580L);
+        assertThat(volta.contexto().ponto()).isNotEqualTo(70016916L);
     }
 
     @Test void perguntaPelasLinhasDoPontoNaoViraPerguntaDeVia() {
-        var r = a.responder("Quais linhas passam no ponto 160015580?").orElseThrow();
+        var r = a.responder("Quais linhas passam no ponto 70016916?").orElseThrow();
         assertThat(r.resposta()).contains("Linhas neste ponto").doesNotContain("De qual linha");
-        assertThat(r.contexto().ponto()).isEqualTo(160015580L);
+        assertThat(r.contexto().ponto()).isEqualTo(70016916L);
     }
 
     @Test void linguagemInformalComNumeroSoltoEEnderecoSemAPalavraPonto() {
-        var r = a.responder("qnto falta pro 5317 na Paulista, 1000").orElseThrow();
+        var r = a.responder("qnto falta pro 875A na paulista 1374").orElseThrow();
         assertThat(r.origem()).isEqualTo("TEMPO_REAL");
-        assertThat(r.contexto().ponto()).isEqualTo(160015580L);
-        assertThat(r.contexto().linha()).startsWith("5317");
+        assertThat(r.contexto().ponto()).isEqualTo(70016916L);
+        assertThat(r.contexto().linha()).startsWith("875A");
         assertThat(consultas).isEqualTo(1);
     }
 
@@ -251,14 +253,91 @@ class ConversaTransporteTest {
     }
 
     @Test void linhaPassaNaViaUsaAbreviacoesEContexto() {
-        var ctx = new Chat.Contexto(null, "5317-10", null, null, null);
-        var sim = a.responder("Esse ônibus passa na Rua Augusta?", ctx).orElseThrow();
+        var ctx = new Chat.Contexto(null, "875A-10", null, null, null);
+        var sim = a.responder("Esse ônibus passa na Avenida Paulista?", ctx).orElseThrow();
         assertThat(sim.origem()).isEqualTo("CADASTRO");
         assertThat(sim.resposta()).startsWith("Sim");
-        var nao = a.responder("Esse ônibus passa na Avenida Paulista?", ctx).orElseThrow();
+        var nao = a.responder("Esse ônibus passa na Avenida Mateo Bei?", ctx).orElseThrow();
         assertThat(nao.resposta()).contains("Não confirmei");
         var semLinha = a.responder("Esse ônibus passa na Avenida Paulista?").orElseThrow();
         assertThat(semLinha.resposta()).contains("De qual linha");
         assertThat(semLinha.contexto().pendencia()).isEqualTo("LINHA");
+    }
+
+    @Test void proximoDepoisDaPrevisaoAvancaSemRepetirOPrimeiroOnibus() {
+        var primeiro = a.responder("Quanto falta para a 875A-10 no ponto 70016916?").orElseThrow();
+        assertThat(primeiro.resposta()).contains("3 minutos");
+        var seguinte = a.responder("e o próximo?", primeiro.contexto()).orElseThrow();
+        assertThat(seguinte.resposta()).contains("9 minutos").doesNotContain("3 minutos", "1 minuto");
+        assertThat(seguinte.contexto().ponto()).isEqualTo(70016916L);
+        assertThat(seguinte.contexto().sentido()).isEqualTo(1);
+        assertThat(consultas).isEqualTo(2);
+        var semOutro = a.responder("e o próximo?", seguinte.contexto()).orElseThrow();
+        assertThat(semOutro.resposta()).contains("outra previsão").doesNotContain("previsto em 3", "previsto em 9");
+        var atualizar = a.responder("quanto falta agora?", seguinte.contexto()).orElseThrow();
+        assertThat(atualizar.resposta()).contains("3 minutos");
+    }
+
+    @Test void proximoSemPontoPedeLocalSemBuscarTextoDaPergunta() {
+        var r = a.responder("Quando vem a 875A-10?").orElseThrow();
+        var seguinte = a.responder("e o próximo?", r.contexto()).orElseThrow();
+        assertThat(seguinte.resposta()).contains("preciso do ponto").doesNotContain("Não encontrei");
+        assertThat(consultas).isZero();
+    }
+
+    @Test void ondeEmbarcarUsaLinhaDaConversaESoSugereParadasDoSentido() {
+        var c = new Chat.Contexto(null, "875A-10", 1, null, null);
+        var local = a.responder("onde posso pegar essa linha?", c).orElseThrow();
+        assertThat(local.resposta()).contains("rua");
+        assertThat(local.contexto().pendencia()).isEqualTo("PONTO_EMBARQUE");
+        var paradas = a.responder("Avenida Paulista, 1374", local.contexto()).orElseThrow();
+        assertThat(paradas.origem()).isEqualTo("CADASTRO");
+        assertThat(paradas.resposta()).contains("embarcar", "Paulista");
+        assertThat(paradas.acoes()).anySatisfy(acao -> assertThat(acao.pergunta()).contains("70016916", "875A-10", "sentido 1"));
+        assertThat(consultas).isZero();
+    }
+
+    @Test void embarqueSemSentidoConservaIntencaoAoEscolherDestino() {
+        var r = a.responder("Onde posso pegar a linha 875A-10?").orElseThrow();
+        assertThat(r.contexto().pendencia()).isEqualTo("PONTO_EMBARQUE");
+        var s = a.responder(r.acoes().getFirst().pergunta(), r.contexto()).orElseThrow();
+        assertThat(s.resposta()).contains("rua");
+        assertThat(s.contexto().pendencia()).isEqualTo("PONTO_EMBARQUE");
+        assertThat(consultas).isZero();
+    }
+
+    @Test void embarqueNoPontoConhecidoNaoConsultaHorario() {
+        var r = a.responder("onde posso pegar essa linha?", new Chat.Contexto(70016916L, "875A-10", 1, null, null)).orElseThrow();
+        assertThat(r.resposta()).contains("embarcar", "Paulista");
+        assertThat(consultas).isZero();
+    }
+
+    @Test void referenciaQueSaiuDaApiNaoFazPularOnibusDisponivel() {
+        var primeira = a.responder("Quanto falta para a 875A-10 no ponto 70016916?").orElseThrow();
+        referenciaSaiu = true;
+        var seguinte = a.responder("e o próximo?", primeira.contexto()).orElseThrow();
+        assertThat(seguinte.resposta()).contains("não aparece mais", "9 minutos").doesNotContain("3 minutos");
+        assertThat(consultas).isEqualTo(2);
+    }
+
+    @Test void falhaNaConsultaDoSeguintePermiteRepetirSemVoltarAoPrimeiro() {
+        var primeira = a.responder("Quanto falta para a 875A-10 no ponto 70016916?").orElseThrow();
+        falhar = true;
+        var falha = a.responder("e o próximo?", primeira.contexto()).orElseThrow();
+        assertThat(falha.disponivel()).isFalse();
+        falhar = false;
+        var repetida = a.responder(falha.acoes().getFirst().pergunta(), falha.contexto()).orElseThrow();
+        assertThat(repetida.resposta()).contains("9 minutos").doesNotContain("3 minutos");
+    }
+
+    @Test void embarqueAmbiguoPermiteEscolherReferenciaSemPerderSentido() {
+        var local = a.responder("onde posso pegar essa linha?", new Chat.Contexto(null, "875A-10", 1, null, null)).orElseThrow();
+        var opcoes = a.responder("Paulista", local.contexto()).orElseThrow();
+        assertThat(opcoes.resposta()).contains("mais de um ponto");
+        var embarque = a.responder("ponto 70016916", opcoes.contexto()).orElseThrow();
+        assertThat(embarque.resposta()).contains("embarcar", "Paulista");
+        var previsao = a.responder(embarque.acoes().getFirst().pergunta(), embarque.contexto()).orElseThrow();
+        assertThat(previsao.origem()).isEqualTo("TEMPO_REAL");
+        assertThat(previsao.contexto().sentido()).isEqualTo(1);
     }
 }

@@ -391,7 +391,7 @@ public class RedeGtfs {
         return new ArrayList<>(s);
     }
 
-    /** Os sentidos de uma linha pelo letreiro completo ("5317-10") ou só pelo número, quando não há ambiguidade. */
+    /** Os sentidos de uma linha pelo letreiro completo ("875A-10") ou só pelo número, quando não há ambiguidade. */
     public List<Viagem> viagensDaLinha(String letreiro) {
         garantirCarga();
         String chave = chaveLetreiro(letreiro);

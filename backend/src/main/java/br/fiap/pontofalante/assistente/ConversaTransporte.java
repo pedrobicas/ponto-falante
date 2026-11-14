@@ -39,13 +39,13 @@ final class ConversaTransporte {
         var ml = LINHA.matcher(t);
         Long pontoExplicito = mp.find() ? Long.parseLong(mp.group(1)) : null;
         String linhaExplicita = ml.find() ? ml.group(1).toUpperCase(Locale.ROOT) : null;
-        if (linhaExplicita == null && "LINHA".equals(c.pendencia()) && t.matches("\\d{3,4}[a-z]?")) linhaExplicita = t.toUpperCase(Locale.ROOT);
+        if (linhaExplicita == null && ("LINHA".equals(c.pendencia()) || "PONTO_EMBARQUE".equals(c.pendencia())) && t.matches("\\d{3,4}[a-z]?")) linhaExplicita = t.toUpperCase(Locale.ROOT);
         if (linhaExplicita == null && t.matches(".*\\b(linha|busao|onibus)\\s+\\d{3,4}[a-z]?\\b.*")) {
             var prefixo = Pattern.compile("\\b(?:linha|busao|onibus)\\s+(\\d{3,4}[a-z]?)\\b").matcher(t);
             if (prefixo.find()) linhaExplicita = prefixo.group(1).toUpperCase(Locale.ROOT);
         }
         if (linhaExplicita == null && TEMPO.matcher(t).find()) {
-            // "quanto falta pro 5317": número solto só vale como linha se existir no cadastro.
+            // "quanto falta pro 875A": número solto só vale como linha se existir no cadastro.
             var solto = Pattern.compile("\\b(?:pro|pra|para o|para a|do|da|o|a)\\s+(\\d{3,4}[a-z]?)\\b").matcher(t);
             if (solto.find() && transporte.usaCadastro(null) && !transporte.rede().letreirosPorNumero(solto.group(1)).isEmpty()) {
                 linhaExplicita = solto.group(1).toUpperCase(Locale.ROOT);
@@ -57,17 +57,18 @@ final class ConversaTransporte {
                 (t.contains("quais") || t.contains("qual") || t.contains("linhas do") || t.contains("linhas nesse")) && linhaExplicita == null;
         boolean tempo = TEMPO.matcher(t).find();
         boolean pontoNome = t.matches(".*\\b(ponto|parada|pto)\\b.*");
-        boolean respostaPendente = c.pendencia() != null && t.length() < 120 && !destino && !contrario && !linhasPonto && !t.startsWith("onde ");
+        boolean respostaPendente = c.pendencia() != null && t.length() < 120 && !tempo && !destino && !contrario && !linhasPonto && !t.startsWith("onde ");
+        boolean embarque = t.matches(".*\\bonde\\b.*\\b(pegar|pego|embarcar|embarco)\\b.*");
         boolean seguimento = t.matches("^(e |esse |essa |ele |ela |nesse |nessa ).*");
         boolean rota = FerramentasRota.perguntaDeRota(t);
-        // Lugar dito sem a palavra "ponto": "... na Paulista, 1000", "... na avenida paulista".
+        // Lugar dito sem a palavra "ponto": "... na paulista 1374", "... na avenida paulista".
         String lugarDito = null;
         var lugar = Pattern.compile("\\b(?:na|no|em|perto d[aeo])\\s+([a-z][a-z0-9 .,]{2,60})$").matcher(t.replaceAll("[?!.]+$", "").strip());
         if (tempo && pontoExplicito == null && !pontoNome && !rota && lugar.find()
                 && !lugar.group(1).matches("^(sentido|linha|ponto|parada|minutos?|breve|seguida)\\b.*")) lugarDito = lugar.group(1);
         String viaPerguntada = FerramentasRota.viaPerguntada(t);
         if (!(rota || pontoExplicito != null || linhaExplicita != null || contrario || destino && (c.linha() != null || seguimento)
-                || tempo || linhasPonto || pontoNome || respostaPendente)) return Optional.empty();
+                || tempo || linhasPonto || pontoNome || respostaPendente || embarque)) return Optional.empty();
 
         Long ponto = pontoExplicito != null ? pontoExplicito : c.ponto();
         String linha = linhaExplicita != null ? linhaExplicita : c.linha();
@@ -80,12 +81,18 @@ final class ConversaTransporte {
         String tarefa = tempo ? "PONTO_PREVISAO" : linhasPonto ? "PONTO_LINHAS" : respostaPendente ? c.pendencia() : "PONTO";
         Contexto atual = new Contexto(ponto, linha, sentido, null, null);
         try {
+            if (embarque || "PONTO_EMBARQUE".equals(c.pendencia()) && (respostaPendente || t.matches("^sentido [12](?: da linha .+)?$"))) {
+                String referencia = respostaPendente && linhaExplicita == null ? t : "";
+                var localEmbarque = Pattern.compile("\\b(?:na|no|em|perto d[aeo])\\s+(.+?)[?!.]*$").matcher(t);
+                if (embarque && localEmbarque.find()) referencia = localEmbarque.group(1);
+                return Optional.of(embarque(new Contexto(ponto, linha, sentido, "PONTO_EMBARQUE", null), referencia));
+            }
             if (rota && viaPerguntada == null && linhaExplicita == null) {
                 var direta = FerramentasRota.linhaDireta(transporte, t, c);
                 if (direta.isPresent()) return Optional.of(resposta(direta.get().texto(), direta.get().contexto(), direta.get().acoes()));
             }
             if (viaPerguntada != null && linha == null) {
-                return Optional.of(resposta("De qual linha você está falando? Diga o número que aparece no letreiro, como 5317-10.",
+                return Optional.of(resposta("De qual linha você está falando? Diga o número que aparece no letreiro, como 875A-10.",
                         new Contexto(ponto, null, null, "LINHA", null), List.of()));
             }
             var destinoBusca = Pattern.compile("(?:vao|vai|vou|ir) (?:para|pra|pro|ao|a) (.+?)[?!.]*$").matcher(t);
@@ -144,7 +151,7 @@ final class ConversaTransporte {
                                     + " é " + o.parada().nome() + ", a " + o.metros() + " metros. ";
                             return Optional.of(new RespostaChat(inicio + previsao.resposta(), previsao.fontes(), previsao.confianca(),
                                     previsao.naoConsta(), previsao.disponivel(), previsao.latenciaMs(), previsao.origem(),
-                                    new Contexto(o.parada().codigo(), it.letreiro(), o.sentido(), null, null), acoesPonto(o.parada().codigo())));
+                                    previsao.contexto(), acoesPonto(o.parada().codigo())));
                         }
                     }
                     if (sentido == null) return Optional.of(escolherSentido(it, atual));
@@ -203,8 +210,12 @@ final class ConversaTransporte {
                                     + " no cadastro. Escolha uma parada do itinerário para consultar a previsão.",
                             new Contexto(null, linha, sentido, "PONTO_PREVISAO", null), List.of(new Acao("Ver paradas da linha", null, "/linha/" + linha + (sentido == null ? "" : "?sentido=" + sentido)))));
                 }
-                var r = formatador.previsoes("ponto " + ponto, "ponto " + ponto, linha, sentido);
-                return Optional.of(r.comContexto(atual, acoesPonto(ponto)));
+                boolean seguinte = t.matches("^(?:e )?(?:o )?(?:proximo|seguinte)(?: onibus)?[?!.]*$")
+                        && Objects.equals(ponto, c.ponto()) && Objects.equals(linha, c.linha()) && Objects.equals(sentido, c.sentido());
+                String veiculoAnterior = seguinte ? c.veiculoAnterior() : null;
+                atual = new Contexto(ponto, linha, sentido, null, null, null, null, veiculoAnterior);
+                var r = formatador.previsoes("ponto " + ponto, "ponto " + ponto, linha, sentido, veiculoAnterior);
+                return Optional.of(r.comContexto(r.contexto() == null ? atual : r.contexto(), acoesPonto(ponto)));
             }
             var dados = transporte.linhasDoPonto(ponto, null);
             StringBuilder texto = new StringBuilder();
@@ -226,6 +237,48 @@ final class ConversaTransporte {
         } catch (ErroApi e) {
             return Optional.of(resposta(e.getMessage(), atual, List.of()));
         }
+    }
+
+    private RespostaChat embarque(Contexto c, String referencia) {
+        if (c.linha() == null) return resposta("Qual é o número da linha em que você quer embarcar?", c, List.of());
+        if (!transporte.usaCadastro(null)) return resposta("Consulte as paradas na busca para escolher onde embarcar na demonstração.", c,
+                List.of(new Acao("Buscar pontos", null, "/busca")));
+        var it = transporte.itinerario(c.linha(), null);
+        Long origem = c.ponto();
+        if (!referencia.isBlank()) {
+            String termo = referencia.replaceFirst("^(?:estou |fico )?(?:na |no |em )", "")
+                    .replaceFirst("^(?:ponto|parada)\\s+", "");
+            var busca = transporte.buscarPontos(termo, null);
+            var numero = Pattern.compile("\\b\\d{1,10}\\b").matcher(termo);
+            boolean exato = numero.find() && busca.aviso() == null && !busca.pontos().isEmpty()
+                    && (busca.pontos().size() == 1 || busca.pontos().getFirst().nome().matches(".*\\b" + numero.group() + "\\b.*"));
+            if (busca.pontos().size() != 1 && !exato) return resposta(busca.pontos().isEmpty()
+                            ? "Não encontrei essa referência. Diga uma rua com número ou o código do ponto."
+                            : "Encontrei mais de um ponto nessa região. Escolha sua referência para buscar o embarque.",
+                    new Contexto(null, it.letreiro(), c.sentido(), "PONTO_EMBARQUE", null),
+                    busca.pontos().stream().limit(6).map(p -> new Acao(p.nome(), "ponto " + p.codigo(), null)).toList());
+            origem = busca.pontos().getFirst().codigo();
+        }
+        var memoria = new Contexto(origem, it.letreiro(), c.sentido(), "PONTO_EMBARQUE", null);
+        if (c.sentido() == null && it.sentidos().size() > 1) return escolherSentido(it, memoria);
+        if (origem == null) return resposta("Em qual rua, número ou ponto de referência você está? Vou procurar onde embarcar na linha " + it.letreiro() + ".", memoria,
+                List.of(new Acao("Ver paradas da linha", null, "/linha/" + it.letreiro()), new Acao("Pontos perto de mim", null, "/busca?perto=1")));
+        var local = transporte.rede().parada(origem);
+        if (local == null) return resposta("Esse ponto não aparece no cadastro. Diga uma rua com número ou outro código.",
+                new Contexto(null, it.letreiro(), c.sentido(), "PONTO_EMBARQUE", null), List.of());
+        var sentido = it.sentidos().stream().filter(s -> c.sentido() == null || s.sentido() == c.sentido()).findFirst();
+        if (sentido.isEmpty()) return escolherSentido(it, memoria);
+        var s = sentido.get();
+        var proximas = s.paradas().stream().filter(p -> p.latitude() != null && p.longitude() != null)
+                .filter(p -> RedeGtfs.metros(local.latitude(), local.longitude(), p.latitude(), p.longitude()) <= 600)
+                .sorted(Comparator.comparingInt(p -> RedeGtfs.metros(local.latitude(), local.longitude(), p.latitude(), p.longitude())))
+                .limit(6).toList();
+        if (proximas.isEmpty()) return resposta("Não encontrei parada dessa linha nesse sentido a até 600 metros da referência. Confira o itinerário ou diga outra rua.", memoria,
+                List.of(new Acao("Ver paradas da linha", null, "/linha/" + it.letreiro() + "?sentido=" + s.sentido())));
+        return resposta("Você pode embarcar na linha " + it.letreiro() + ", sentido " + s.destino() + ", nestas paradas próximas de " + local.nome()
+                        + ": " + String.join("; ", proximas.stream().map(Ponto::nome).toList()) + ". Distância em linha reta; confira o acesso a pé. Escolha uma parada para consultar a previsão.",
+                new Contexto(origem, it.letreiro(), s.sentido(), "PONTO_EMBARQUE", null), proximas.stream()
+                        .map(p -> new Acao(p.nome(), "previsão da linha " + it.letreiro() + " no ponto " + p.codigo() + " no sentido " + s.sentido(), null)).toList());
     }
 
     private RespostaChat escolherSentido(RespostaItinerario it, Contexto c) {

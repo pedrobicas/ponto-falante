@@ -118,6 +118,10 @@ public class AssistenteTempoReal {
     }
 
     RespostaChat previsoes(String original, String t, String filtroLinha, Integer sentido) {
+        return previsoes(original, t, filtroLinha, sentido, null);
+    }
+
+    RespostaChat previsoes(String original, String t, String filtroLinha, Integer sentido, String veiculoAnterior) {
         ProvedorTransporte provedor = transporte.escolher(null);
         Ponto ponto;
         List<Ponto> alternativas = List.of();
@@ -152,6 +156,17 @@ public class AssistenteTempoReal {
         }
         if (sentido != null) onibus.removeIf(o -> !sentido.equals(o.sentido()));
         onibus.sort(java.util.Comparator.comparingInt(OnibusPrevisto::minutos));
+        // O cursor identifica apenas o ônibus; horários são sempre consultados novamente.
+        boolean referenciaEncontrada = false;
+        if (veiculoAnterior != null) {
+            for (int i = 0; i < onibus.size(); i++) {
+                if (veiculoAnterior.equals(onibus.get(i).veiculo())) {
+                    onibus.subList(0, i + 1).clear();
+                    referenciaEncontrada = true;
+                    break;
+                }
+            }
+        }
         boolean simulado = p.fonte() == Fonte.SIMULADO;
         StringBuilder sb = new StringBuilder();
         if (simulado) {
@@ -163,8 +178,12 @@ public class AssistenteTempoReal {
             sb.append(", ").append(legivel(p.ponto().endereco()));
         }
         sb.append(". ");
+        if (veiculoAnterior != null && !referenciaEncontrada && !onibus.isEmpty()) {
+            sb.append("A previsão anterior não aparece mais na consulta atual. Mostro os próximos disponíveis. ");
+        }
         if (onibus.isEmpty()) {
-            sb.append(filtroLinha == null ? "Não há ônibus previstos agora. "
+            sb.append(veiculoAnterior != null ? "Não há outra previsão disponível depois do ônibus consultado. Isso não confirma que não haverá outro ônibus. "
+                    : filtroLinha == null ? "Não há ônibus previstos agora. "
                     : "Não há previsão para a linha " + filtroLinha + " neste ponto agora. ");
         } else {
             int n = Math.min(MAX_ONIBUS, onibus.size());
@@ -195,7 +214,10 @@ public class AssistenteTempoReal {
             }
             sb.append(String.join("; ", nomes)).append(". ");
         }
-        return resposta(sb.toString().trim(), p.fonte(), false);
+        String referencia = onibus.isEmpty() ? veiculoAnterior : onibus.getFirst().veiculo();
+        if (referencia != null && !referencia.matches("[a-f0-9]{10}")) referencia = null;
+        return resposta(sb.toString().trim(), p.fonte(), false).comContexto(
+                new Chat.Contexto(ponto.codigo(), filtroLinha, sentido, null, null, null, null, referencia), List.of());
     }
 
     /**

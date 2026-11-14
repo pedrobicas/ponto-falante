@@ -8,7 +8,8 @@ async (page) => {
   async function perguntar(pergunta, verificar) {
     await page.waitForFunction(() => document.querySelector('[role="log"]')?.getAttribute('aria-busy') === 'false');
     await page.getByRole('textbox', { name: 'Sua pergunta' }).fill(pergunta);
-    const resposta = page.waitForResponse(r => r.url().endsWith('/api/chat') && r.request().method() === 'POST');
+    // A primeira chamada ao modelo local pode demorar mais que o padrão de 30 s do navegador.
+    const resposta = page.waitForResponse(r => r.url().endsWith('/api/chat') && r.request().method() === 'POST', { timeout: 150_000 });
     await page.getByRole('button', { name: 'Enviar pergunta', exact: true }).click();
     const http = await resposta;
     const r = await http.json();
@@ -23,11 +24,11 @@ async (page) => {
   }
   try {
     await page.goto(new URL('/assistente', page.url()).href);
-    await perguntar('Quais linhas passam no ponto 160015580?', r => r.contexto.ponto === 160015580);
-    await perguntar('sentido 1 da linha 5317-10', r => r.contexto.sentido === 1 && r.resposta.includes('73 paradas'));
+    await perguntar('Quais linhas passam no ponto 70016916?', r => r.contexto.ponto === 70016916);
+    await perguntar('sentido 1 da linha 875A-10', r => r.contexto.sentido === 1 && r.resposta.includes('70 paradas'));
     await page.getByRole('link', { name: 'Ver paradas e previsões', exact: true }).click();
-    await page.getByRole('searchbox', { name: 'Encontre sua parada' }).fill('Paulista, 1000');
-    await page.getByRole('button', { name: /1711/ }).click();
+    await page.getByRole('searchbox', { name: 'Encontre sua parada' }).fill('Paulista 1374');
+    await page.getByRole('button', { name: /1374/ }).click();
     await page.waitForFunction(() => !!document.querySelector('.linha__selecionada') && !document.querySelector('.linha__selecionada [role="status"]'));
     await page.route('**/__test-axe.js', route => route.fulfill({ path: 'frontend/node_modules/axe-core/axe.min.js', contentType: 'application/javascript' }));
     async function auditar(nome) {
@@ -48,17 +49,17 @@ async (page) => {
     await auditar('linha-mobile-175');
     await page.evaluate(() => document.documentElement.style.removeProperty('--escala-fonte'));
     await page.getByRole('link', { name: 'Assistente', exact: true }).click();
-    if (!(await page.getByRole('log').textContent()).includes('73 paradas')) throw new Error('Histórico perdido ao navegar.');
+    if (!(await page.getByRole('log').textContent()).includes('70 paradas')) throw new Error('Histórico perdido ao navegar.');
     await page.setViewportSize({ width: 1365, height: 900 });
     await auditar('chat-desktop');
-    const itinerario = await (await page.request.get(new URL('/api/linhas/5317-10/paradas', page.url()).href)).json();
+    const itinerario = await (await page.request.get(new URL('/api/linhas/875A-10/paradas', page.url()).href)).json();
     const paradasVolta = new Set(itinerario.sentidos.find(s => s.sentido === 2).paradas.map(p => p.codigo));
     const volta = await perguntar('e no sentido contrário?', r => r.contexto.sentido === 2
-      && r.contexto.ponto !== 160015580 && paradasVolta.has(r.contexto.ponto));
+      && r.contexto.ponto !== 70016916 && paradasVolta.has(r.contexto.ponto));
     await perguntar('e o próximo?', r => r.origem === 'TEMPO_REAL' && r.contexto.sentido === 2
-      && r.contexto.linha === '5317-10' && r.contexto.ponto === volta.contexto.ponto);
-    await perguntar('Quais linhas passam no ponto 160015580?', r => r.resposta.includes('5317-10'));
-    await perguntar('e o próximo?', r => r.origem === 'TEMPO_REAL' && r.contexto.linha === null && r.contexto.ponto === 160015580);
+      && r.contexto.linha === '875A-10' && r.contexto.ponto === volta.contexto.ponto);
+    await perguntar('Quais linhas passam no ponto 70016916?', r => r.resposta.includes('875A-10'));
+    await perguntar('e o próximo?', r => r.origem === 'TEMPO_REAL' && r.contexto.linha === null && r.contexto.ponto === 70016916);
     await perguntar('Tenho 69 anos. Posso usar o ônibus municipal com RG?', r => r.disponivel && !r.nao_consta && r.fontes.length > 0);
     await page.evaluate(() => {
       if (!window.speechSynthesis) return;

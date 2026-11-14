@@ -36,10 +36,13 @@ Trivy (dependências e imagem) e um teste de fumaça da imagem.
   consulta em produção trouxe 2 pontos ("paulista"), 4 linhas ("8000") e 24 ônibus previstos no ponto 260015039,
   todos com `fonte: OLHO_VIVO` e `tipo: PREVISAO`. Validação: [evidencias/sptrans_gateway_validacao.txt](evidencias/sptrans_gateway_validacao.txt).
 - Sem credenciais, o modo demonstração continua identificado com o selo **SIMULADO**.
-- Conversa completa em produção (14/11/2026): [evidencias/conversa_producao_20261114.txt](evidencias/conversa_producao_20261114.txt),
-  gerada por `scripts/integracao/conversar.py`. Mostra a memória de ponto, linha e sentido, a linha direta de uma
-  origem a um destino pelo cadastro oficial, previsões reais, boletim e respostas de regras com fontes.
-- Busca corrigida (13/11/2026): "Rua Augusta, 1000" e o código 160015580 devolvem o mesmo ponto;
+- Validação atual com exemplos públicos (14/11/2026): [evidencias/validacao_neutra_20261114.json](evidencias/validacao_neutra_20261114.json).
+  Instância local isolada com SPTrans e GenAI reais: 462 testes, 11 telas sem overflow/violações axe,
+  voz pt-BR, continuidade da conversa e boletim publicado pelo robô no banco local. Sem avaliação final GenAI.
+- Conversa em produção (14/11/2026): [evidencias/conversa_producao_20261114.txt](evidencias/conversa_producao_20261114.txt).
+  Transcrição histórica sanitizada: trechos com referências locais pessoais foram omitidos; respostas de regras e boletim foram preservadas.
+  O roteiro atual em `scripts/integracao/conversar.py` usa exemplos públicos da Avenida Paulista.
+- Busca: os exemplos públicos atuais "Av. Paulista, 1374" e código 70016916 devolvem o mesmo ponto;
   regressão em `backend/src/test/java/br/fiap/pontofalante/transporte/BuscaRedeTest.java`.
 - Assistente no site (13/11/2026): [evidencias/assistente_producao_20261113.txt](evidencias/assistente_producao_20261113.txt),
   gerado por `scripts/integracao/coletar_evidencias_producao.py`. Perguntas de horário respondidas pelo backend com a
