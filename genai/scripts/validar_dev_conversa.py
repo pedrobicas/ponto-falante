@@ -43,6 +43,8 @@ def main():
     with saida.open("x", encoding="utf-8") as arquivo:
         for caso in casos:
             inicio = time.perf_counter()
+            # Loopback fixo da API local (mesma máquina): HTTP sem TLS não sai do computador.
+            # nosemgrep: python.lang.security.audit.insecure-transport.urllib.insecure-request-object.insecure-request-object
             req = Request("http://127.0.0.1:8001/chat", data=json.dumps({"pergunta": caso["pergunta"]}).encode(),
                           headers={"Content-Type": "application/json", "X-API-Key": chave})
             try:
@@ -52,7 +54,7 @@ def main():
                     r = resultado.resposta.model_dump(exclude_none=True)
                     r['passos'] = resultado.passos
                 else:
-                    with urlopen(req, timeout=50) as resposta:
+                    with urlopen(req, timeout=50) as resposta:  # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected -- URL fixa de loopback
                         r = json.load(resposta)
                 ids = [f["trecho_id"] for f in r.get("fontes", [])]
                 fonte_ok = caso["nao_consta"] or any(i.startswith(d + "-") for i in ids for d in caso["documentos"])
