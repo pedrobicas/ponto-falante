@@ -78,6 +78,7 @@ Execuções reais de 13/11/2026:
 
 - Coleta em produção (GitHub Actions): 6 pontos consultados, 111 ônibus previstos em 46 linhas-ponto, 6 amostras gravadas, 0 rejeitadas.
 - Boletim do dia 12/11 publicado como **INDISPONÍVEL**: a coleta ainda não existia nesse dia, e o robô não inventou números.
+- Boletim do dia 13/11 (execução de 14/11): 17 consultas válidas, 24 linhas avaliadas, 6 em **ATENÇÃO** e 18 dentro dos limites, com aviso de "amostragem parcial" (17 de 48 janelas). O agendador gratuito do GitHub atrasa e pula execuções, e o boletim informa a cobertura real.
 - Execução local contra a SPTrans real: 6 amostras e boletim ESTIMADO com aviso de "amostragem parcial" (`logs/rpa_2026-11-13.log`).
 
 ## 7. Tratamento de exceções e recuperação
@@ -116,7 +117,9 @@ INFO | pf_rpa.robo | Boletim publicado no MVP (POST /boletim)
 
 O resultado é consumido por outro componente via API. O coletor lê as previsões no backend Spring Boot (que consulta a SPTrans pelo gateway da Prefeitura) e grava as amostras em PostgreSQL (`POST /api/rpa/amostras`). O robô do boletim lê essas amostras e publica em `POST /boletim`. O backend confere se a proveniência declarada bate com as amostras gravadas, guarda o boletim e o serve em `GET /boletim` para a tela do Angular, que lê o `resumo_falado` em voz alta e mostra o selo **Estimado**, **Simulado** ou **Indisponível**. Contrato: `contratos/openapi-integracao.yaml`.
 
-Execuções no GitHub Actions: https://github.com/pedrobicas/ponto-falante/actions/workflows/rpa-coleta.yml e https://github.com/pedrobicas/ponto-falante/actions/workflows/rpa-diario.yml. [Inserir no PDF o print da tela `/boletim` do MVP.]
+Execuções no GitHub Actions: https://github.com/pedrobicas/ponto-falante/actions/workflows/rpa-coleta.yml e https://github.com/pedrobicas/ponto-falante/actions/workflows/rpa-diario.yml. Tela `/boletim` do MVP publicado em 14/11/2026, com o primeiro boletim estimado a partir de consultas reais:
+
+![Boletim de 13/11/2026 no MVP publicado, com o selo Estimado](../assets/boletim_producao_20261114.png)
 
 ## 10. Testes realizados
 
