@@ -98,10 +98,10 @@ Assistente real: [scripts/genai/README.md](scripts/genai/README.md) (Ollama + AP
 ## Testes
 
 ```powershell
-Push-Location backend; .\mvnw.cmd -B verify; Pop-Location                 # 106 testes, PostgreSQL embutido
-Push-Location frontend; npm.cmd ci; npm.cmd test -- --watch=false; Pop-Location   # 40 testes (axe)
-Push-Location genai; ..\.venv\Scripts\python.exe -m pytest -q tests; Pop-Location # 126 testes
-Push-Location rpa; ..\.venv\Scripts\python.exe -m pytest -q; Pop-Location         # 45 testes
+Push-Location backend; .\mvnw.cmd -B verify; Pop-Location                 # 172 testes, PostgreSQL embutido
+Push-Location frontend; npm.cmd ci; npm.cmd test -- --watch=false; Pop-Location   # 47 testes (axe)
+Push-Location genai; ..\.venv\Scripts\python.exe -m pytest -q tests; Pop-Location # 155 testes
+Push-Location rpa; ..\.venv\Scripts\python.exe -m pytest -q; Pop-Location         # 46 testes
 .\.venv\Scripts\python.exe -m pytest -q tests/integracao                          # 26 testes
 .\.venv\Scripts\python.exe scripts/integracao/testar_mvp.py --url https://ponto-falante.onrender.com
 ```

@@ -3,14 +3,14 @@
 Este documento reúne as provas de que cada parte foi executada e testada, e não apenas escrita. Cada item aponta
 para o arquivo ou a execução correspondente.
 
-## 1. Testes automatizados (execução local de 13/11/2026, repetida na CI)
+## 1. Testes automatizados (execução local de 14/11/2026, repetida na CI)
 
 | Suíte | Testes | Comando |
 |---|---|---|
-| Spring Boot (PostgreSQL embutido, contratos Olho Vivo, segurança) | 106 | `backend/mvnw -B verify` |
-| Angular (unidade + acessibilidade axe) | 40 | `npm test -- --watch=false` |
-| GenAI (RAG, agentes v1/v2/v3, API, segurança, continuidade da avaliação) | 126 | `pytest -q genai/tests` |
-| RPA (coletor e cenários do boletim) | 45 | `pytest -q rpa` |
+| Spring Boot (PostgreSQL embutido, contratos Olho Vivo, segurança) | 172 | `backend/mvnw -B verify` |
+| Angular (unidade + acessibilidade axe) | 47 | `npm test -- --watch=false` |
+| GenAI (RAG, agentes v1/v2/v3, API, segurança, continuidade da avaliação, conversa) | 155 | `pytest -q genai/tests` |
+| RPA (coletor e cenários do boletim) | 46 | `pytest -q rpa` |
 | Integração (MVP + RPA + contratos) | 26 | `pytest -q tests/integracao` |
 
 Todos passaram. O número de testes de cada suíte está no README.
@@ -36,6 +36,11 @@ Trivy (dependências e imagem) e um teste de fumaça da imagem.
   consulta em produção trouxe 2 pontos ("paulista"), 4 linhas ("8000") e 24 ônibus previstos no ponto 260015039,
   todos com `fonte: OLHO_VIVO` e `tipo: PREVISAO`. Validação: [evidencias/sptrans_gateway_validacao.txt](evidencias/sptrans_gateway_validacao.txt).
 - Sem credenciais, o modo demonstração continua identificado com o selo **SIMULADO**.
+- Conversa completa em produção (14/11/2026): [evidencias/conversa_producao_20261114.txt](evidencias/conversa_producao_20261114.txt),
+  gerada por `scripts/integracao/conversar.py`. Mostra a memória de ponto, linha e sentido, a linha direta de uma
+  origem a um destino pelo cadastro oficial, previsões reais, boletim e respostas de regras com fontes.
+- Busca corrigida (13/11/2026): "Rua Augusta, 1000" e o código 160015580 devolvem o mesmo ponto;
+  regressão em `backend/src/test/java/br/fiap/pontofalante/transporte/BuscaRedeTest.java`.
 - Assistente no site (13/11/2026): [evidencias/assistente_producao_20261113.txt](evidencias/assistente_producao_20261113.txt),
   gerado por `scripts/integracao/coletar_evidencias_producao.py`. Perguntas de horário respondidas pelo backend com a
   SPTrans (`origem=TEMPO_REAL`); perguntas de regras respondidas pela GenAI no PC do dono, pelo Quick Tunnel gratuito
@@ -49,7 +54,10 @@ O robô roda no GitHub Actions (cron diário às 9h UTC), lê o histórico do MV
 - Execução de 11/11/2026: https://github.com/pedrobicas/ponto-falante/actions/runs/43082177783
 - Coleta real em produção (13/11/2026): https://github.com/pedrobicas/ponto-falante/actions/runs/43429040197.
   6 pontos consultados no MVP publicado (SPTrans real), 111 ônibus previstos, 6 amostras gravadas, 0 rejeitadas.
-  A coleta passa a rodar 8 vezes por dia (`rpa-coleta.yml`).
+  A coleta está agendada para 8 vezes por dia (`rpa-coleta.yml`); o agendador gratuito do GitHub atrasa e pula
+  execuções, então o boletim informa a cobertura real.
+- Primeiro boletim **ESTIMADO** com dados reais (14/11/2026, referente a 13/11): 17 consultas válidas, 24 linhas
+  avaliadas, 6 em atenção, "amostragem parcial" declarada: https://github.com/pedrobicas/ponto-falante/actions/runs/43609879807.
 - Boletim de 13/11/2026 para o dia 12/11: https://github.com/pedrobicas/ponto-falante/actions/runs/43429139001.
   Como a coleta ainda não existia em 12/11, o robô publicou o boletim como **INDISPONIVEL**, em vez de preencher com
   dados simulados. O boletim de 13/11 sai na execução de 14/11 a partir das amostras reais (estimado, porque
