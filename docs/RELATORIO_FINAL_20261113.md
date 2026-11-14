@@ -100,4 +100,6 @@ Revisão atualizada em [REVISAO_CRITERIOS.md](REVISAO_CRITERIOS.md):
 2. **Gravar os vídeos** (GenAI e RPA). Roteiro do RPA: `rpa/docs/roteiro_video.md`. Depois, colocar os links nos
    relatórios.
 3. **Exportar o PDF do relatório do RPA** (`rpa/docs/relatorio.md`), com o print da tela `/boletim`.
-4. **Se a FIAP exigir**, tornar o repositório público: `gh repo edit pedrobicas/ponto-falante --visibility public`.
+4. **Orientação substituída em 14/11:** a FIAP exige repositório público. Preparar uma cópia sanitizada com histórico
+   novo e preservar este repositório privado: o histórico antigo conserva exemplos pessoais. Ver
+   [checklist atual](ENTREGA_FIAP.md) e a revisão de privacidade antes de publicar.

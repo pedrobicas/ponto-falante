@@ -56,4 +56,5 @@ frontend/*.zip
 
 # Saídas locais de validação e material oficial da FIAP (não versionar)
 /output/
+/entregaveis/
 /Global_Solution_*.pdf

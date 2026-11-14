@@ -312,6 +312,40 @@ class ConversaTransporteTest {
         assertThat(consultas).isZero();
     }
 
+    @ParameterizedTest @ValueSource(strings={
+            "Esse ônibus passa na Avenida Paulista?",
+            "A linha 875A-10 passa pela Avenida Paulista?",
+            "E passa em Avenida Paulista?"})
+    void perguntaDeViaDepoisDasOpcoesDeEmbarqueNaoViraReferencia(String pergunta) {
+        var linha = a.responder("Onde posso pegar a linha 875A-10?").orElseThrow();
+        var sentido = a.responder("sentido 1 da linha 875A-10", linha.contexto()).orElseThrow();
+        var opcoes = a.responder("Avenida Paulista, 1374", sentido.contexto()).orElseThrow();
+        assertThat(opcoes.contexto().pendencia()).isEqualTo("PONTO_EMBARQUE");
+
+        var via = a.responder(pergunta, opcoes.contexto()).orElseThrow();
+        assertThat(via.origem()).isEqualTo("CADASTRO");
+        assertThat(via.resposta()).startsWith("Sim.").contains("875A-10", "Perdizes");
+        assertThat(via.contexto().ponto()).isEqualTo(70016916L);
+        assertThat(via.contexto().linha()).isEqualTo("875A-10");
+        assertThat(via.contexto().sentido()).isEqualTo(1);
+        assertThat(via.contexto().pendencia()).isNull();
+        assertThat(consultas).isZero();
+
+        var previsao = a.responder(via.acoes().getFirst().pergunta(), via.contexto()).orElseThrow();
+        assertThat(previsao.origem()).isEqualTo("TEMPO_REAL");
+        assertThat(previsao.contexto().sentido()).isEqualTo(1);
+    }
+
+    @Test void viaNaoConfirmadaDuranteEmbarquePreservaReferenciaELinha() {
+        var contexto = new Chat.Contexto(70016916L, "875A-10", 1, "PONTO_EMBARQUE", null);
+        var via = a.responder("Esse ônibus passa na Avenida Mateo Bei?", contexto).orElseThrow();
+        assertThat(via.resposta()).contains("Não confirmei").doesNotContain("Não encontrei essa referência");
+        assertThat(via.contexto().ponto()).isEqualTo(contexto.ponto());
+        assertThat(via.contexto().linha()).isEqualTo(contexto.linha());
+        assertThat(via.contexto().sentido()).isEqualTo(contexto.sentido());
+        assertThat(consultas).isZero();
+    }
+
     @Test void referenciaQueSaiuDaApiNaoFazPularOnibusDisponivel() {
         var primeira = a.responder("Quanto falta para a 875A-10 no ponto 70016916?").orElseThrow();
         referenciaSaiu = true;

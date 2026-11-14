@@ -123,7 +123,8 @@ Execuções no GitHub Actions: https://github.com/pedrobicas/ponto-falante/actio
 
 ## 10. Testes realizados
 
-45 testes automatizados (`python -m pytest -v`), todos passando, também na CI a cada push. Evidências em `tests/EVIDENCIAS.md`.
+46 testes automatizados na validação de 14/11/2026, todos passando. Resultado preservado e cenários em
+`tests/EVIDENCIAS.md`; a suíte também é executada na CI a cada push. Esta atualização documental não reexecutou a suíte.
 
 | Tipo | Cenário | Resultado |
 |---|---|---|

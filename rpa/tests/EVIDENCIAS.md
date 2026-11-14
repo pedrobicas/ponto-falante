@@ -1,5 +1,23 @@
 # Evidências dos testes
 
+## Atualização de 14/11/2026
+
+A validação da revisão `3c4fb1a` registrou **46 testes aprovados em 18,96 s**, sem falhas.
+Fonte local preservada: `.validation/rpa-privacy.log`, na raiz do projeto. O log é evidência da sessão anterior;
+esta consolidação não executou novamente os testes.
+
+```text
+..............................................                           [100%]
+46 passed in 18.96s
+```
+
+Os cenários atuais estão em `tests/` e abrangem coleta real, decisão por linha, insuficiência de amostras,
+origem declarada, publicação, tentativas após falha e proteção de segredos nos logs.
+A validação integrada local de 14/11 está resumida em
+[`docs/evidencias/validacao_neutra_20261114.json`](../../docs/evidencias/validacao_neutra_20261114.json).
+
+## Evidência histórica de 11/11/2026
+
 Execução em 11/11/2026, Windows 11, Python 3.11, comando `python -m pytest -v` dentro de `rpa/`.
 
 ```text
