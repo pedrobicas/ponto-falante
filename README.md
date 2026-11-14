@@ -9,6 +9,24 @@ Global Solution FIAP 2026.2 · Engenharia de Software.
 - **Aplicação publicada:** https://ponto-falante.onrender.com
 - **Repositório:** https://github.com/pedrobicas/ponto-falante
 
+## Ficha técnica do MVP
+
+Ficha comum da equipe, conforme o PDF oficial da FIAP, p. 20. Os indicadores abaixo são propostas de acompanhamento;
+não representam impacto já medido com passageiros.
+
+| Campo | Definição |
+|---|---|
+| Nome do produto | Ponto Falante |
+| Cidadão e território | Usuários de ônibus municipais de São Paulo, especialmente pessoas com deficiência visual e idosos |
+| Problema | Dificuldade de ler letreiros, consultar previsões e entender orientações de transporte com autonomia |
+| Proposta de valor | Consulta acessível por texto e voz, com fontes e distinção entre previsão, estimativa e demonstração |
+| Arquitetura | Angular, Spring Boot, PostgreSQL; GenAI local via FastAPI/Ollama; robôs Python em GitHub Actions |
+| Fontes de dados | Cadastro GTFS e previsões Olho Vivo da SPTrans; documentos oficiais identificados em `genai/base/fontes.csv` |
+| Modelos de IA | Produção: agente com `qwen2.5:7b` local; recuperação FAISS com embeddings multilíngues. Comparações e versões anteriores no relatório GenAI |
+| URL e repositório | Links acima; a publicação de uma cópia sanitizada do repositório ainda precisa ser concluída |
+| Indicadores de impacto propostos | Proporção de consultas concluídas por voz; tempo para obter uma previsão; sucesso de uso com leitor de tela; compreensão da origem/data do boletim |
+| ODS conectados | ODS 10 (redução das desigualdades) e ODS 11 (cidades e comunidades sustentáveis), pelo acesso à informação de mobilidade |
+
 | Nome completo | RM |
 |---|---|
 | Pedro Henrique Bicas Couto | 99534 |
@@ -34,7 +52,7 @@ Exemplos públicos: Avenida Paulista, 1374 (ponto `70016916`) e linha `875A-10`,
 O cadastro oficial completo permanece intacto. Exemplos e evidências de demonstração não devem usar referências
 à residência dos integrantes. A lista da assistente, os testes e os roteiros seguem essa regra.
 
-Entrega FIAP: [critérios e pendências](docs/REVISAO_CRITERIOS.md), [roteiro GenAI](genai/ROTEIRO_VIDEO.md)
+Entrega FIAP: [checklist atual e sequência de envio](docs/ENTREGA_FIAP.md), [critérios](docs/REVISAO_CRITERIOS.md), [roteiro GenAI](genai/ROTEIRO_VIDEO.md)
 e [roteiro RPA](rpa/docs/roteiro_video.md). Não repetir os conjuntos finais fechados para gravar uma demonstração.
 
 ## Arquitetura

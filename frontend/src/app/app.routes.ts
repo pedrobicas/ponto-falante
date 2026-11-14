@@ -36,7 +36,7 @@ export const routes: Routes = [
   },
   {
     path: 'boletim',
-    title: 'Boletim de atrasos' + SUFIXO,
+    title: 'Boletim de esperas previstas' + SUFIXO,
     loadComponent: () => import('./features/boletim/boletim').then((m) => m.BoletimPage),
   },
   {

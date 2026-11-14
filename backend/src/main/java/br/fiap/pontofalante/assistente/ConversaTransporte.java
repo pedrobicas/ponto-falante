@@ -57,10 +57,11 @@ final class ConversaTransporte {
                 (t.contains("quais") || t.contains("qual") || t.contains("linhas do") || t.contains("linhas nesse")) && linhaExplicita == null;
         boolean tempo = TEMPO.matcher(t).find();
         boolean pontoNome = t.matches(".*\\b(ponto|parada|pto)\\b.*");
-        boolean respostaPendente = c.pendencia() != null && t.length() < 120 && !tempo && !destino && !contrario && !linhasPonto && !t.startsWith("onde ");
+        boolean rota = FerramentasRota.perguntaDeRota(t);
+        // Uma pergunta explícita de trajeto interrompe a escolha de referência de embarque.
+        boolean respostaPendente = c.pendencia() != null && t.length() < 120 && !tempo && !destino && !contrario && !linhasPonto && !rota && !t.startsWith("onde ");
         boolean embarque = t.matches(".*\\bonde\\b.*\\b(pegar|pego|embarcar|embarco)\\b.*");
         boolean seguimento = t.matches("^(e |esse |essa |ele |ela |nesse |nessa ).*");
-        boolean rota = FerramentasRota.perguntaDeRota(t);
         // Lugar dito sem a palavra "ponto": "... na paulista 1374", "... na avenida paulista".
         String lugarDito = null;
         var lugar = Pattern.compile("\\b(?:na|no|em|perto d[aeo])\\s+([a-z][a-z0-9 .,]{2,60})$").matcher(t.replaceAll("[?!.]+$", "").strip());
