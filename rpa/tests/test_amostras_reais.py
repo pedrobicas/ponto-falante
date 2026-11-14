@@ -86,6 +86,18 @@ def test_amostragem_parcial_gera_aviso(cfg):
     assert any("Amostragem parcial" in a for a in b["avisos"]) and "parcial" in b["resumo_falado"]
 
 
+def test_consulta_real_insuficiente_nao_e_estimativa_operacional(cfg):
+    cfg.coleta.pontos = ['P1']
+    mock_mvp.estado.update({'modo': 'REAL', 'amostras': [_amostra('P1', 7, [('A', 5)])]})
+    b = executar(cfg, DATA).boletim
+    assert b['natureza_dados'] == 'INDISPONIVEL'
+    assert b['fonte_dados'] == {'olhovivo': 1, 'simulador': 0}
+    assert b['amostragem']['classificacao'] == 'VERIFICADO'
+    assert b['amostragem']['consultas_validas'] == 1
+    assert 'insuficientes' in b['resumo_falado']
+    assert not b['dados_simulados']
+
+
 def test_regra_estimada_limites():
     r = RegrasEstimadas()
     assert classificar_estimada(30.5, 31, 0, r)[0] == CRITICA

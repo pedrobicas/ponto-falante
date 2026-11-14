@@ -10,6 +10,8 @@ public final class DemoLocal {
         try (EmbeddedPostgres pg = EmbeddedPostgres.builder()
                 .setDataDirectory(raiz.resolve(".validation/local/pgdata"))
                 .setCleanDataDirectory(false)
+                // 10 s (padrão) não basta logo depois do build, com a máquina ocupada.
+                .setPGStartupWait(java.time.Duration.ofSeconds(60))
                 .setServerConfig("listen_addresses", "127.0.0.1")
                 .setServerConfig("max_connections", "20").start()) {
             String java = Path.of(System.getProperty("java.home"), "bin", "java").toString();

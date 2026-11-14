@@ -64,6 +64,9 @@ function numero(v: number | null | undefined, casas = 1): string {
             @if (estimado()) {
               <pf-origem tipo="estimado" [forte]="true" />
             }
+            @if (b.natureza_dados === 'INDISPONIVEL') {
+              <pf-origem tipo="indisponivel" rotulo="Dados insuficientes" [forte]="true" />
+            }
           </h2>
           <dl class="ficha__dados">
             <div><dt>Período observado</dt><dd>{{ periodoTexto() }}</dd></div>

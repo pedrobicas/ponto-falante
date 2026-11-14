@@ -214,12 +214,13 @@ def montar_estimado(data_ref: str, situacoes: list[SituacaoEstimada], val: Resul
     avisos = list(avisos)
     if parcial:
         avisos.append(f"Amostragem parcial: {len(janelas)} de {esperadas} janelas de coleta cobertas ({cobertura}%).")
+    tem_estimativa = any(s.status != SEM_DADOS for s in situacoes)
     boletim = {
         "data_referencia": data_ref,
         "gerado_em": agora.isoformat(timespec="seconds"),
         "desatualizado": False,
         "motivo_desatualizado": None,
-        "natureza_dados": "ESTIMADO",
+        "natureza_dados": "ESTIMADO" if tem_estimativa else "INDISPONIVEL",
         "metodo": METODO_ESTIMADO,
         "periodo_referencia": {"data": data_ref, "inicio": inicio, "fim": fim, "fuso": "America/Sao_Paulo"},
         "ultima_atualizacao": validas[-1].consultado_em.isoformat(timespec="seconds"),
@@ -279,6 +280,10 @@ def montar_estimado(data_ref: str, situacoes: list[SituacaoEstimada], val: Resul
         "revisao_humana": REVISAO_HUMANA,
     }
     boletim["resumo_falado"] = _resumo_estimado(data_ref, situacoes, len(validas), inicio, fim, parcial)
+    if not tem_estimativa:
+        boletim['resumo_falado'] = (f"Boletim de {data_por_extenso(data_ref)} indisponível: "
+                                   f"foram feitas {len(validas)} consultas reais à SPTrans, mas os dados são "
+                                   "insuficientes para estimar a espera nas linhas monitoradas.")
     boletim["html"] = renderizar_html(boletim)
     return boletim
 

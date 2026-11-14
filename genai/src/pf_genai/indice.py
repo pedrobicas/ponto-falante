@@ -9,6 +9,7 @@ import json
 import os
 from dataclasses import dataclass
 from pathlib import Path
+from functools import lru_cache
 
 import faiss
 import numpy as np
@@ -55,9 +56,15 @@ class Indice:
         self.index.add(vetores)
 
     def buscar(self, consulta: str, k: int = 3) -> list[Resultado]:
+        # Cache limitado em memória; nunca persiste perguntas. O índice é imutável após carregar.
+        # Cópias impedem que um consumidor altere os resultados das próximas consultas.
+        return [Resultado(self.trechos[i], score) for i, score in self._buscar(consulta, k)]
+
+    @lru_cache(maxsize=128)
+    def _buscar(self, consulta: str, k: int) -> tuple:
         q = embutir([consulta], self.nome_modelo, tipo="query")
         scores, ids = self.index.search(q, k)
-        return [Resultado(self.trechos[i], float(s)) for s, i in zip(scores[0], ids[0]) if i >= 0]
+        return tuple((int(i), float(s)) for s, i in zip(scores[0], ids[0]) if i >= 0)
 
     def salvar(self, pasta: Path = BASE) -> None:
         faiss.write_index(self.index, str(pasta / "indice.faiss"))

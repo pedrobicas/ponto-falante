@@ -41,7 +41,7 @@ class AssistenteTempoRealTest {
     }
 
     @Test void linhaSemPrevisaoNaoGrudaFrasesNaVoz() {
-        RespostaChat r = assistente.responder("Quando passa a linha 9999-10 no ponto Paulista?").orElseThrow();
+        RespostaChat r = assistente.responder("Quando passa a linha 9999-10 no ponto Paulista Trianon?").orElseThrow();
         assertThat(r.resposta()).contains("Não há previsão para a linha 9999-10")
                 .doesNotContainPattern("[a-zà-ú]\\.[A-ZÀ-Ú]");
     }
@@ -78,7 +78,7 @@ class AssistenteTempoRealTest {
 
     @Test void horarioDeLinhaSemPontoPedeOPonto() {
         RespostaChat r = assistente.responder("Quando passa a linha 8000-10?").orElseThrow();
-        assertThat(r.origem()).isEqualTo("TEMPO_REAL");
+        assertThat(r.origem()).isEqualTo("CADASTRO");
         assertThat(r.resposta()).contains("preciso do ponto").contains("8000-10");
     }
 

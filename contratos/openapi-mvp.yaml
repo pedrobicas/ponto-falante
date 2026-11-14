@@ -460,6 +460,19 @@ components:
       required: [pergunta]
       properties:
         pergunta: {type: string, minLength: 1, maxLength: 500}
+        contexto: {$ref: '#/components/schemas/ContextoChat'}
+
+    ContextoChat:
+      type: object
+      description: Entidades da conversa; não guarda previsões. Enviado novamente a cada mensagem.
+      properties:
+        ponto: {type: integer, format: int64, minimum: 1, maximum: 999999999999, nullable: true}
+        linha: {type: string, pattern: '^[0-9]{3,4}[A-Za-z]?(-[0-9]{1,2})?$', nullable: true}
+        sentido: {type: integer, enum: [1, 2], nullable: true}
+        pendencia: {type: string, enum: [PONTO_PREVISAO, PONTO_LINHAS, LINHA, PONTO], nullable: true}
+        tema: {type: string, enum: [BILHETE, GRATUIDADE, ACESSIBILIDADE], nullable: true}
+        publico: {type: string, enum: [IDOSO, PCD, ESTUDANTE], nullable: true}
+        idade: {type: integer, minimum: 0, maximum: 120, nullable: true}
 
     RespostaChat:
       type: object
@@ -473,14 +486,25 @@ components:
             properties:
               documento: {type: string}
               trecho_id: {type: string}
+              url: {type: string, format: uri, nullable: true}
         confianca: {type: string, enum: [alta, media, baixa]}
         nao_consta: {type: boolean}
         disponivel: {type: boolean, description: "false = serviço GenAI fora do ar; resposta é aviso"}
         latencia_ms: {type: integer}
+        natureza_dados: {type: string, nullable: true, enum: [ESTIMADO, SIMULADO, INDISPONIVEL], description: "Classificação do boletim quando origem=BOLETIM; null quando não informada. Não confundir disponibilidade do serviço com suficiência dos dados."}
         origem:
           type: string
-          enum: [TEMPO_REAL, BASE_OFICIAL, INDISPONIVEL]
+          enum: [TEMPO_REAL, CADASTRO, BOLETIM, BASE_OFICIAL, INDISPONIVEL]
           description: "TEMPO_REAL = backend consultou a SPTrans (ou a demonstração, identificada no texto), sem LLM; BASE_OFICIAL = GenAI local com fontes oficiais"
+        contexto: {$ref: '#/components/schemas/ContextoChat'}
+        acoes:
+          type: array
+          items:
+            type: object
+            properties:
+              titulo: {type: string}
+              pergunta: {type: string, nullable: true}
+              rota: {type: string, nullable: true}
 
     Passagem:
       type: object
@@ -584,7 +608,8 @@ components:
         natureza_dados (NOVO) diz o que o boletim é, sem misturar categorias:
         ESTIMADO = calculado de amostras REAIS de previsão da SPTrans (espera prevista, nunca atraso);
         SIMULADO = histórico de demonstração (só com o MVP em modo demonstração e sem amostra real);
-        INDISPONIVEL = sem dados suficientes. O bloco amostragem traz os fatos VERIFICADOS da coleta.
+        INDISPONIVEL = sem dados suficientes para classificar a operação, mesmo quando houve consultas reais.
+        O bloco amostragem traz os fatos VERIFICADOS da coleta, que não comprovam chegadas nem atrasos.
         Ausente em boletins antigos. O backend rejeita combinações incoerentes.
       properties:
         data_referencia: {type: string, format: date}

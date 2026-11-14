@@ -73,6 +73,17 @@ def test_chave_certa_preserva_contrato(cliente):
     assert r.json()["latencia_ms"] >= 0
 
 
+def test_capacidade_ocupada_rejeita_sem_enfileirar(cliente, monkeypatch):
+    vagas = threading.BoundedSemaphore(1)
+    vagas.acquire()
+    monkeypatch.setattr(modulo, "_vagas", vagas)
+    r = enviar(cliente)
+    assert r.status_code == 429
+    assert r.headers["Retry-After"] == "5"
+    vagas.release()
+    assert enviar(cliente).status_code == 200
+
+
 def test_auth_desativada_avisa_no_log(cliente, monkeypatch, caplog):
     monkeypatch.delenv("GENAI_API_KEY")
     monkeypatch.setenv("GENAI_AUTH_DESATIVADA", "1")

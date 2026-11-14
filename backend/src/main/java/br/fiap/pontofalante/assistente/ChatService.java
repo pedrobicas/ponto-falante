@@ -52,6 +52,53 @@ public class ChatService {
         this.rest = ClienteGenai.criar(props, props.genaiConnectTimeoutMs(), props.genaiReadTimeoutMs());
     }
 
+    private static final java.util.regex.Pattern OCORRENCIAS = java.util.regex.Pattern.compile(
+            // "problema" sozinho não basta ("problema no meu bilhete" é pergunta de regra): precisa falar do transporte.
+            "\\b(ocorrencias?|problemas?)\\b(?!.*\\b(bilhete|cartao|recarga|credito|cadastro)\\b).*\\b(transporte|onibus|linhas?|transito)\\b"
+                    + "|\\bboletim\\b|\\bsituacao d[aeo]s? (linhas?|onibus|transporte)\\b|\\bcomo esta[o]? (o transporte|os onibus|as linhas)\\b"
+                    + "|\\blinhas? (com|em) (atraso|atencao|problema)\\b|\\batrasos? hoje\\b");
+    private br.fiap.pontofalante.rpa.BoletimService boletim;
+
+    /** Opcional: sem o serviço do boletim (testes unitários), a pergunta segue o fluxo normal. */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setBoletim(br.fiap.pontofalante.rpa.BoletimService boletim) {
+        this.boletim = boletim;
+    }
+
+    /**
+     * "Tem algum problema no transporte hoje?": responde com o último boletim do robô, dizendo a data e a natureza do
+     * dado (estimado, simulado ou indisponível). O boletim não registra acidentes nem interdições, e a resposta diz isso.
+     */
+    java.util.Optional<RespostaChat> respostaDoBoletim(String pergunta) {
+        if (boletim == null || !OCORRENCIAS.matcher(AssistenteTempoReal.normalizar(pergunta)).find()) {
+            return java.util.Optional.empty();
+        }
+        var fonte = List.of(new FonteCitada("Boletim diário do Ponto Falante (robô sobre previsões da SPTrans)", ""));
+        var acoes = List.of(new Chat.Acao("Abrir o boletim", null, "/boletim"));
+        try {
+            var b = boletim.ultimo();
+            String natureza = b.path("dados_simulados").asBoolean(false) ? "SIMULADO" : b.path("natureza_dados").asText("");
+            String rotulo = switch (natureza) {
+                case "SIMULADO" -> "dados simulados de demonstração";
+                case "INDISPONIVEL" -> "sem dados suficientes";
+                case "ESTIMADO" -> "estimativa a partir de previsões reais da SPTrans, não atrasos medidos";
+                default -> "classificação não informada; não é possível confirmar a natureza dos dados";
+            };
+            String texto = "Boletim de " + b.path("data_referencia").asText("data não informada") + " (" + rotulo + "): "
+                    + b.path("resumo_falado").asText("sem resumo.")
+                    + (b.path("desatualizado").asBoolean(false) ? " Atenção: este boletim está desatualizado." : "")
+                    + (!java.time.LocalDate.now(java.time.ZoneId.of("America/Sao_Paulo")).toString().equals(b.path("data_referencia").asText())
+                        ? " Este boletim não confirma a situação de hoje." : "")
+                    + " O boletim não registra acidentes, greves nem interdições; para isso, consulte a SPTrans ou o 156.";
+            return java.util.Optional.of(new RespostaChat(texto, fonte, java.util.Set.of("ESTIMADO", "SIMULADO").contains(natureza) ? "media" : "baixa",
+                    false, true, null, "BOLETIM", Chat.Contexto.vazio(), acoes).comNatureza(natureza));
+        } catch (ErroApi e) {
+            return java.util.Optional.of(new RespostaChat("Ainda não há boletim publicado, então não tenho um resumo das linhas. "
+                    + "Para ocorrências do dia, consulte a SPTrans ou o 156.", fonte, "baixa", false, true, null, "BOLETIM",
+                    Chat.Contexto.vazio(), List.of()));
+        }
+    }
+
     /** Identificador pseudônimo do usuário para a cota individual na GenAI: hash salgado do IP, nunca o IP. */
     public String idCliente(String ip) {
         try {
@@ -70,34 +117,56 @@ public class ChatService {
     }
 
     public RespostaChat perguntar(String pergunta, String idCliente) {
+        return perguntar(pergunta, idCliente, null);
+    }
+
+    public RespostaChat perguntar(String pergunta, String idCliente, Chat.Contexto contexto) {
+        var doBoletim = respostaDoBoletim(pergunta);
+        if (doBoletim.isPresent()) {
+            return doBoletim.get();
+        }
         // Horários e previsões vêm só do backend (SPTrans ou demonstração identificada), nunca do modelo.
         long inicioTempoReal = System.nanoTime();
-        var direta = tempoReal.responder(pergunta);
+        var direta = contexto == null ? tempoReal.responder(pergunta) : tempoReal.responder(pergunta, contexto);
         if (direta.isPresent()) {
             RespostaChat r = direta.get();
             return new RespostaChat(r.resposta(), r.fontes(), r.confianca(), r.naoConsta(), r.disponivel(),
-                    (int) ((System.nanoTime() - inicioTempoReal) / 1_000_000), r.origem());
+                    (int) ((System.nanoTime() - inicioTempoReal) / 1_000_000), r.origem(), r.contexto(), r.acoes());
+        }
+        Chat.Contexto memoria = contextoRegra(pergunta, contexto);
+        String consulta = pergunta;
+        if (memoria.tema() != null && contexto != null && memoria.tema().equals(contexto.tema())
+                && AssistenteTempoReal.normalizar(pergunta).matches("^(e |nesse |nessa |isso |ele |ela ).*")) {
+            consulta = "Sobre " + switch (memoria.tema()) {
+                case "BILHETE" -> "Bilhete Único";
+                case "GRATUIDADE" -> "gratuidade no ônibus municipal de São Paulo";
+                default -> "acessibilidade no ônibus municipal de São Paulo";
+            } + (memoria.publico() == null ? "" : switch (memoria.publico()) {
+                case "IDOSO" -> " para pessoa idosa";
+                case "PCD" -> " para pessoa com deficiência";
+                default -> " para estudante";
+            }) + (memoria.idade() == null ? "" : " de " + memoria.idade() + " anos") + ": " + pergunta;
         }
         long geracaoDaChamada = geracao.get();
         var base = endereco.base();
         if (base.isEmpty()) {
-            return indisponivel();
+            return indisponivel().comContexto(memoria, List.of());
         }
         if (System.nanoTime() - circuitoAbertoAteNanos < 0) {
-            return indisponivel();
+            return indisponivel().comContexto(memoria, List.of());
         }
         long inicio = System.nanoTime();
         try {
             JsonNode r = rest.post().uri(base.get() + "/chat")
                     .header("X-API-Key", props.genaiApiKey() == null ? "" : props.genaiApiKey())
                     .headers(h -> { if (idCliente != null) h.set("X-PF-Cliente", idCliente); })
-                    .body(Map.of("pergunta", pergunta))
+                    .body(Map.of("pergunta", consulta.length() <= 500 ? consulta : pergunta))
                     .retrieve().body(JsonNode.class);
             RespostaChat resposta = converter(r, (System.nanoTime() - inicio) / 1_000_000);
             if (resposta == null) {
                 throw new IllegalStateException("resposta sem texto");
             }
-            return resposta;
+            return resposta.comContexto(memoria, List.of());
         } catch (HttpClientErrorException.TooManyRequests e) {
             // Limite da GenAI (individual ou de capacidade): avisa o usuário sem derrubar o assistente para todos.
             throw new ErroApi(HttpStatus.TOO_MANY_REQUESTS, "MUITAS_PERGUNTAS",
@@ -106,7 +175,7 @@ public class ChatService {
             // Só o tipo da falha vai para o log; nunca a pergunta.
             log.warn("Assistente (GenAI) indisponível: {}", e.getClass().getSimpleName());
             abrirCircuito(geracaoDaChamada);
-            return indisponivel();
+            return indisponivel().comContexto(memoria, List.of());
         }
     }
 
@@ -116,7 +185,9 @@ public class ChatService {
         }
         List<FonteCitada> fontes = new ArrayList<>();
         for (JsonNode f : r.path("fontes")) {
-            fontes.add(new FonteCitada(f.path("documento").asText(""), f.path("trecho_id").asText("")));
+            String url = f.path("url").asText("");
+            fontes.add(new FonteCitada(f.path("documento").asText(""), f.path("trecho_id").asText(""),
+                    url.matches("https://[a-zA-Z0-9.-]+/[^\\s]*") ? url : null));
         }
         String confianca = r.path("confianca").asText("baixa");
         if (!List.of("alta", "media", "baixa").contains(confianca)) {
@@ -129,6 +200,25 @@ public class ChatService {
 
     static RespostaChat indisponivel() {
         return new RespostaChat(MSG_INDISPONIVEL, List.of(), "baixa", true, false, null, "INDISPONIVEL");
+    }
+
+    static Chat.Contexto contextoRegra(String pergunta, Chat.Contexto anterior) {
+        String t = AssistenteTempoReal.normalizar(pergunta);
+        boolean segue = anterior != null && t.matches("^(e |nesse |nessa |isso |ele |ela ).*");
+        var anos = java.util.regex.Pattern.compile("\\b(\\d{1,3}) anos\\b|\\b(?:tenho|fez|completei) (\\d{1,3})\\b").matcher(t);
+        Integer idade = anos.find() ? Integer.valueOf(anos.group(1) == null ? anos.group(2) : anos.group(1)) : segue ? anterior.idade() : null;
+        if (idade != null && idade > 120) idade = null;
+        String publico = t.matches(".*\\b(deficiencia|pcd|cadeirante|cadeira|autista)\\b.*") ? "PCD"
+                : t.matches(".*\\b(estudante|escola|faculdade|universitario|aluno)\\b.*") ? "ESTUDANTE"
+                : t.matches(".*\\b(idos[oa]|avo)\\b.*") ? "IDOSO"
+                : segue && anterior.publico() != null ? anterior.publico()
+                : idade != null && idade >= 60 ? "IDOSO" : null;
+        String tema = t.matches(".*\\b(gratuidade|idos[oa]|pago|gratis|gratuito)\\b.*") ? "GRATUIDADE"
+                : t.matches(".*\\b(bilhete|cartao|recarga)\\b.*") ? "BILHETE"
+                : t.matches(".*\\b(acessibilidade|cadeirante|cadeira|rampa)\\b.*") ? "ACESSIBILIDADE"
+                : segue && anterior.tema() != null ? anterior.tema()
+                : idade != null && idade >= 60 ? "GRATUIDADE" : null;
+        return new Chat.Contexto(null, null, null, null, tema, publico, idade);
     }
 
     /** Novo endereço registrado: não esperar o fim do disjuntor aberto pelo túnel antigo. */
