@@ -403,6 +403,31 @@ reproduzível em `scripts/rodar_v3.py`. Validado em produção em 13/11: "Tenho 
 São Paulo?" respondida com 3 fontes (Estatuto da Pessoa Idosa e SPTrans), e "cachorro no ônibus em Curitiba" recusada
 com indicação do 156.
 
+## 13. Assistente em conversa e reparo de recusa (13 e 14/11/2026)
+
+**Arquitetura de ferramentas.** Perguntas de horário, ponto, linha, sentido e trajeto direto não passam pelo modelo:
+o backend responde com a SPTrans em tempo real e com o cadastro oficial (GTFS), e devolve um contexto só com entidades
+(ponto, linha, sentido) que o navegador reenvia na pergunta seguinte. "Quanto falta para a 5317-10?", "e o próximo?" e
+"e no sentido contrário?" funcionam por esse contexto. O modelo responde só regras, com fontes. Perguntas sobre
+ocorrências usam o boletim do robô, com a natureza do dado declarada.
+
+**Reparo de recusa indevida.** O agente recusava perguntas abertas com o trecho certo em 1º lugar ("Como funciona o
+Bilhete Único?"). Com `PF_REPARO_RECUSA=1`, quando o modelo diz "não consta" e o 1º trecho passa do limiar com folga
+(0,02), há uma nova tentativa só com esse trecho, que continua passando pela auditoria de números e pelo verificador.
+Medido **só no DEV v3** (108 perguntas, mesmo `qwen2.5:7b`; `avaliacao/v3/dev_agente_20261114/`):
+
+| Agente v1 (DEV v3) | Acerto | Correto (respondíveis) | Recusa indevida | Erro factual (respondíveis) | Recusa correta |
+|---|---|---|---|---|---|
+| sem reparo | 77,8% | 70,0% | 16,2% | 5,0% | 100% |
+| com reparo | 79,6% | 72,5% | 11,2% | 5,0% | 100% |
+
+O ganho é pequeno e vem só da queda da recusa indevida, sem aumento de erro factual. O teste fechado v3 já foi usado
+uma vez e **não** foi repetido, então este ganho não tem confirmação em conjunto inédito.
+
+**Cenários de conversa.** `avaliacao/dev_conversa_20261113.jsonl` traz 8 contratos de conversa (disponibilidade,
+recusa e família da fonte), verificados com o Ollama real por `scripts/validar_dev_conversa.py`. Não são uma medida de
+acurácia geral.
+
 ## 10. Links
 
 - Repositório GitHub: https://github.com/pedrobicas/ponto-falante
