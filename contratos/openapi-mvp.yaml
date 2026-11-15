@@ -495,8 +495,12 @@ components:
         natureza_dados: {type: string, nullable: true, enum: [ESTIMADO, SIMULADO, INDISPONIVEL], description: "Classificação do boletim quando origem=BOLETIM; null quando não informada. Não confundir disponibilidade do serviço com suficiência dos dados."}
         origem:
           type: string
-          enum: [TEMPO_REAL, CADASTRO, BOLETIM, BASE_OFICIAL, INDISPONIVEL]
-          description: "TEMPO_REAL = backend consultou a SPTrans (ou a demonstração, identificada no texto), sem LLM; BASE_OFICIAL = GenAI local com fontes oficiais"
+          enum: [TEMPO_REAL, CADASTRO, BOLETIM, BASE_OFICIAL, FORA_DA_AREA, INDISPONIVEL]
+          description: "TEMPO_REAL = backend consultou a SPTrans (ou a demonstração, identificada no texto), sem LLM; BASE_OFICIAL = GenAI local com fontes oficiais; FORA_DA_AREA = pergunta sobre outra cidade, respondida pelo backend com a limitação de área"
+        tipo_resposta:
+          type: string
+          enum: [FUNDAMENTADA, CONSULTA, RECUSA, FORA_DA_AREA, INSUFICIENTE, INDISPONIVEL]
+          description: "Calculado pelo backend a partir de origem, nao_consta, fontes e confianca. A interface mostra a situação por este campo, e não a confiança crua: uma recusa nunca aparece como confiança alta."
         contexto: {$ref: '#/components/schemas/ContextoChat'}
         acoes:
           type: array

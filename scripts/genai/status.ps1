@@ -30,3 +30,8 @@ if ($null -ne $registro) {
     $ultima = Get-Content -LiteralPath (Join-Path $script:GenAIRun 'registro.log') -Tail 1 -ErrorAction SilentlyContinue
     Write-Host "registro no backend: ativo (PID $($registro.Id)). Ultima linha: $ultima"
 }
+$guarda = Get-GenAIManagedProcess 'guarda-rpa'
+if ($null -ne $guarda) {
+    $ultimaGuarda = Get-Content -LiteralPath (Join-Path $script:GenAIRun 'guarda-rpa.log') -Tail 1 -ErrorAction SilentlyContinue
+    Write-Host "guarda do RPA: ativa (PID $($guarda.Id)). Ultimo disparo: $ultimaGuarda"
+}

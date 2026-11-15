@@ -8,7 +8,8 @@ name: rpa-coleta
 on:
   schedule:
     # UTC: 10,12,14,16,18,20,22,00 = 07,09,11,13,15,17,19,21 em São Paulo (UTC-3, sem horário de verão)
-    - cron: "0 0,10,12,14,16,18,20,22 * * *"
+    # Minuto 17: o GitHub descarta mais execucoes agendadas na virada da hora. scripts/genai/garantir-rpa.ps1 cobre as que faltarem.
+    - cron: "17 0,10,12,14,16,18,20,22 * * *"
   workflow_dispatch:
 
 permissions:

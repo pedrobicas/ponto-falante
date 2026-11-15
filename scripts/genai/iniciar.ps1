@@ -87,6 +87,12 @@ if ($TunelRapido) {
     Start-GenAIProcess -Name 'registro' -Executable $powershell `
         -Arguments @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $PSScriptRoot 'registrar-tunel.ps1'), '-Repetir') | Out-Null
     Write-Host 'Tunel rapido ativo e registro automatico no backend iniciado (run/registro.log).'
+    if ($env:PF_GUARDA_RPA -ne '0' -and $null -ne (Get-Command gh -ErrorAction SilentlyContinue)) {
+        # Cobre coletas e boletins que o cron do GitHub deixou de rodar (veja garantir-rpa.ps1).
+        Start-GenAIProcess -Name 'guarda-rpa' -Executable $powershell `
+            -Arguments @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $PSScriptRoot 'garantir-rpa.ps1'), '-Repetir') | Out-Null
+        Write-Host 'Guarda do agendamento do RPA iniciada (run/guarda-rpa.log).'
+    }
     return
 }
 if (-not $env:CF_TUNNEL_NAME) {
