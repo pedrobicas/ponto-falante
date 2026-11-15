@@ -5,6 +5,8 @@ param([switch]$SomenteLocal, [switch]$TunelRapido)
 Import-GenAIEnv
 $env:OLLAMA_HOST = '127.0.0.1:11434'
 $env:PYTHONDONTWRITEBYTECODE = '1'
+# Mantem o modelo carregado entre perguntas espacadas (modelo frio pode passar do timeout de 40 s).
+if (-not $env:PF_KEEP_ALIVE) { $env:PF_KEEP_ALIVE = '24h' }
 if ($SomenteLocal -and @(Get-Process -Name cloudflared -ErrorAction SilentlyContinue).Count -gt 0) {
     throw 'SomenteLocal solicitado, mas cloudflared ja esta ativo. Encerre o tunel antes de iniciar em modo local.'
 }

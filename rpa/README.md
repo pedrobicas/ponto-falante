@@ -122,7 +122,7 @@ curl -X POST "http://127.0.0.1:8080/admin/falha?ativo=true"
 ```bash
 python -m pytest -v
 ```
-45 testes, incluindo os 3 cenários exigidos:
+46 testes na validação preservada de 14/11/2026, incluindo os 3 cenários exigidos. A atualização dos documentos e do vídeo não reexecutou a suíte:
 
 | Cenário | Teste | Resultado esperado |
 |---|---|---|
@@ -166,5 +166,9 @@ tests/             testes automatizados e evidências
 
 ## Links
 
+O vídeo mostra o sistema e as ferramentas executando de verdade na gravação de 14/11/2026, das 23:08 às 23:19. A coleta real somente leitura consultou 6 pontos com 27 ônibus previstos, e o histórico do GitHub Actions mostra as execuções agendadas. A execução completa usa o **MVP local de teste, SIMULADO**: 349 registros recebidos, 330 válidos, 9 inválidos e 10 duplicados; 1 linha CRÍTICA, 2 em ATENÇÃO e 2 OK; código 0. A falha HTTP 503 tem 3 tentativas com esperas de 2 s e 4 s, republicação do boletim anterior como **desatualizado** e código 2. A produção foi só lida: 17 consultas, cobertura de 35,4%, 24 linhas e 6 em atenção no boletim de 13/11. Evidência: [`video_rpa_20261115.md`](../docs/evidencias/video_rpa_20261115.md).
+
 - Repositório: https://github.com/pedrobicas/ponto-falante (privado)
-- Vídeo (até 3 min): [preencher]
+- Vídeo local: [`entregaveis/Ponto_Falante_RPA.mp4`](../entregaveis/Ponto_Falante_RPA.mp4), **2 min 12 s (132 s, abaixo do limite de 180 s)**, 1920 x 1080, sem áudio e sem música.
+- Roteiro final: [`entregaveis/ROTEIRO_RPA.md`](../entregaveis/ROTEIRO_RPA.md).
+- URL pública do vídeo: pendente de hospedagem. O repositório segue privado; nenhuma entrega no Teams foi realizada.

@@ -165,6 +165,9 @@ inclui fila da thread, carga do indice e todas as etapas da pergunta. Retorna
 504 com o contrato `indisponivel`; a chamada sincrona pode continuar em segundo
 plano com resultado descartado. Um pool fixo limita a quatro geracoes ativas;
 trabalhos que expiram na fila sao cancelados antes de executar.
+`PF_KEEP_ALIVE` define quanto tempo o Ollama mantem o modelo carregado apos cada
+chamada. A biblioteca usa 30m; `iniciar.ps1` usa 24h quando a variavel nao existe,
+porque o modelo frio ja fez a primeira pergunta passar dos 40 s.
 O limitador permite 20 chamadas autenticadas em janela movel de 60 segundos
 por IP, responde 429 com `Retry-After` e reinicia junto com a API. Perguntas,
 chaves e IPs nao sao gravados pelo log da API. IPs ficam apenas em memoria,
