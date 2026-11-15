@@ -22,7 +22,8 @@ function prepararCopia() {
 }
 
 async function terminal(nav, nome, roteiro, porta) {
-  const arq = path.join(TRAB, nome + '.json');
+  if (!/^[a-z0-9_]+$/.test(nome)) throw new Error('nome de roteiro inválido: ' + nome);
+  const arq = path.join(TRAB, nome + '.json');  // nosemgrep -- nome fixo do roteiro, validado na linha anterior
   fs.writeFileSync(arq, JSON.stringify(roteiro, null, 1));
   const srv = spawn(PY, [path.join(__dirname, 'terminal_real.py'), arq, '--porta', String(porta)], { stdio: 'ignore', windowsHide: true });
   try {

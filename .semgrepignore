@@ -6,3 +6,5 @@ target/
 dist/
 .worktrees/
 .validation/
+# Ferramentas arquivadas da primeira versão dos vídeos (não executadas; mantidas só para rastreabilidade).
+scripts/video/v1/

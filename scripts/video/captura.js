@@ -5,6 +5,7 @@
 // a montagem final (zoom, cortes, transições e selos) é feita por scripts/video/compor.py.
 //
 // O cursor desenhado na página só acompanha os eventos reais de mouse do Playwright: nada é encenado.
+const NOME_SEGURO = /^[a-z0-9_]+$/;  // nomes de cena e de quadro: só letras minúsculas, dígitos e _
 const { chromium } = require('playwright-core');
 const fs = require('fs');
 const path = require('path');
@@ -111,9 +112,10 @@ class Cena {
 }
 
 async function gravar(navegador, raiz, nome, roteiro, opcoes = {}) {
-  const pasta = path.join(raiz, nome);
+  if (!NOME_SEGURO.test(nome)) throw new Error('nome de cena inválido: ' + nome);
+  const pasta = path.join(raiz, nome);  // nosemgrep -- nome de cena fixo do roteiro, validado por NOME_SEGURO
   fs.rmSync(pasta, { recursive: true, force: true });
-  fs.mkdirSync(path.join(pasta, 'q'), { recursive: true });
+  fs.mkdirSync(path.join(pasta, 'q'), { recursive: true });  // nosemgrep -- nome de cena fixo do roteiro, validado por NOME_SEGURO
   const ctx = await navegador.newContext({ viewport: opcoes.viewport || VIEWPORT, deviceScaleFactor: ESCALA, locale: 'pt-BR',
     timezoneId: 'America/Sao_Paulo', colorScheme: opcoes.esquema || 'light', reducedMotion: 'no-preference' });
   await ctx.addInitScript(CURSOR);
@@ -125,7 +127,7 @@ async function gravar(navegador, raiz, nome, roteiro, opcoes = {}) {
   cdp.on('Page.screencastFrame', (f) => {
     const arquivo = String(n++).padStart(6, '0') + '.jpg';
     cena.quadros.push({ t: f.metadata.timestamp, a: arquivo });
-    gravacoes.push(fs.promises.writeFile(path.join(pasta, 'q', arquivo), Buffer.from(f.data, 'base64')));
+    gravacoes.push(fs.promises.writeFile(path.join(pasta, 'q', arquivo), Buffer.from(f.data, 'base64')));  // nosemgrep -- nome de cena fixo do roteiro, validado por NOME_SEGURO
     cdp.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {});
   });
   if (opcoes.antes) await opcoes.antes(page);
@@ -142,7 +144,7 @@ async function gravar(navegador, raiz, nome, roteiro, opcoes = {}) {
   await cdp.send('Page.stopScreencast').catch(() => {});
   await Promise.all(gravacoes);
   await ctx.close();
-  fs.writeFileSync(path.join(pasta, 'indice.json'), JSON.stringify({ quadros: cena.quadros, marcas: cena.marcas }, null, 0));
+  fs.writeFileSync(path.join(pasta, 'indice.json'), JSON.stringify({ quadros: cena.quadros, marcas: cena.marcas }, null, 0));  // nosemgrep -- nome de cena fixo do roteiro, validado por NOME_SEGURO
   console.log(`cena ${nome}: ${cena.quadros.length} quadros, ${(cena.marcas.at(-1).t - cena.marcas[0].t).toFixed(1)} s`);
   if (erro) throw erro;
 }

@@ -184,7 +184,7 @@ def main() -> None:
     total = tempo + edl.get("cauda", 0.8)
     saida = Path(sys.argv[3])
     saida.parent.mkdir(parents=True, exist_ok=True)
-    proc = subprocess.Popen([FFMPEG, "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(fps),
+    proc = subprocess.Popen([FFMPEG, "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(fps),  # nosemgrep -- lista de argumentos sem shell; FFMPEG é o executável escolhido pelo próprio operador
                              "-i", "-", "-an", "-c:v", "libx264", "-preset", "slow", "-crf", "16", "-profile:v", "high",
                              "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(saida)], stdin=subprocess.PIPE)
     rot = Rotulos()
