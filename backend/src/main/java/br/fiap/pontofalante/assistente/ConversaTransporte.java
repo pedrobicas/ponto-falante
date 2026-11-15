@@ -53,7 +53,9 @@ final class ConversaTransporte {
         }
         boolean contrario = t.contains("contrario") || t.contains("volta");
         boolean destino = t.matches(".*\\b(destino|sentido|vai pra|vai para|pra onde|para onde|itinerario|trajeto)\\b.*");
-        boolean linhasPonto = t.matches(".*\\b(linhas|onibus|busoes)\\b.*") &&
+        // "ônibus" sozinho não basta: "qual a cor do ônibus..." não é consulta ao ponto e segue para a GenAI.
+        boolean linhasPonto = (t.matches(".*\\blinhas\\b.*") || t.matches(".*\\b(onibus|busoes)\\b.*")
+                && t.matches(".*\\b(passa|passam|para|param|atende|atendem|tem|aqui|ponto|parada|vai|vao|sai|saem)\\b.*")) &&
                 (t.contains("quais") || t.contains("qual") || t.contains("linhas do") || t.contains("linhas nesse")) && linhaExplicita == null;
         boolean tempo = TEMPO.matcher(t).find();
         boolean pontoNome = t.matches(".*\\b(ponto|parada|pto)\\b.*");
