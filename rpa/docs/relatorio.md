@@ -99,7 +99,7 @@ não usa os segredos do RPA. O boletim continua informando a cobertura real e nu
 
 ## 7. Tratamento de exceções e recuperação
 
-| Exceção | Tratamento | Código |
+| Exceção | Tratamento | Saída |
 |---|---|---|
 | MVP fora ao ler as amostras | 3 tentativas com backoff; republica o último boletim marcado como **desatualizado**, com o motivo | 2 |
 | Publicação recusada ou MVP fora ao publicar | Salva o boletim em `saida/` e registra a falha | 1 |
@@ -164,10 +164,10 @@ Execuções no GitHub Actions: https://github.com/pedrobicas/ponto-falante/actio
 ## 12. Links
 
 - Repositório GitHub: https://github.com/pedrobicas/ponto-falante (privado, pasta `rpa/`)
-- URL pública do repositório sanitizado: **PENDENTE DE AUTORIZAÇÃO E HOSPEDAGEM**.
+- URL pública do repositório sanitizado: **[PENDENTE: URL_REPOSITORIO_PUBLICO]**.
 - MVP publicado: https://ponto-falante.onrender.com/boletim
 - Vídeo local: `entregaveis/Ponto_Falante_RPA.mp4`, **2 min 12 s (132 s, abaixo do limite de 180 s)**, 1920 x 1080, sem áudio e sem música, pronto para narração.
 - Roteiro final: `entregaveis/ROTEIRO_RPA.md`.
-- URL pública do vídeo: **PENDENTE DE HOSPEDAGEM**. O repositório segue privado; nenhuma entrega no Teams foi realizada.
+- URL pública do vídeo: **[PENDENTE: URL_VIDEO_RPA]**. O repositório segue privado; nenhuma entrega no Teams foi realizada.
 
 O vídeo mostra a execução ponta a ponta do robô de boletim no MVP local, do comando à publicação com código 0, entre 01:00 e 01:21. A coleta real, o agendamento e o boletim publicado são trechos de produção identificados pelo selo DADOS REAIS ou ESTIMADO. Entre 01:21 e 01:44 aparecem a falha, a recuperação e a auditoria. O material atende ao conteúdo demonstrativo das pp. 46-50 do enunciado; a aceitação e a nota cabem à avaliação docente.

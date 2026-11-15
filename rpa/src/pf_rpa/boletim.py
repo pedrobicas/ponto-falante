@@ -213,7 +213,7 @@ def montar_estimado(data_ref: str, situacoes: list[SituacaoEstimada], val: Resul
     parcial = cobertura is not None and cobertura < regras.cobertura_minima_pct
     avisos = list(avisos)
     if parcial:
-        avisos.append(f"Amostragem parcial: {len(janelas)} de {esperadas} janelas de coleta cobertas ({cobertura}%).")
+        avisos.append(f"Amostragem parcial: {len(janelas)} de {esperadas} janelas de coleta cobertas ({str(cobertura).replace('.', ',')}%).")
     tem_estimativa = any(s.status != SEM_DADOS for s in situacoes)
     boletim = {
         "data_referencia": data_ref,

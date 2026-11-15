@@ -443,32 +443,43 @@ acurácia geral.
 ## 14. Links e demonstração final
 
 - Repositório atual (privado): https://github.com/pedrobicas/ponto-falante
-- URL pública do repositório sanitizado: **PENDENTE DE AUTORIZAÇÃO E HOSPEDAGEM**.
+- URL pública do repositório sanitizado: **[PENDENTE: URL_REPOSITORIO_PUBLICO]**.
 - MVP publicado: https://ponto-falante.onrender.com
-- Vídeo final local: [Ponto_Falante_GenAI.mp4](../entregaveis/Ponto_Falante_GenAI.mp4), **2min27s** (147 s), 1920 x 1080, sem áudio e sem música, preparado para narração humana.
+- Vídeo final local: [Ponto_Falante_GenAI.mp4](../entregaveis/Ponto_Falante_GenAI.mp4), **2min22s** (142 s), 1920 x 1080, sem áudio e sem música, preparado para narração humana.
 - [Roteiro de narração](../entregaveis/ROTEIRO_GENAI.md) e [evidências da captura](../docs/evidencias/video_genai_20261115.md). A URL pública do vídeo ainda depende de hospedagem; o arquivo local não substitui esse link na entrega FIAP.
-- URL pública do vídeo: **PENDENTE DE HOSPEDAGEM**.
+- URL pública do vídeo: **[PENDENTE: URL_VIDEO_GENAI]**.
 - Notebooks com saídas: `notebooks/01_base_conhecimento.ipynb`, `02_indice_recall_limiar.ipynb`, `03_geracao_fundamentada.ipynb`, `04_agente_e_placar.ipynb`
 
-### Demonstração gravada em 14/11/2026 (versão 2)
+### Demonstração gravada em 14 e 15/11/2026 (versão 3)
 
-O vídeo foi refeito com captura direta do site publicado (Edge sem interface controlado pelo Playwright, quadros
+O vídeo usa captura direta do site publicado (Edge sem interface controlado pelo Playwright, quadros
 de 1920 x 1080) e montagem reprodutível em `scripts/video/` (`cap_genai.js`, `compor.py`, `edl_genai.json`).
-Ele mostra uma conversa contínua em produção: rota para o Centro pelo cadastro oficial (resposta em cerca de 1,5 s),
-"quanto falta" e "no sentido contrário" com previsão em tempo real da SPTrans (cerca de 1,5 s cada), gratuidade
-para pessoa de 66 anos com duas fontes citadas (cerca de 20 s), leitura em voz alta, recusa fora da base (cerca de
-5,6 s), letra grande e alto contraste com a conversa preservada. Seguem os diagramas de arquitetura do README e deste
-relatório e os placares já registrados (teste inédito v3 e reparo de recusa no DEV), apenas lidos dos CSVs.
-As esperas da gratuidade e da recusa foram aceleradas e o vídeo indica isso com um selo; os textos não foram editados.
+Ele mostra uma conversa contínua em produção, regravada em 15/11: rota para o Centro pelo cadastro oficial (resposta em
+cerca de 1,6 s), "quanto falta" e "no sentido contrário" com previsão em tempo real da SPTrans (cerca de 1,5 s cada),
+gratuidade para pessoa de 66 anos com duas fontes citadas (cerca de 7 s), leitura em voz alta, pergunta sobre outra
+cidade (Curitiba) e letra grande com alto contraste, com a conversa preservada. Seguem os diagramas de arquitetura do
+README e deste relatório e os placares já registrados (teste inédito v3 e reparo de recusa no DEV), apenas lidos dos CSVs.
+A espera da gratuidade foi acelerada e o vídeo indica isso com um selo; os textos não foram editados.
 
-Limite registrado: na primeira tentativa de gravação, com o modelo ainda frio, a pergunta de gratuidade excedeu o
-timeout de **40 s** da API. O modelo foi aquecido com duas perguntas antes da gravação definitiva; a falha não
-aparece no vídeo, mas o risco de timeout com o modelo frio continua. O diagnóstico das ocorrências anteriores está
-em `docs/evidencias/timeout_genai_20261114.md`, na raiz do projeto: limite atingido em 40.014 ms e 40.006 ms,
-várias chamadas ao Ollama por pergunta e thread síncrona que pode continuar após o timeout HTTP. Não foi alterado
-modelo, limiar ou timeout. A recusa sobre Curitiba conserva o encaminhamento fixo para o 156 de São Paulo; isso não
-valida regras de outra cidade. O vídeo é silencioso: mostra o acionamento da Web Speech API, sem comprovar a
-reprodução audível em todos os aparelhos.
+**Correção de 15/11 que motivou a regravação.** Na versão 2, a pergunta sobre Curitiba terminava com o encaminhamento
+ao 156 da SPTrans, que vale só para São Paulo, e a interface exibia a confiança gerada pelo modelo mesmo numa recusa.
+Agora o backend reconhece perguntas sobre outras cidades antes de chamar a GenAI (`ForaDaArea.java`): a resposta diz que
+o serviço cobre só São Paulo e orienta procurar o órgão de transporte da cidade citada, sem inventar contato. Cada
+resposta também traz `tipo_resposta` (FUNDAMENTADA, CONSULTA, RECUSA, INSUFICIENTE, FORA_DA_AREA ou INDISPONIVEL), e a
+tela mostra a situação correspondente em vez de uma confiança artificial. Testes: `TipoRespostaTest` (backend) e
+`tipo-resposta.spec.ts` (Angular). Nada disso mudou o modelo, o limiar, o agente ou os placares registrados.
+
+**Operação validada em 15/11.** Depois de reiniciar o serviço (`PF_KEEP_ALIVE=24h` mantém o modelo carregado), a
+primeira pergunta de direitos pela produção respondeu em 7 s e as seguintes entre 8 e 10 s. Com o serviço parado, a
+produção respondeu em cerca de 1 s com "O assistente está indisponível agora" (`tipo_resposta = INDISPONIVEL`). Ao
+religar, o novo túnel foi registrado no backend em cerca de 1,5 min, depois de duas tentativas recusadas enquanto o
+endereço do túnel propagava. Registro em `docs/evidencias/genai_operacao_20261115.md`, na raiz do projeto.
+
+Limites registrados: com o modelo frio, a pergunta de gratuidade já excedeu o timeout de **40 s** da API em 14/11; o
+diagnóstico está em `docs/evidencias/timeout_genai_20261114.md` (40.014 ms e 40.006 ms, várias chamadas ao Ollama por
+pergunta). Não foi alterado modelo, limiar ou timeout. O agente v1 mantém a recusa alta medida no teste: perguntas como
+"qual o valor da tarifa" podem receber "não encontrei", sempre com indicação para confirmar no 156. O vídeo é silencioso:
+mostra o acionamento da Web Speech API, sem comprovar a reprodução audível em todos os aparelhos.
 
 Nenhuma avaliação final fechada foi aberta ou reexecutada. O repositório permanece privado; hospedagem do vídeo,
 cópia pública sanitizada e envio no Teams continuam pendentes.
