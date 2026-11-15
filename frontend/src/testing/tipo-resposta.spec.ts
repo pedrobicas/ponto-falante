@@ -35,6 +35,21 @@ describe('Tipo da resposta', () => {
   it('previsão da SPTrans é descrita como consulta, não como chegada', () => {
     expect(situacaoEmPalavras({ ...base, origem: 'TEMPO_REAL' })).toContain('Previsão não é chegada confirmada');
   });
+
+  it('resposta antiga de tempo real indisponível vira INDISPONIVEL, como no backend', () => {
+    expect(tipoDaResposta({ ...base, origem: 'TEMPO_REAL', disponivel: false })).toBe('INDISPONIVEL');
+  });
+
+  it('consulta simulada não é descrita como dado da SPTrans', () => {
+    const texto = situacaoEmPalavras({ ...base, origem: 'CADASTRO' }, true);
+    expect(texto).toMatch(/simulados/);
+    expect(texto).not.toMatch(/SPTrans/);
+  });
+
+  it('consulta sem dados (confiança baixa) não aparece como confiável', () => {
+    const texto = situacaoEmPalavras({ ...base, origem: 'BOLETIM', confianca: 'baixa' });
+    expect(texto).toMatch(/sem dados suficientes/);
+  });
 });
 
 describe('Assistente: recusa e fora da área', () => {

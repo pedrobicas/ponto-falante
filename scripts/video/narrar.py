@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -59,7 +60,9 @@ def arquivo(caminho: str, tipo: str) -> Path:
 
 def montar_trechos(args) -> list[tuple[float, Path]]:
     if args.audio:
-        return [(args.atraso, arquivo(args.audio, "Áudio"))]
+        audio = arquivo(args.audio, "Áudio")
+        validar_inicio(args.atraso, audio.name)
+        return [(args.atraso, audio)]
     base = arquivo(args.trechos, "Lista de trechos")
     itens = json.loads(base.read_text(encoding="utf-8"))
     trechos = []
@@ -69,14 +72,26 @@ def montar_trechos(args) -> list[tuple[float, Path]]:
         caminho = Path(item["arquivo"])
         if not caminho.is_absolute():
             caminho = base.parent / caminho
-        trechos.append((float(item["inicio"]), arquivo(str(caminho), "Áudio")))
+        try:
+            inicio = float(item["inicio"])
+        except (TypeError, ValueError):
+            sys.exit(f"Trecho {i + 1}: \"inicio\" precisa ser um número de segundos.")
+        trechos.append((inicio, arquivo(str(caminho), "Áudio")))
+    for inicio, arq in trechos:
+        validar_inicio(inicio, arq.name)
     return sorted(trechos, key=lambda t: t[0])
+
+
+def validar_inicio(inicio: float, nome: str) -> None:
+    """Rejeita início negativo, NaN ou infinito: a mistura não corta o começo do áudio, então seria dessincronizado."""
+    if not math.isfinite(inicio) or inicio < 0:
+        sys.exit(f"Início inválido para {nome}: {inicio}. Use segundos >= 0.")
 
 
 def filtro_mistura(trechos: list[tuple[float, Path]], total: float) -> str:
     partes = []
     for i, (inicio, _) in enumerate(trechos):
-        ms = max(0, round(inicio * 1000))
+        ms = round(inicio * 1000)
         partes.append(f"[{i + 1}:a]aresample=48000,aformat=channel_layouts=mono,adelay={ms}|{ms}[a{i}]")
     entradas = "".join(f"[a{i}]" for i in range(len(trechos)))
     partes.append(f"{entradas}amix=inputs={len(trechos)}:normalize=0:dropout_transition=0,"
@@ -85,6 +100,9 @@ def filtro_mistura(trechos: list[tuple[float, Path]], total: float) -> str:
 
 
 def main() -> None:
+    for fluxo in (sys.stdout, sys.stderr):  # console do Windows em cp1252 não imprime "→"
+        if hasattr(fluxo, "reconfigure"):
+            fluxo.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("video")
     grupo = ap.add_mutually_exclusive_group(required=True)

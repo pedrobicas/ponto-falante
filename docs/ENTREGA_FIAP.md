@@ -52,7 +52,7 @@ Base oficial: pp. 46-50. O vídeo vale 2 pontos; documentação, 2; integração
 | BPMN/PDD, entradas, decisões, repetição e exceções | [BPMN editável](../rpa/docs/fluxo.bpmn), [fluxo visual](../rpa/docs/fluxo.png), relatório, seções 4-7 | Preservar arquivos e legibilidade no PDF final |
 | Implementação Python, README, logs, imagens e testes | `rpa/src/`, `rpa/logs/`, `rpa/assets/`, `rpa/tests/` e [README](../rpa/README.md) | Disponibilizar na cópia pública |
 | Integração verificável com o MVP | MP4 mostra execução do robô contra mock e integração em produção com data e categoria | Concluído; alcance e origens em [evidência RPA](evidencias/video_rpa_20261115.md) |
-| Sucesso, decisão e falha | [Evidências](../rpa/tests/EVIDENCIAS.md); 46 testes anteriores; vídeo mostra sucesso e 503 local | Concluído, sem repetir a suíte |
+| Sucesso, decisão e falha | [Evidências](../rpa/tests/EVIDENCIAS.md); 53 testes passando em 15/11; vídeo mostra sucesso e 503 local | Concluído |
 | Vídeo até 3 minutos com execução, regra, integração e falha | MP4 silencioso de 132 s e [roteiro final](../entregaveis/ROTEIRO_RPA.md) validados | Narrar, hospedar e inserir a URL no relatório e README |
 
 O PDF tem o conteúdo final para revisão, com campos explícitos para as URLs pendentes.

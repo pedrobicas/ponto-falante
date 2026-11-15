@@ -84,17 +84,21 @@ Execuções reais de 13/11/2026:
 
 **Investigação da cobertura (15/11/2026).** O cron previa 8 coletas por dia, mas o histórico do GitHub Actions mostra
 só 3 execuções para o dia 13 (09h54, 16h31 e 21h51 em São Paulo; a primeira foi disparada à mão) e 2 para o dia 14
-(13h30 e 19h15). O agendador gratuito descartou as demais, e o `rpa-diario` das 06h chegou a rodar com até 8 h de
-atraso. Cada coleta que rodou consultou os 6 pontos. Das 18 consultas do dia 13, 17 foram válidas: às 21h52 a SPTrans
+(13h30 e 19h15). As demais simplesmente não aparecem no histórico (exportado em
+`docs/evidencias/rpa_execucoes_20261115.json`), e o `rpa-diario` das 06h chegou a rodar com até 8 h de atraso. A
+explicação mais provável é o comportamento documentado do GitHub: agendamentos `schedule` podem atrasar ou não rodar
+em horários de alta carga. Não temos log do lado do GitHub que prove o descarte de cada horário. Cada coleta que rodou consultou os 6 pontos. Das 18 consultas do dia 13, 17 foram válidas: às 21h52 a SPTrans
 não tinha previsão para o ponto 630015011 (resposta 404 "sem previsão"), e um HTTP 503 às 16h33 foi recuperado na
 segunda tentativa. No dia 14, a consulta das 19h15 ao ponto 340015324 também voltou "sem previsão". Os logs das
 execuções (artefatos `rpa-coleta-*`) não mostram falha de persistência nem de publicação. A causa da cobertura baixa
-é o agendamento.
+é a falta de execuções agendadas, não a coleta em si.
 
-Correções: a coleta passou para o minuto 17 de cada horário, longe da virada da hora em que o GitHub mais descarta
-execuções. O script `scripts/genai/garantir-rpa.ps1`, iniciado junto com a GenAI no PC do projeto, confere a última
-execução a cada 15 minutos. Ele dispara o mesmo workflow pelo `gh workflow run` quando a coleta passa de 125 minutos
-sem rodar, entre 07h e 21h, ou quando o boletim do dia ainda não rodou depois das 07h. O script não coleta dados e
+Correções: a coleta passou para o minuto 17 de cada horário, longe da virada da hora, que o GitHub aponta como o horário de
+maior carga. O script `scripts/genai/garantir-rpa.ps1`, iniciado junto com a GenAI no PC do projeto, confere a última
+execução a cada 15 minutos. Para cada horário do cron, ele espera 25 minutos de tolerância e, se até o fim da janela
+de 2 horas daquele horário nenhuma execução tiver sido criada, dispara o mesmo workflow pelo `gh workflow run` (no
+máximo 3 tentativas por horário). Para o boletim, exige uma execução bem-sucedida no dia depois das 07h; falhas e
+cancelamentos contam como tentativa, também com limite de 3. O script não coleta dados e
 não usa os segredos do RPA. O boletim continua informando a cobertura real e nunca completa as lacunas.
 
 ## 7. Tratamento de exceções e recuperação
@@ -139,8 +143,9 @@ Execuções no GitHub Actions: https://github.com/pedrobicas/ponto-falante/actio
 
 ## 10. Testes realizados
 
-46 testes automatizados na validação de 14/11/2026, todos passando. Resultado preservado e cenários em
-`tests/EVIDENCIAS.md`; a suíte também é executada na CI a cada push. Esta atualização documental não reexecutou a suíte.
+53 testes automatizados, todos passando em 15/11/2026: os 46 da validação de 14/11 e 7 novos de falha (timeout com
+backoff, resposta vazia ou em HTML, 503 seguido de recuperação e reexecução no mesmo dia sem duplicar). Cenários e
+saídas em `tests/EVIDENCIAS.md`; a suíte também roda na CI a cada push.
 
 | Tipo | Cenário | Resultado |
 |---|---|---|
@@ -151,7 +156,7 @@ Execuções no GitHub Actions: https://github.com/pedrobicas/ponto-falante/actio
 | Falha | MVP fora, chave recusada, publicação fora, retry | Boletim anterior marcado como desatualizado; lote pendente reenviado; 3 tentativas com esperas de 2 s e 4 s |
 | Segurança | Chave no log | Mascarada |
 
-**Evidência do vídeo (gravado em 14/11/2026, das 23:08 às 23:19):** todos os comandos rodaram durante a gravação. A coleta real em modo somente leitura consultou 6 pontos pela API publicada e encontrou 27 ônibus previstos, sem gravar nada. O histórico do GitHub Actions mostra as coletas e os boletins agendados. A execução completa contra o MVP local, rotulada **SIMULADO**, recebeu 349 registros: 330 válidos, 9 inválidos e 10 duplicados. Ela classificou 1 linha como CRÍTICA, 2 em ATENÇÃO e 2 OK, gerou JSON e HTML e publicou com código 0. A falha foi provocada no mesmo MVP local: HTTP 503, 3 tentativas com esperas observadas de 2 s e 4 s, boletim anterior republicado como **desatualizado**, código 2 e registro na auditoria. A produção foi só lida: boletim de 13/11 com 17 consultas, 35,4% de cobertura, 24 linhas e 6 em atenção, também citado pela assistente. Registro: `docs/evidencias/video_rpa_20261115.md`. Não houve nova execução da suíte de testes.
+**Evidência do vídeo (gravado em 14/11/2026, das 23:08 às 23:19):** todos os comandos rodaram durante a gravação. A coleta real em modo somente leitura consultou 6 pontos pela API publicada e encontrou 27 ônibus previstos, sem gravar nada. O histórico do GitHub Actions mostra as coletas e os boletins agendados. A execução completa contra o MVP local, rotulada **SIMULADO**, recebeu 349 registros: 330 válidos, 9 inválidos e 10 duplicados. Ela classificou 1 linha como CRÍTICA, 2 em ATENÇÃO e 2 OK, gerou JSON e HTML e publicou com código 0. A falha foi provocada no mesmo MVP local: HTTP 503, 3 tentativas com esperas observadas de 2 s e 4 s, boletim anterior republicado como **desatualizado**, código 2 e registro na auditoria. A produção foi só lida: boletim de 13/11 com 17 consultas, 35,4% de cobertura, 24 linhas e 6 em atenção, também citado pela assistente. Registro: `docs/evidencias/video_rpa_20261115.md`. A gravação não incluiu a suíte de testes, executada à parte.
 
 ## 11. Segurança e LGPD
 

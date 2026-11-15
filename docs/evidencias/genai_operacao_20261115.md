@@ -3,6 +3,8 @@
 Ambiente: site publicado `https://ponto-falante.onrender.com` (Render) → túnel rápido da Cloudflare → API FastAPI no PC do
 integrante → Ollama `qwen2.5:7b`, `PF_MODO=agente`. Medições feitas com `POST /api/chat` a partir de outro processo, em
 horário de São Paulo. Nenhum conjunto de avaliação foi usado: as perguntas abaixo são exemplos públicos de operação.
+As respostas brutas das duas rodadas de medição estão em `genai_medicoes_20261115_1209.json` (depois do reinício) e
+`genai_medicoes_20261115_1222.json` (depois da recuperação), nesta mesma pasta, sem endereço de túnel nem chave.
 
 ## 1. Reinício com keep-alive (12:02)
 

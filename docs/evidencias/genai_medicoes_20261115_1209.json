@@ -1,0 +1,52 @@
+[
+ {
+  "pergunta": "Quem tem direito à gratuidade no ônibus por idade?",
+  "segundos": 8.5,
+  "origem": "BASE_OFICIAL",
+  "tipo_resposta": "FUNDAMENTADA",
+  "confianca": "alta",
+  "disponivel": true,
+  "fontes": 3,
+  "resposta": "Pessoas com 60 a 64 anos têm direito à gratuidade no ônibus. Pessoas com 65 anos ou mais também têm esse direito."
+ },
+ {
+  "pergunta": "Pessoa de 62 anos paga passagem?",
+  "segundos": 10.5,
+  "origem": "BASE_OFICIAL",
+  "tipo_resposta": "RECUSA",
+  "confianca": "media",
+  "disponivel": true,
+  "fontes": 0,
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156."
+ },
+ {
+  "pergunta": "Qual o valor da tarifa do ônibus em São Paulo?",
+  "segundos": 8.7,
+  "origem": "BASE_OFICIAL",
+  "tipo_resposta": "RECUSA",
+  "confianca": "media",
+  "disponivel": true,
+  "fontes": 0,
+  "resposta": "Não encontrei essa informação nas fontes oficiais que eu conheço. Para ter certeza, ligue para a SPTrans no telefone 156."
+ },
+ {
+  "pergunta": "Posso levar meu cachorro no ônibus em Curitiba?",
+  "segundos": 0.4,
+  "origem": "FORA_DA_AREA",
+  "tipo_resposta": "FORA_DA_AREA",
+  "confianca": "baixa",
+  "disponivel": true,
+  "fontes": 0,
+  "resposta": "O Ponto Falante atende só o transporte público municipal da cidade de São Paulo e não tem informações oficiais sobre Curitiba. Para saber as regras de lá, consu"
+ },
+ {
+  "pergunta": "Qual a cor do ônibus do papa?",
+  "segundos": 0.4,
+  "origem": "CADASTRO",
+  "tipo_resposta": "CONSULTA",
+  "confianca": "alta",
+  "disponivel": true,
+  "fontes": 1,
+  "resposta": "Para consultar, diga o nome ou o código do ponto."
+ }
+]

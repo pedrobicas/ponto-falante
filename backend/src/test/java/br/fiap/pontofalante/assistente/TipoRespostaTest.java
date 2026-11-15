@@ -70,7 +70,10 @@ class TipoRespostaTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"Quanto custa a passagem no Rio de Janeiro?", "Idoso paga ônibus em Belo Horizonte?",
-            "Tem ônibus noturno em Porto Alegre?", "como funciona o bilhete em Campinas"})
+            "Tem ônibus noturno em Porto Alegre?", "como funciona o bilhete em Campinas",
+            "Quanto custa o ônibus para o Rio de Janeiro?", "Idoso paga ônibus em Guarulhos?",
+            "Como é o ônibus na cidade de Santos?", "Tem gratuidade em Belém do Pará?", "Passagem em Rio Branco, Acre",
+            "Posso usar meu bilhete de São Paulo em Curitiba?"})
     void outrasCidadesSaoReconhecidas(String pergunta) {
         assertThat(ForaDaArea.cidade(pergunta)).isPresent();
     }
@@ -78,7 +81,8 @@ class TipoRespostaTest {
     @ParameterizedTest
     @ValueSource(strings = {"Ônibus na Rio Branco para o Centro", "Ponto na Av. Santos Dumont", "Linha que passa no Belém",
             "Quanto falta para a 875A-10?", "Ponto na Rua Curitiba", "Ônibus na São Luís", "Tenho 66 anos, posso andar de graça?",
-            "Ônibus em São Paulo para Pinheiros"})
+            "Ônibus em São Paulo para Pinheiros", "Quais ônibus passam na Campinas, em São Paulo?",
+            "Sou de Curitiba; quais linhas passam no ponto 70016916?", "Ônibus em Santos", "Ponto em Vitória"})
     void enderecosDeSaoPauloNaoViramForaDaArea(String pergunta) {
         assertThat(ForaDaArea.cidade(pergunta)).isEmpty();
     }

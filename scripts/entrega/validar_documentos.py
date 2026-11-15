@@ -53,6 +53,7 @@ def main() -> None:
     if copia.exists() and 'sha256' in resultado['RPA']:
         resultado['RPA']['copia_rpa_docs_identica'] = (
             hashlib.sha256(copia.read_bytes()).hexdigest() == resultado['RPA']['sha256'])
+    OUT.mkdir(parents=True, exist_ok=True)  # entregaveis/ é ignorada pelo git: num clone novo ainda não existe
     (OUT / 'VALIDACAO_DOCUMENTOS.json').write_text(json.dumps(resultado, ensure_ascii=False, indent=2), encoding='utf-8')
     for nome in ('RPA', 'GenAI'):
         r = resultado[nome]

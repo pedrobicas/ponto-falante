@@ -63,6 +63,14 @@ class ConversaTransporteTest {
         assertThat(r.origem()).isEqualTo("CADASTRO");
     }
 
+    @ParameterizedTest @ValueSource(strings={"Quais ônibus?", "Qual ônibus pego?", "E quais os ônibus?"})
+    void perguntaEliticaUsaOPontoDoContexto(String pergunta) {
+        var c = new Chat.Contexto(70016916L, null, null, null, null);
+        var r = a.responder(pergunta, c).orElseThrow();
+        assertThat(r.origem()).isEqualTo("CADASTRO");
+        assertThat(r.resposta()).doesNotContain("diga o nome ou o código do ponto");
+    }
+
     @Test void novoPontoPorNomeNoSeguimentoNaoReutilizaPontoAnterior() {
         var c = new Chat.Contexto(70016916L, null, null, null, null);
         var r = a.responder("E no ponto da Paulista?", c).orElseThrow();

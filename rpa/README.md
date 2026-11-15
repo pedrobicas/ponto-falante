@@ -122,7 +122,7 @@ curl -X POST "http://127.0.0.1:8080/admin/falha?ativo=true"
 ```bash
 python -m pytest -v
 ```
-46 testes na validação preservada de 14/11/2026, incluindo os 3 cenários exigidos. A atualização dos documentos e do vídeo não reexecutou a suíte:
+53 testes passando em 15/11/2026 (46 da validação de 14/11 e 7 novos de falha em `tests/test_falhas_extras.py`), incluindo os 3 cenários exigidos:
 
 | Cenário | Teste | Resultado esperado |
 |---|---|---|

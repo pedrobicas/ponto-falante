@@ -16,8 +16,15 @@ export type { Mensagem } from '../../core/conversa.service';
 export const LIMITE = 500;
 
 /** Frase sob a resposta. Depende do tipo, não só da confiança: uma recusa nunca aparece como "confiança alta". */
-export function situacaoEmPalavras(r: RespostaChat): string {
-  switch (tipoDaResposta(r)) {
+export function situacaoEmPalavras(r: RespostaChat, simulada = false): string {
+  const tipo = tipoDaResposta(r);
+  if (tipo === 'CONSULTA' && simulada) {
+    return 'Consulta com dados simulados de demonstração, sem inteligência artificial: não use para decidir a viagem.';
+  }
+  if (tipo === 'CONSULTA' && r.confianca === 'baixa') {
+    return 'Consulta direta, mas sem dados suficientes agora: confirme antes de decidir.';
+  }
+  switch (tipo) {
     case 'FUNDAMENTADA':
       return r.confianca === 'alta'
         ? 'Resposta baseada nas fontes oficiais citadas abaixo.'
@@ -351,13 +358,16 @@ export class Assistente {
   /** Barras: três só para resposta fundamentada com confiança alta ou consulta direta; uma para recusa/insuficiente. */
   protected classeSituacao(r: RespostaChat): 'alta' | 'media' | 'baixa' {
     const t = tipoDaResposta(r);
-    if (t === 'CONSULTA') return origemDaResposta(r) === 'BOLETIM' ? 'media' : 'alta';
+    if (t === 'CONSULTA') {
+      if (r.confianca === 'baixa' || this.simulada(r)) return 'baixa';
+      return origemDaResposta(r) === 'BOLETIM' || r.confianca === 'media' ? 'media' : 'alta';
+    }
     if (t === 'FUNDAMENTADA') return r.confianca === 'alta' ? 'alta' : 'media';
     return 'baixa';
   }
 
   protected confianca(r: RespostaChat): string {
-    return situacaoEmPalavras(r);
+    return situacaoEmPalavras(r, this.simulada(r));
   }
 
   protected segundos(ms: number): string {
