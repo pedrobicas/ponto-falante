@@ -37,7 +37,7 @@ Arquivo editável: `docs/fluxo.bpmn` (BPMN 2.0, gerado por `docs/gerar_fluxo_bpm
 |---|---|---|---|
 | Coleta (8 vezes por dia) | `config/monitoramento.yaml` (6 pontos) | `GET /api/pontos/{codigo}/previsoes` no MVP; só respostas com `fonte = OLHO_VIVO` viram amostra | `POST /api/rpa/amostras` com `X-API-Key`; lote pendente em `saida/pendentes/` se falhar |
 | Início do boletim (06:00) | Agendamento diário | Carrega a configuração | Configuração validada |
-| Leitura | `GET /api/rpa/amostras?data=` | 3 tentativas com espera de 2, 4 e 8 s | Amostras do dia anterior |
+| Leitura | `GET /api/rpa/amostras?data=` | 3 tentativas, com esperas de 2 s e 4 s entre elas | Amostras do dia anterior |
 | Validação (laço) | Cada amostra | Campos, período, ponto no escopo, previsões de 0 a 120 min, sentidos separados | Válidas + inválidas com motivo |
 | Deduplicação | Válidas | Mesmo ponto e mesmo horário de consulta contam uma vez | Amostras únicas |
 | Decisão (laço) | Cada linha | Espera típica, maior espera e consultas sem ônibus previsto → CRÍTICA, ATENÇÃO, OK ou SEM DADOS | Situação por linha |
@@ -132,8 +132,10 @@ Execuções no GitHub Actions: https://github.com/pedrobicas/ponto-falante/actio
 | Sucesso (simulado rotulado) | Ponta a ponta contra o mock | Boletim publicado e igual ao `GET /boletim` |
 | Decisão | Perfis de espera e limites exatos | CRÍTICA, ATENÇÃO, OK e SEM DADOS conferidos |
 | Sem dado real | MVP real sem amostras; coletor diante de dado de demonstração | INDISPONÍVEL, sem números inventados; simulação nunca gravada como real |
-| Falha | MVP fora, chave recusada, publicação fora, retry | Boletim anterior marcado como desatualizado; lote pendente reenviado; esperas 2, 4, 8 s |
+| Falha | MVP fora, chave recusada, publicação fora, retry | Boletim anterior marcado como desatualizado; lote pendente reenviado; 3 tentativas com esperas de 2 s e 4 s |
 | Segurança | Chave no log | Mascarada |
+
+**Evidência do vídeo (gravado em 14/11/2026, das 23:08 às 23:19):** todos os comandos rodaram durante a gravação. A coleta real em modo somente leitura consultou 6 pontos pela API publicada e encontrou 27 ônibus previstos, sem gravar nada. O histórico do GitHub Actions mostra as coletas e os boletins agendados. A execução completa contra o MVP local, rotulada **SIMULADO**, recebeu 349 registros: 330 válidos, 9 inválidos e 10 duplicados. Ela classificou 1 linha como CRÍTICA, 2 em ATENÇÃO e 2 OK, gerou JSON e HTML e publicou com código 0. A falha foi provocada no mesmo MVP local: HTTP 503, 3 tentativas com esperas observadas de 2 s e 4 s, boletim anterior republicado como **desatualizado**, código 2 e registro na auditoria. A produção foi só lida: boletim de 13/11 com 17 consultas, 35,4% de cobertura, 24 linhas e 6 em atenção, também citado pela assistente. Registro: `docs/evidencias/video_rpa_20261115.md`. Não houve nova execução da suíte de testes.
 
 ## 11. Segurança e LGPD
 
@@ -145,6 +147,11 @@ Execuções no GitHub Actions: https://github.com/pedrobicas/ponto-falante/actio
 
 ## 12. Links
 
-- Repositório GitHub: https://github.com/pedrobicas/ponto-falante (pasta `rpa/`)
+- Repositório GitHub: https://github.com/pedrobicas/ponto-falante (privado, pasta `rpa/`)
+- URL pública do repositório sanitizado: **PENDENTE DE AUTORIZAÇÃO E HOSPEDAGEM**.
 - MVP publicado: https://ponto-falante.onrender.com/boletim
-- Vídeo demonstrativo (até 3 min): [preencher após a gravação]
+- Vídeo local: `entregaveis/Ponto_Falante_RPA.mp4`, **2 min 12 s (132 s, abaixo do limite de 180 s)**, 1920 x 1080, sem áudio e sem música, pronto para narração.
+- Roteiro final: `entregaveis/ROTEIRO_RPA.md`.
+- URL pública do vídeo: **PENDENTE DE HOSPEDAGEM**. O repositório segue privado; nenhuma entrega no Teams foi realizada.
+
+O vídeo mostra a execução ponta a ponta do robô de boletim no MVP local, do comando à publicação com código 0, entre 01:00 e 01:21. A coleta real, o agendamento e o boletim publicado são trechos de produção identificados pelo selo DADOS REAIS ou ESTIMADO. Entre 01:21 e 01:44 aparecem a falha, a recuperação e a auditoria. O material atende ao conteúdo demonstrativo das pp. 46-50 do enunciado; a aceitação e a nota cabem à avaliação docente.

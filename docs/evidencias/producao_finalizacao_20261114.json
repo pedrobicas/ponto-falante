@@ -1,0 +1,31 @@
+{
+  "verificado_em": "2026-11-14T18:44:43.912270-03:00",
+  "commit": "8846a31072ed4f6257ef8e6a336006f5974da4dd",
+  "ci": {
+    "run": 43617735669,
+    "jobs_aprovados": 7
+  },
+  "deploy": {
+    "id": 7790706514,
+    "estado": "success",
+    "concluido_em": "2026-11-14T13:55:38-03:00"
+  },
+  "previsoes": {
+    "fonte": "OLHO_VIVO",
+    "tipo": "PREVISAO",
+    "consultado_em": "2026-11-14T18:44:43.111022388-03:00",
+    "dados_simulados": null,
+    "onibus": 12
+  },
+  "boletim": {
+    "data_referencia": "2026-11-13",
+    "gerado_em": "2026-11-14T12:36:11-03:00",
+    "natureza_dados": "ESTIMADO",
+    "dados_simulados": false,
+    "desatualizado": false,
+    "avisos": [
+      "Amostragem parcial: 17 de 48 janelas de coleta cobertas (35.4%)."
+    ],
+    "proveniencia": null
+  }
+}

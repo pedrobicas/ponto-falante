@@ -101,12 +101,13 @@ genai/
    ```bash
    uvicorn api.app:app --port 8001
    ```
-   Exemplo de chamada:
+   Configure `GENAI_API_KEY` no ambiente antes de iniciar. Exemplo de chamada em Bash,
+   usando a mesma variável (não substituir por uma chave literal no histórico):
    ```bash
-   curl -X POST http://localhost:8001/chat -H "Content-Type: application/json" -d "{\"pergunta\": \"Tenho 67 anos, pago ônibus?\"}"
+   curl -X POST http://localhost:8001/chat -H "X-API-Key: $GENAI_API_KEY" -H "Content-Type: application/json" -d "{\"pergunta\": \"Tenho 67 anos, pago ônibus?\"}"
    ```
 
-Variáveis de ambiente (todas opcionais):
+Variáveis de ambiente:
 
 | Variável | Para que serve | Padrão |
 |---|---|---|
@@ -115,8 +116,11 @@ Variáveis de ambiente (todas opcionais):
 | `PF_EMBEDDINGS` | Modelo de embeddings | `intfloat/multilingual-e5-large` |
 | `PF_LIMIAR` | Limiar de similaridade | `0.86` |
 | `PF_MODO` | Estratégia servida pela API: `agente` (menos alucinação) ou `rag` (responde mais) | `agente` |
+| `GENAI_API_KEY` | Autenticação entre backend e API; obrigatória no serviço publicado | Sem padrão |
+| `GENAI_TIMEOUT_S` | Prazo global de uma pergunta, incluindo as etapas do agente | `40` |
 
-Nenhuma chave ou senha é necessária.
+O Ollama não exige chave de provedor. A API do produto exige autenticação; no Windows,
+use as instruções de serviço em [`scripts/genai/README.md`](../scripts/genai/README.md).
 
 ## Evidência da API rodando
 
@@ -133,6 +137,8 @@ Nenhuma chave ou senha é necessária.
 
 - Se o Ollama cair, a resposta é HTTP 503 com uma mensagem amigável (`modo: "indisponivel"`). Nunca há falha silenciosa.
 - `GET /health` informa o estado do LLM e do índice.
+- Ao exceder 40 s, a API retorna 504; o backend apresenta indisponibilidade ao usuário.
+  Diagnóstico da gravação: [`timeout_genai_20261114.md`](../docs/evidencias/timeout_genai_20261114.md).
 - Contrato completo: `../contratos/openapi-integracao.yaml`. Exemplo em Java: `../contratos/GUIA_BACKEND_SPRING.md`.
 
 ## Por que agente e não LoRA
@@ -157,5 +163,7 @@ Nenhuma chave ou senha é necessária.
 
 ## Links
 
-- Repositório: _a preencher na publicação_
-- Vídeo: _a preencher_
+- Repositório atual: https://github.com/pedrobicas/ponto-falante (privado; cópia pública sanitizada depende de autorização).
+- Vídeo final local: [Ponto_Falante_GenAI.mp4](../entregaveis/Ponto_Falante_GenAI.mp4), 2min27s (147 s), 1920 x 1080, sem áudio e sem música.
+- [Roteiro para narração humana](../entregaveis/ROTEIRO_GENAI.md) · [Evidências e limites observados](../docs/evidencias/video_genai_20261115.md).
+- Hospedagem e URL pública do vídeo ainda pendentes. `entregaveis/` é uma pasta local ignorada pelo Git.

@@ -1,0 +1,331 @@
+{
+ "fps": 30,
+ "cauda": 0.6,
+ "planos": [
+  {
+   "cena": "genai_chat",
+   "de": "inicio_site-1.0",
+   "ate": "assistente+1.5",
+   "capitulo": "Assistente do Ponto Falante",
+   "nota": "site publicado; entrada pela navegação"
+  },
+  {
+   "cena": "genai_chat",
+   "de": "enviada_rota-4.6",
+   "ate": "resposta_rota+6.0",
+   "capitulo": "Conversa · rota pelo cadastro oficial",
+   "selo": "oficial",
+   "zoom": [
+    [
+     0,
+     960,
+     540,
+     1920
+    ],
+    [
+     6.4,
+     960,
+     540,
+     1920
+    ],
+    [
+     8.0,
+     960,
+     470,
+     1320
+    ],
+    [
+     12.0,
+     960,
+     470,
+     1320
+    ]
+   ],
+   "nota": "linhas diretas para o Centro saindo do ponto citado (GTFS)"
+  },
+  {
+   "cena": "genai_chat",
+   "de": "enviada_falta-3.4",
+   "ate": "resposta_falta+5.0",
+   "capitulo": "Contexto · previsão em tempo real",
+   "selo": "real",
+   "zoom": [
+    [
+     0,
+     960,
+     540,
+     1920
+    ],
+    [
+     4.6,
+     960,
+     540,
+     1920
+    ],
+    [
+     6.0,
+     960,
+     470,
+     1320
+    ],
+    [
+     9.8,
+     960,
+     470,
+     1320
+    ]
+   ],
+   "nota": "a linha da conversa anterior e a previsão da SPTrans"
+  },
+  {
+   "cena": "genai_chat",
+   "de": "enviada_contrario-2.6",
+   "ate": "resposta_contrario+6.5",
+   "capitulo": "Contexto · sentido contrário",
+   "selo": "real",
+   "zoom": [
+    [
+     0,
+     960,
+     540,
+     1920
+    ],
+    [
+     3.6,
+     960,
+     540,
+     1920
+    ],
+    [
+     5.2,
+     960,
+     470,
+     1320
+    ],
+    [
+     10.5,
+     960,
+     470,
+     1320
+    ]
+   ],
+   "nota": "pergunta curta resolvida pelo contexto (linha, ponto, sentido)"
+  },
+  {
+   "cena": "genai_chat",
+   "de": "enviada_idoso-3.8",
+   "ate": "enviada_idoso+2.0",
+   "capitulo": "Direitos · resposta com fontes",
+   "selo": "genai",
+   "nota": "pergunta de regra vai para a GenAI"
+  },
+  {
+   "cena": "genai_chat",
+   "de": "enviada_idoso+2.0",
+   "ate": "resposta_idoso-0.3",
+   "vel": 8,
+   "transicao": 0,
+   "capitulo": "Direitos · resposta com fontes",
+   "selo": "genai",
+   "nota": "espera real da GenAI acelerada e sinalizada"
+  },
+  {
+   "cena": "genai_chat",
+   "de": "resposta_idoso-0.3",
+   "ate": "ouvir+3.6",
+   "transicao": 0,
+   "capitulo": "Direitos · resposta com fontes",
+   "selo": "genai",
+   "zoom": [
+    [
+     0,
+     960,
+     540,
+     1920
+    ],
+    [
+     2.5,
+     960,
+     540,
+     1920
+    ],
+    [
+     4.0,
+     900,
+     500,
+     1320
+    ],
+    [
+     9.0,
+     900,
+     520,
+     1320
+    ],
+    [
+     10.5,
+     960,
+     540,
+     1920
+    ]
+   ],
+   "nota": "Estatuto da Pessoa Idosa e SPTrans citados; leitura em voz alta"
+  },
+  {
+   "cena": "genai_chat",
+   "de": "enviada_recusa-3.8",
+   "ate": "enviada_recusa+1.0",
+   "capitulo": "Fora da base · recusa honesta",
+   "selo": "genai",
+   "nota": "pergunta sobre outra cidade"
+  },
+  {
+   "cena": "genai_chat",
+   "de": "enviada_recusa+1.0",
+   "ate": "resposta_recusa-0.2",
+   "vel": 3,
+   "transicao": 0,
+   "capitulo": "Fora da base · recusa honesta",
+   "selo": "genai"
+  },
+  {
+   "cena": "genai_chat",
+   "de": "resposta_recusa-0.2",
+   "ate": "resposta_recusa+6.0",
+   "transicao": 0,
+   "capitulo": "Fora da base · recusa honesta",
+   "selo": "genai",
+   "zoom": [
+    [
+     0,
+     960,
+     540,
+     1920
+    ],
+    [
+     1.4,
+     960,
+     540,
+     1920
+    ],
+    [
+     2.8,
+     960,
+     520,
+     1320
+    ],
+    [
+     6.2,
+     960,
+     520,
+     1320
+    ]
+   ],
+   "nota": "não consta nas fontes: orienta a confirmar no 156"
+  },
+  {
+   "cena": "genai_chat",
+   "de": "ajustes-0.3",
+   "ate": "volta+0.3",
+   "capitulo": "Acessibilidade · letras e contraste",
+   "nota": "ajustes reais da interface"
+  },
+  {
+   "cena": "genai_chat",
+   "de": "volta+0.3",
+   "ate": "fim_chat",
+   "capitulo": "Acessibilidade · conversa preservada",
+   "zoom": [
+    [
+     0,
+     960,
+     540,
+     1920
+    ],
+    [
+     11.6,
+     960,
+     540,
+     1920
+    ]
+   ],
+   "nota": "alto contraste com a conversa mantida"
+  },
+  {
+   "cena": "genai_arq",
+   "de": "sistema-0.3",
+   "ate": "fim_arq",
+   "capitulo": "Arquitetura · ferramentas + GenAI",
+   "selo": "codigo",
+   "zoom": [],
+   "nota": "diagramas do README e do relatório"
+  },
+  {
+   "cena": "genai_term",
+   "de": "cmd0-0.3",
+   "ate": "ok0+7.6",
+   "capitulo": "Avaliação · teste inédito v3",
+   "selo": "avaliacao",
+   "zoom": [
+    [
+     0,
+     960,
+     540,
+     1920
+    ],
+    [
+     3.0,
+     960,
+     540,
+     1920
+    ],
+    [
+     4.8,
+     948,
+     470,
+     1880
+    ],
+    [
+     8.0,
+     948,
+     470,
+     1880
+    ]
+   ],
+   "nota": "46 perguntas, executado uma única vez em 13/11"
+  },
+  {
+   "cena": "genai_term",
+   "de": "cmd1-0.3",
+   "ate": "ok1+7.4",
+   "capitulo": "Avaliação · reparo de recusa (DEV)",
+   "selo": "avaliacao",
+   "zoom": [
+    [
+     0,
+     960,
+     540,
+     1920
+    ],
+    [
+     3.0,
+     960,
+     540,
+     1920
+    ],
+    [
+     4.8,
+     948,
+     470,
+     1880
+    ],
+    [
+     8.0,
+     948,
+     470,
+     1880
+    ]
+   ],
+   "nota": "108 perguntas do DEV; o teste fechado não foi reaberto"
+  }
+ ]
+}

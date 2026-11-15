@@ -2,6 +2,11 @@
 
 FIAP · Engenharia de Software 4º ano · Global Solution 2026.2 · CitizenTech · problema: **mobilidade**
 
+**Versão de entrega, 14/11/2026.** As seções 6 a 9 preservam o ciclo original com o modelo 3B.
+As seções 11 a 13 registram as iterações posteriores; o produto e o vídeo usam o agente com
+`qwen2.5:7b`. Os placares permanecem congelados. Vídeo e roteiro estão concluídos localmente;
+faltam as URLs de hospedagem do vídeo e do repositório público sanitizado.
+
 ## 1. Integrantes
 
 | Nome completo | RM |
@@ -19,14 +24,14 @@ FIAP · Engenharia de Software 4º ano · Global Solution 2026.2 · CitizenTech 
 | **Problema** | Pessoas idosas, com deficiência visual e estudantes têm dúvidas frequentes sobre gratuidade, Bilhete Único, integração e direitos no ônibus. A informação oficial está espalhada em dezenas de páginas de perguntas e respostas e em leis, em formato difícil de ler para quem usa leitor de tela. |
 | **O que a IA resolve** | Assistente do Ponto Falante que responde em até 3 frases simples, para leitura em voz alta. Usa **somente** documentos oficiais, cita o trecho usado e **recusa** quando a base não tem a resposta, orientando a ligar 156. |
 | **Usuário** | Passageiro de ônibus da cidade de São Paulo, pelo app Ponto Falante (Angular), via backend Spring Boot. |
-| **LLM** | `qwen2.5:3b` (Alibaba Qwen, Apache 2.0) rodando localmente no **Ollama** 0.40, com temperatura 0, semente 42 e contexto de 4096 tokens. Saída estruturada por JSON Schema. Roda na GPU AMD RX 7600 ou em CPU. |
+| **LLM** | Produto atual: `qwen2.5:7b` com agente; ciclo original: `qwen2.5:3b` (Alibaba Qwen, Apache 2.0). Execução local no **Ollama**, temperatura 0, semente 42 e contexto de 4096 tokens. Saída estruturada por JSON Schema. Máquina com GPU AMD RX 7600; não foi medida a distribuição CPU/GPU durante o vídeo. |
 | **Embeddings** | `intfloat/multilingual-e5-large` (MIT), via fastembed/ONNX, com prefixos `query:` e `passage:`. |
 | **Índice** | FAISS `IndexFlatIP` com vetores normalizados (similaridade de cosseno), sobre 244 trechos. |
 | **Especialização** | **Agente** em 5 passos sobre o mesmo modelo (justificativa de não usar LoRA na seção 4). |
 | **Validação** | pydantic v2 no formato do contrato: `{resposta, fontes[{documento, trecho_id}], confianca, nao_consta}`. |
 | **Serviço** | FastAPI (`POST /chat`, `GET /health`), chamado pelo Spring Boot. |
-| **Custo** | Zero: tudo gratuito e local, sem chave de API. |
-| **LGPD** | Não guardamos a pergunta, o IP nem um identificador. A base contém só documentos públicos. |
+| **Custo** | Modelo local, sem cobrança por token. A API do produto exige chave de autenticação em variável de ambiente; ela não aparece no repositório nem no vídeo. |
+| **LGPD** | A API não persiste perguntas, IPs ou identificadores. A limitação de chamadas usa identificadores temporários em memória. O navegador mantém o histórico da conversa. A base contém documentos públicos. |
 
 ## 3. Diagramas
 
@@ -50,7 +55,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    U[Angular: pergunta por voz ou texto] --> S[Spring Boot<br/>POST /chat]
+    U[Angular: pergunta por texto] --> S[Spring Boot<br/>POST /api/chat]
     S --> API[FastAPI genai<br/>POST /chat]
     API --> T[1. Triagem + reescrita<br/>LLM: termos oficiais]
     T --> B[2. Busca dupla<br/>pergunta original + reescrita, top-4]
@@ -251,6 +256,12 @@ Detalhamento completo, com o rastro de cada caso, em [avaliacao/erros.md](avalia
 - `GET /health` mostra o estado do LLM e do índice;
 - nenhum texto de pergunta é registrado (LGPD).
 
+## 10. Evolução e preservação dos resultados
+
+O ciclo original das seções anteriores permanece documentado com seu modelo e seus resultados.
+As próximas seções registram v2, v3 e os ajustes de conversa separadamente. A demonstração final
+usa a configuração atual do produto; ela não substitui nem recalcula os placares congelados.
+
 ## 11. Iteração v2 (após a revisão crítica independente)
 
 A v1 acima foi preservada sem alteração (tag `experimento-original-genai-v1`). A v2 respondeu às críticas registradas
@@ -429,9 +440,35 @@ uma vez e **não** foi repetido, então este ganho não tem confirmação em con
 recusa e família da fonte), verificados com o Ollama real por `scripts/validar_dev_conversa.py`. Não são uma medida de
 acurácia geral.
 
-## 10. Links
+## 14. Links e demonstração final
 
-- Repositório GitHub: https://github.com/pedrobicas/ponto-falante
+- Repositório atual (privado): https://github.com/pedrobicas/ponto-falante
+- URL pública do repositório sanitizado: **PENDENTE DE AUTORIZAÇÃO E HOSPEDAGEM**.
 - MVP publicado: https://ponto-falante.onrender.com
-- Vídeo: _a preencher_
+- Vídeo final local: [Ponto_Falante_GenAI.mp4](../entregaveis/Ponto_Falante_GenAI.mp4), **2min27s** (147 s), 1920 x 1080, sem áudio e sem música, preparado para narração humana.
+- [Roteiro de narração](../entregaveis/ROTEIRO_GENAI.md) e [evidências da captura](../docs/evidencias/video_genai_20261115.md). A URL pública do vídeo ainda depende de hospedagem; o arquivo local não substitui esse link na entrega FIAP.
+- URL pública do vídeo: **PENDENTE DE HOSPEDAGEM**.
 - Notebooks com saídas: `notebooks/01_base_conhecimento.ipynb`, `02_indice_recall_limiar.ipynb`, `03_geracao_fundamentada.ipynb`, `04_agente_e_placar.ipynb`
+
+### Demonstração gravada em 14/11/2026 (versão 2)
+
+O vídeo foi refeito com captura direta do site publicado (Edge sem interface controlado pelo Playwright, quadros
+de 1920 x 1080) e montagem reprodutível em `scripts/video/` (`cap_genai.js`, `compor.py`, `edl_genai.json`).
+Ele mostra uma conversa contínua em produção: rota para o Centro pelo cadastro oficial (resposta em cerca de 1,5 s),
+"quanto falta" e "no sentido contrário" com previsão em tempo real da SPTrans (cerca de 1,5 s cada), gratuidade
+para pessoa de 66 anos com duas fontes citadas (cerca de 20 s), leitura em voz alta, recusa fora da base (cerca de
+5,6 s), letra grande e alto contraste com a conversa preservada. Seguem os diagramas de arquitetura do README e deste
+relatório e os placares já registrados (teste inédito v3 e reparo de recusa no DEV), apenas lidos dos CSVs.
+As esperas da gratuidade e da recusa foram aceleradas e o vídeo indica isso com um selo; os textos não foram editados.
+
+Limite registrado: na primeira tentativa de gravação, com o modelo ainda frio, a pergunta de gratuidade excedeu o
+timeout de **40 s** da API. O modelo foi aquecido com duas perguntas antes da gravação definitiva; a falha não
+aparece no vídeo, mas o risco de timeout com o modelo frio continua. O diagnóstico das ocorrências anteriores está
+em `docs/evidencias/timeout_genai_20261114.md`, na raiz do projeto: limite atingido em 40.014 ms e 40.006 ms,
+várias chamadas ao Ollama por pergunta e thread síncrona que pode continuar após o timeout HTTP. Não foi alterado
+modelo, limiar ou timeout. A recusa sobre Curitiba conserva o encaminhamento fixo para o 156 de São Paulo; isso não
+valida regras de outra cidade. O vídeo é silencioso: mostra o acionamento da Web Speech API, sem comprovar a
+reprodução audível em todos os aparelhos.
+
+Nenhuma avaliação final fechada foi aberta ou reexecutada. O repositório permanece privado; hospedagem do vídeo,
+cópia pública sanitizada e envio no Teams continuam pendentes.

@@ -1,16 +1,14 @@
-"""Gera rpa/docs/relatorio.pdf a partir de relatorio.md, sem dependências (Markdown simples -> HTML -> PDF pelo Edge).
+"""Compatibilidade do comando original; exporta os PDFs finais de RPA e GenAI.
 
     python rpa/docs/gerar_relatorio_pdf.py
 
-Cobre o que o relatório usa: títulos, parágrafos, listas, tabelas, blocos de código, imagens, negrito, código e links.
+Usa scripts/entrega/gerar_pdfs.py (mistune, Pillow, pypdf e Edge). Os conversores
+antigos abaixo permanecem disponíveis para compatibilidade; não alteram os relatórios.
 """
 from __future__ import annotations
 
 import html
 import re
-import shutil
-import subprocess
-import sys
 from pathlib import Path
 
 AQUI = Path(__file__).resolve().parent
@@ -82,20 +80,8 @@ def converter(md: str) -> str:
 
 
 def main() -> None:
-    md = (AQUI / "relatorio.md").read_text(encoding="utf-8")
-    md = re.sub(r"^> Este arquivo é a base do PDF.*\n", "", md, flags=re.M)
-    pagina = AQUI / "relatorio.html"
-    pagina.write_text(f'<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Relatório técnico RPA - Ponto Falante</title>'
-                      f"<style>{CSS}</style><body>{converter(md)}</body></html>", encoding="utf-8")
-    edge = next((e for e in EDGE if Path(e).exists()), None) or shutil.which("msedge")
-    if not edge:
-        sys.exit("Edge não encontrado; abra rpa/docs/relatorio.html no navegador e use Imprimir > Salvar como PDF.")
-    destino = AQUI / "relatorio.pdf"
-    subprocess.run([edge, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",  # nosemgrep -- executável e argumentos fixos
-                    f"--print-to-pdf={destino}", pagina.as_uri()], check=True, timeout=120,
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    pagina.unlink()
-    print(f"gerado {destino} ({destino.stat().st_size // 1024} KB)")
+    import runpy
+    runpy.run_path(str(AQUI.parents[1] / 'scripts/entrega/gerar_pdfs.py'), run_name='__main__')
 
 
 if __name__ == "__main__":

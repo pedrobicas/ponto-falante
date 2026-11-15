@@ -4,6 +4,12 @@ Conferido em **14/11/2026** no [PDF oficial](../Global_Solution_2026_2_CitizenTe
 Este checklist consolida as pendências atuais; os relatos anteriores permanecem como histórico.
 Não houve nova execução nem leitura dos conjuntos finais fechados de avaliação da GenAI.
 
+**Fechamento dos arquivos de GenAI e RPA (vídeos regravados em 14/11, montados e revisados em 15/11):** vídeos, roteiros e relatórios concluídos
+para revisão e narração. Índice local: [`entregaveis/LEIA_ME.md`](../entregaveis/LEIA_ME.md).
+RPA: 132 s; GenAI: 147 s; H.264, 1920 x 1080, 30 fps, sem áudio; ambos decodificados integralmente. Versões anteriores em `entregaveis/versao_anterior_20261114/`.
+Restam narração/revisão do dono, hospedagem e URLs, autorização da cópia pública sanitizada e submissão.
+Os vídeos foram regravados com captura real do site publicado e dos comandos; nenhuma avaliação fechada foi reexecutada.
+
 ## Prazo e regras comuns
 
 - **19/11/2026 às 23h55**, no Teams de cada disciplina, por **um integrante** da equipe (pp. 24-27).
@@ -29,7 +35,7 @@ Base oficial: pp. 29-31. O relatório não precisa ser PDF; precisa estar no Git
 | Recall@1/@3, limiar, JSON, citações, recusa e comparação entre configurações | Relatório, seções 6-7 e iterações documentadas | Usar os resultados já salvos e identificar o ciclo mostrado |
 | Cinco erros reais, causas e correções; conclusão | Relatório, seções 8-9; análises posteriores separadas | Nenhuma nova avaliação necessária |
 | Notebooks com saídas, API e reprodução | Quatro notebooks com saídas salvas, API e [README GenAI](../genai/README.md) | Abertura pública e, se possível, reprodução em outra máquina |
-| Link do vídeo no relatório | [Roteiro GenAI](../genai/ROTEIRO_VIDEO.md) pronto | Gravar, hospedar e substituir `_a preencher_` em `genai/RELATORIO.md` e o marcador em `genai/README.md` |
+| Link do vídeo no relatório | MP4 silencioso de 147 s e [roteiro final](../entregaveis/ROTEIRO_GENAI.md) validados | Narrar, hospedar e inserir a URL em `genai/RELATORIO.md` e `genai/README.md` |
 | Repositório público | Código local e remoto privado preservados | Publicar cópia sanitizada e atualizar os links |
 
 O PDF oficial exige vídeo, mas **não fixa duração para GenAI** nessas páginas. Os três minutos do roteiro são uma
@@ -42,17 +48,18 @@ Base oficial: pp. 46-50. O vídeo vale 2 pontos; documentação, 2; integração
 
 | Exigência | Evidência existente | Falta para a entrega |
 |---|---|---|
-| Relatório com os 12 itens, integrantes e RMs | [Fonte Markdown](../rpa/docs/relatorio.md) e [PDF existente](../rpa/docs/relatorio.pdf) | Inserir links finais e regenerar o PDF; o PDF atual ainda não contém o vídeo |
+| Relatório com os 12 itens, integrantes e RMs | [Fonte Markdown](../rpa/docs/relatorio.md) e [PDF final para revisão](../entregaveis/Relatorio_RPA.pdf), com BPMN ampliado | Inserir URLs de hospedagem e regenerar; conteúdo concluído |
 | BPMN/PDD, entradas, decisões, repetição e exceções | [BPMN editável](../rpa/docs/fluxo.bpmn), [fluxo visual](../rpa/docs/fluxo.png), relatório, seções 4-7 | Preservar arquivos e legibilidade no PDF final |
 | Implementação Python, README, logs, imagens e testes | `rpa/src/`, `rpa/logs/`, `rpa/assets/`, `rpa/tests/` e [README](../rpa/README.md) | Disponibilizar na cópia pública |
-| Integração verificável com o MVP | Contrato API, tela do boletim no relatório e evidências reais salvas | Gravar a integração em funcionamento com data e categoria visíveis |
-| Sucesso, decisão e falha | [Evidências](../rpa/tests/EVIDENCIAS.md); 46 testes na validação anterior de 14/11 | Não repetir a suíte completa para esta revisão; no vídeo mostrar um cenário de falha isolado |
-| Vídeo até 3 minutos com execução, regra, integração e falha | [Roteiro RPA](../rpa/docs/roteiro_video.md) pronto | Gravar/hospedar e substituir marcadores no relatório e README |
+| Integração verificável com o MVP | MP4 mostra execução do robô contra mock e integração em produção com data e categoria | Concluído; alcance e origens em [evidência RPA](evidencias/video_rpa_20261115.md) |
+| Sucesso, decisão e falha | [Evidências](../rpa/tests/EVIDENCIAS.md); 46 testes anteriores; vídeo mostra sucesso e 503 local | Concluído, sem repetir a suíte |
+| Vídeo até 3 minutos com execução, regra, integração e falha | MP4 silencioso de 132 s e [roteiro final](../entregaveis/ROTEIRO_RPA.md) validados | Narrar, hospedar e inserir a URL no relatório e README |
 
-O PDF atual é uma versão preparatória. Após os links finais, executar na raiz:
+O PDF tem o conteúdo final para revisão, com campos explícitos para as URLs pendentes.
+Após inserir os links nos relatórios, atualizar os dois PDFs na raiz:
 
 ```powershell
-.\.venv\Scripts\python.exe rpa/docs/gerar_relatorio_pdf.py
+.\.venv\Scripts\python.exe -X utf8 scripts/entrega/gerar_pdfs.py
 ```
 
 Conferir visualmente o PDF inteiro, os links clicáveis, o BPMN, a captura do boletim, nomes/RMs e os cenários.
@@ -77,10 +84,10 @@ evidências específicas exigidas abaixo.
 1. **Privacidade e publicação:** fechar a revisão do histórico e dos artefatos, escolher a cópia sanitizada pública,
    publicar apenas o estado revisado e atualizar URLs dos relatórios e READMEs. Não mudar a visibilidade do histórico
    antigo nem reescrevê-lo nesta etapa.
-2. **Gravação:** seguir os roteiros prontos de GenAI e RPA. Usar só locais públicos, fechar painéis de segredos e
-   capturar o comportamento observado. No RPA, a falha controlada ocorre contra o mock/local, sem interromper produção.
+2. **Narração:** revisar e narrar os dois MP4 concluídos, seguindo os tempos dos roteiros. As capturas existentes
+   já mostram exemplos públicos, o RPA em ambiente local identificado e a integração em produção.
 3. **Links e PDF:** inserir os dois vídeos, regenerar/revisar o PDF RPA e testar todos os links em janela anônima.
-   O roteiro GenAI usa três minutos como sugestão; os limites obrigatórios são RPA 3, pitch 5 e Maker 6 minutos.
+   A GenAI ficou em 2min27s, sem limite expresso nessas páginas; RPA ficou em 2min12s (limite de 3 minutos).
 4. **Equipe:** obter os links/artefatos das outras cinco disciplinas e resolver as lacunas da tabela; não tratar o
    endpoint de integração como prova de que o componente inteiro está concluído.
 5. **Envio:** um integrante envia o material de cada disciplina, com os nomes/RMs exigidos, e conserva o comprovante.
@@ -96,6 +103,6 @@ evidências específicas exigidas abaixo.
 | URL do repositório sanitizado | Atualizar `README.md`, `genai/README.md`, `genai/RELATORIO.md`, `rpa/README.md` e `rpa/docs/relatorio.md` após publicação |
 | Vídeo GenAI | Preencher em `genai/RELATORIO.md` e `genai/README.md` |
 | Vídeo RPA | Preencher em `rpa/docs/relatorio.md` e `rpa/README.md`, então regenerar o PDF |
-| Anexo do Teams RPA | `rpa/docs/relatorio.pdf`, após revisão final |
+| Anexo do Teams RPA | `entregaveis/Relatorio_RPA.pdf` (cópia idêntica em `rpa/docs/relatorio.pdf`), após inserir URLs |
 | Envio do Teams GenAI | Link do repositório público, apontando para `genai/` e seu relatório |
 | Comprovantes de envio | Guardar somente depois da submissão real; sem declarar entrega antecipadamente |

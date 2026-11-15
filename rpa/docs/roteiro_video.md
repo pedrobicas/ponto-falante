@@ -1,15 +1,25 @@
 # Roteiro do vídeo RPA (até 3 minutos)
 
-Gravação: OBS ou Xbox Game Bar (Win+G), tela cheia, fonte do terminal grande. Abas já abertas antes de gravar:
-o site publicado, o GitHub Actions do repositório e um terminal na pasta `rpa/`.
+O roteiro de narração completo, com as falas por trecho, está em [`entregaveis/ROTEIRO_RPA.md`](../../entregaveis/ROTEIRO_RPA.md), na raiz do projeto.
+Vídeo local: [`entregaveis/Ponto_Falante_RPA.mp4`](../../entregaveis/Ponto_Falante_RPA.mp4), **2 min 12 s (132 s, abaixo do limite de 180 s)**,
+1920 x 1080, sem áudio e sem música. A URL pública ainda depende de hospedagem. O repositório continua privado.
 
-| Tempo | Fala (resumo) | Na tela |
+As cenas foram gravadas em 14/11/2026, das 23:08 às 23:19, com o site publicado e comandos reais. O rodapé de cada cena mostra o capítulo e a
+natureza do dado (**DADOS REAIS**, **ESTIMADO**, **SIMULADO** ou **REPOSITÓRIO**). Não há narração, música nem trecho acelerado.
+
+| Tempo | Cena | Natureza |
 |---|---|---|
-| 0:00–0:25 | "O Ponto Falante fala a previsão dos ônibus para quem não enxerga bem. Para avisar que uma linha anda com espera longa, alguém teria de consultar os pontos o dia todo e escrever um aviso. Dois robôs fazem isso sozinhos." | Site publicado, depois o BPMN `docs/fluxo.png` |
-| 0:25–0:55 | Explicar os dois robôs: o coletor consulta 6 pontos 8 vezes por dia e grava amostras reais; o boletim valida, remove duplicados, decide por linha e publica. Mostrar as regras no YAML. | BPMN + `config/monitoramento.yaml` (`regras_estimadas`) |
-| 0:55–1:35 | Execução real: abrir a coleta no GitHub Actions e apontar as contagens da execução exibida. Dizer por que o boletim é **estimado**: previsão não é chegada observada. Informar quando a amostragem é parcial. | GitHub Actions (`rpa-coleta`) |
-| 1:35–2:05 | Integração: abrir `/boletim` no site e deixar a tela ler em voz alta, com o selo **Estimado** (ou **Indisponível**, quando não houve coleta no dia, sem números inventados). | Navegador |
-| 2:05–2:40 | Falha: com o mock (`uvicorn tools.mock_mvp:app --port 8080`), ligar `POST /admin/falha?ativo=true` e rodar `python -m pf_rpa.robo --data 2026-11-12`. Mostrar as 3 tentativas com espera crescente e o boletim anterior publicado como "desatualizado". Mostrar `logs/auditoria.jsonl`. | Terminal |
-| 2:40–3:00 | Testes: `python -m pytest -q`; mostrar a contagem realmente obtida. Encerrar com o benefício: autonomia para o passageiro e lista de linhas em atenção para a gestora. | Terminal |
+| 00:00-00:16 | Busca de ponto e previsões no site publicado | Real |
+| 00:16-00:34 | BPMN dos robôs de coleta e de boletim | Documento |
+| 00:34-00:41 | Regras de decisão em `config/monitoramento.yaml` | Repositório |
+| 00:41-00:54 | Coletor somente leitura: 6 pontos, 27 ônibus previstos | Real |
+| 00:54-01:00 | Execuções agendadas no GitHub Actions | Real |
+| 01:00-01:12 | Execução completa: 349 recebidos, 330 válidos, 1 CRÍTICA, 2 ATENÇÃO, 2 OK, código 0 | Simulado (MVP local) |
+| 01:12-01:21 | Boletim HTML gerado na mesma execução | Simulado |
+| 01:21-01:37 | HTTP 503, 3 tentativas (2 s e 4 s), boletim anterior desatualizado, código 2 | Simulado |
+| 01:37-01:44 | Trilha de auditoria da execução com falha | Simulado |
+| 01:44-02:00 | Boletim de 13/11 publicado em produção (17 consultas, 24 linhas, 6 em atenção) | Estimado |
+| 02:00-02:12 | A assistente responde com o boletim e seus limites | Estimado |
 
-Dica: ensaie com cronômetro; se passar de 3 min, corte a explicação do YAML.
+Ferramentas de gravação: `scripts/video/cap_rpa.js` (captura), `scripts/video/terminal_real.py` (terminal com comandos fixos) e
+`scripts/video/compor.py` com `scripts/video/edl_rpa.json` (montagem). Evidência: [`docs/evidencias/video_rpa_20261115.md`](../../docs/evidencias/video_rpa_20261115.md).

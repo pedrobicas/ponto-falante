@@ -1,0 +1,94 @@
+{
+  "verificado_em": "2026-11-14T13:56:59.700532-03:00",
+  "base": "https://ponto-falante.onrender.com",
+  "status": {
+    "versao": "1.0.0",
+    "sptrans": "REAL",
+    "assistente": "INDISPONIVEL",
+    "ultimo_boletim": "2026-11-13",
+    "horario_servidor": "2026-11-14T13:57:00.357144752-03:00",
+    "assistente_tempo_real": true
+  },
+  "conversa": [
+    {
+      "pergunta": "Onde posso pegar a linha 875A-10?",
+      "resposta": "A linha 875A-10 tem estes destinos no cadastro: sentido Perdizes; sentido Aeroporto. Qual sentido você quer consultar? Para confirmar uma região como Centro, diga a rua ou parada de destino.",
+      "origem": "CADASTRO",
+      "contexto": {
+        "ponto": null,
+        "linha": "875A-10",
+        "sentido": null,
+        "pendencia": "PONTO_EMBARQUE",
+        "tema": null,
+        "publico": null,
+        "idade": null,
+        "veiculo_anterior": null
+      },
+      "segundos": 5.78
+    },
+    {
+      "pergunta": "sentido 1 da linha 875A-10",
+      "resposta": "Em qual rua, número ou ponto de referência você está? Vou procurar onde embarcar na linha 875A-10.",
+      "origem": "CADASTRO",
+      "contexto": {
+        "ponto": null,
+        "linha": "875A-10",
+        "sentido": 1,
+        "pendencia": "PONTO_EMBARQUE",
+        "tema": null,
+        "publico": null,
+        "idade": null,
+        "veiculo_anterior": null
+      },
+      "segundos": 0.5
+    },
+    {
+      "pergunta": "Avenida Paulista, 1374",
+      "resposta": "Você pode embarcar na linha 875A-10, sentido Perdizes, nestas paradas próximas de Av. Paulista, 1374: Av. Paulista, 1374; Av. Paulista, 1754; Av. Paulista, 900. Distância em linha reta; confira o acesso a pé. Escolha uma parada para consultar a previsão.",
+      "origem": "CADASTRO",
+      "contexto": {
+        "ponto": 70016916,
+        "linha": "875A-10",
+        "sentido": 1,
+        "pendencia": "PONTO_EMBARQUE",
+        "tema": null,
+        "publico": null,
+        "idade": null,
+        "veiculo_anterior": null
+      },
+      "segundos": 0.61
+    },
+    {
+      "pergunta": "Esse ônibus passa na Avenida Paulista?",
+      "resposta": "Sim. O cadastro da linha 875A-10 indica avenida paulista no sentido Perdizes. Escolha a parada para consultar a previsão.",
+      "origem": "CADASTRO",
+      "contexto": {
+        "ponto": 70016916,
+        "linha": "875A-10",
+        "sentido": 1,
+        "pendencia": null,
+        "tema": null,
+        "publico": null,
+        "idade": null,
+        "veiculo_anterior": null
+      },
+      "segundos": 0.3
+    }
+  ],
+  "previsoes": {
+    "fonte": "OLHO_VIVO",
+    "tipo": "PREVISAO",
+    "consultado_em": "2026-11-14T13:57:08.737502969-03:00",
+    "onibus": 9
+  },
+  "boletim": {
+    "data_referencia": "2026-11-13",
+    "natureza_dados": "ESTIMADO",
+    "dados_simulados": false,
+    "avisos": [
+      "Amostragem parcial: 17 de 48 janelas de coleta cobertas (35.4%)."
+    ],
+    "chat_consistente": true
+  },
+  "correcao_confirmada": true
+}

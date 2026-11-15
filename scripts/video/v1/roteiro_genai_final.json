@@ -1,0 +1,120 @@
+{
+  "descricao": "Capturas reais, sem áudio; cortes de espera e ajustes de velocidade declarados.",
+  "cenas": [
+    {
+      "title": "Informação de transporte que dá para ouvir",
+      "duration": 8,
+      "lines": [
+        "Assistente integrada ao MVP de mobilidade de São Paulo.",
+        "Consultas reais, fontes visíveis e recursos de acessibilidade.",
+        "Demonstração silenciosa, preparada para narração humana."
+      ],
+      "note": "Capturas reais de 14/11/2026 · pausas de consulta encurtadas",
+      "eyebrow": "PONTO FALANTE · GENERATIVE AI FOR ENGINEERING"
+    },
+    {
+      "source": ".validation/video-genai/01-transporte.webm",
+      "start": 2.4,
+      "end": 27.8,
+      "duration": 30,
+      "title": "01 · SPTrans real e contexto da conversa",
+      "note": "Captura original 13h53 · “E o próximo?” mantém ponto, linha e sentido · velocidade 0,85×"
+    },
+    {
+      "source": "output/playwright/genai-final-take2/genai-direitos.webm",
+      "start": 5.8,
+      "end": 10.3,
+      "duration": 6,
+      "title": "02 · Uma pergunta à GenAI em produção",
+      "note": "Pergunta real · a espera da consulta foi cortada após o envio"
+    },
+    {
+      "source": "output/playwright/genai-final-take2/genai-direitos.webm",
+      "start": 33.4,
+      "end": 54,
+      "duration": 26,
+      "title": "02 · Resposta fundamentada, fontes e comando de voz",
+      "note": "Consulta respondeu em cerca de 24 s · leitura acionada em pt-BR · áudio não incluído"
+    },
+    {
+      "source": "output/playwright/genai-final-take2/genai-direitos.webm",
+      "start": 96.5,
+      "end": 104.1,
+      "duration": 8,
+      "title": "03 · Limite observado: timeout na continuação",
+      "note": "“E meu acompanhante?” excedeu 40 s · indisponibilidade real, sem resposta inventada"
+    },
+    {
+      "source": "output/playwright/genai-final-take2/genai-direitos.webm",
+      "start": 104.2,
+      "end": 119.5,
+      "duration": 23,
+      "title": "04 · Letras, contraste e histórico preservado",
+      "note": "Ajustes reais da interface · retorno à conversa com as mensagens mantidas"
+    },
+    {
+      "source": "output/playwright/genai-final-take2/genai-limite.webm",
+      "start": 15.3,
+      "end": 23.1,
+      "duration": 13,
+      "title": "05 · Recusa quando a informação não consta",
+      "note": "Pergunta fora da base de São Paulo · o encaminhamento 156 mostrado é dessa cidade"
+    },
+    {
+      "source": "output/playwright/genai-final-take2/genai-boletim.webm",
+      "start": 7,
+      "end": 14.9,
+      "duration": 16,
+      "title": "06 · Integração com o boletim do robô",
+      "note": "Estimativa de 13/11 · amostragem parcial · não confirma as condições de hoje"
+    },
+    {
+      "title": "Como a resposta é construída",
+      "duration": 16,
+      "lines": [
+        "244 trechos identificados, extraídos de fontes oficiais.",
+        "Busca por embeddings → agente local qwen2.5:7b.",
+        "JSON validado → conferência de números, citações e evidência.",
+        "Horários usam ferramentas da SPTrans; direitos usam a GenAI."
+      ],
+      "note": "Fonte: genai/RELATORIO.md · nenhuma avaliação final executada",
+      "eyebrow": "RELATÓRIO E DEMONSTRAÇÃO"
+    },
+    {
+      "title": "Resultados já publicados no relatório",
+      "duration": 16,
+      "lines": [
+        "Sem contexto: 8,7% de acerto; 34,8% de erro factual por pergunta.",
+        "RAG simples: 65,2% de acerto; 15,2% de erro factual por pergunta.",
+        "Agente v1: 65,2% de acerto; 8,7% de erro factual por pergunta.",
+        "A v3_final ficou em 58,7% de acerto; não substituiu o padrão."
+      ],
+      "note": "Ciclo v3: 46 perguntas · rubrica automática v3.1 · números transcritos do relatório",
+      "eyebrow": "RELATÓRIO E DEMONSTRAÇÃO"
+    },
+    {
+      "title": "Cinco erros reais e os próximos passos",
+      "duration": 20,
+      "lines": [
+        "Recusa com evidência → selecionar melhor o contexto.",
+        "Número ligado ao assunto errado → conferir valor, unidade e sujeito.",
+        "Canal de recarga confundido → melhorar a recuperação.",
+        "Dedução sem fonte sobre óbito → exigir evidência ou recusar.",
+        "Rubrica leu negação errado → revisar em outro ciclo."
+      ],
+      "note": "Casos DEV já documentados em genai/RELATORIO.md · teste final preservado",
+      "eyebrow": "RELATÓRIO E DEMONSTRAÇÃO"
+    },
+    {
+      "title": "Fontes, limites e reprodução",
+      "duration": 8,
+      "lines": [
+        "MVP: ponto-falante.onrender.com",
+        "Relatório, notebooks com saídas e instruções em genai/.",
+        "Serviço GenAI depende do PC e do túnel ativos."
+      ],
+      "note": "Projeto acadêmico FIAP · exemplos públicos · narração a cargo do autor",
+      "eyebrow": "RELATÓRIO E DEMONSTRAÇÃO"
+    }
+  ]
+}

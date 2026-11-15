@@ -1,0 +1,4 @@
+# Dependências do exportador de relatórios; versões presentes no fechamento.
+mistune==3.4.0
+Pillow==13.0.0
+pypdf==7.0.1

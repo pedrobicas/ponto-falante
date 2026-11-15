@@ -10,6 +10,9 @@ import ollama
 MODELO = os.environ.get("PF_MODELO", "qwen2.5:3b")
 _cliente = ollama.Client(host=os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434"), timeout=120)
 OPCOES = {"temperature": 0, "seed": 42, "num_ctx": 4096, "num_predict": 350}
+# Tempo que o Ollama mantém o modelo carregado após cada chamada. Modelo frio pode estourar o timeout
+# de 40 s da API na primeira pergunta; no período de correção, use por exemplo PF_KEEP_ALIVE=24h.
+KEEP_ALIVE = os.environ.get("PF_KEEP_ALIVE", "30m")
 
 
 def gerar(sistema: str, usuario: str, json_schema: dict | None = None, modelo: str | None = None,
@@ -21,7 +24,7 @@ def gerar(sistema: str, usuario: str, json_schema: dict | None = None, modelo: s
         messages=[{"role": "system", "content": sistema}, {"role": "user", "content": usuario}],
         format=json_schema if json_schema is not None else "",
         options={**OPCOES, **opcoes},
-        keep_alive="30m",
+        keep_alive=KEEP_ALIVE,
         **extra,
     )
     return resp["message"]["content"]
