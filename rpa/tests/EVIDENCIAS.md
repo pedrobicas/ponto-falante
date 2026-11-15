@@ -1,5 +1,29 @@
 # Evidências dos testes
 
+## Atualização de 15/11/2026
+
+Execução local em 15/11/2026, Python 3.11, `python -m pytest -q` dentro de `rpa/`: **53 testes aprovados em 18,62 s**.
+
+```text
+.....................................................                    [100%]
+53 passed in 18.62s
+```
+
+Novos em `tests/test_falhas_extras.py` (todos com mock ou respostas fabricadas, nunca coleta real):
+
+| Cenário | Comportamento verificado |
+|---|---|
+| Timeout em todas as tentativas | 3 tentativas com esperas de 2 s e 4 s, depois `MVPIndisponivel` |
+| Timeout seguido de resposta | Recupera na segunda tentativa, sem erro |
+| HTTP 503 seguido de 200 | Recupera após uma espera de 2 s |
+| Corpo vazio, HTML ou formato errado | `RespostaInvalida`: nada vira amostra |
+| Duas execuções para a mesma data | Mesmo boletim, mesmas estatísticas, um arquivo por data, publicação igual no MVP |
+
+Já cobertos antes: MVP fora (republica o último boletim como desatualizado, código 2), chave recusada (lote guardado e
+reenviado depois), publicação recusada (cópia local, código de falha), dados inválidos e duplicados (descartados com
+motivo), lote pendente com formato errado (quarentena) e chave fora dos logs. Em produção, a deduplicação de amostras
+também acontece no backend (`Envio: 6 gravadas, 0 duplicadas` no log da coleta).
+
 ## Atualização de 14/11/2026
 
 A validação da revisão `3c4fb1a` registrou **46 testes aprovados em 18,96 s**, sem falhas.

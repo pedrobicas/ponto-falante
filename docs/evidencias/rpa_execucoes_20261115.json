@@ -1,0 +1,175 @@
+{
+ "gerado_em": "2026-11-15",
+ "fonte": "gh run list (GitHub Actions), sem logs nem segredos",
+ "periodo": "2026-11-12 a 2026-11-15 (UTC)",
+ "workflows": {
+  "rpa-coleta": {
+   "total": 7,
+   "por_evento": {
+    "workflow_dispatch": 2,
+    "schedule": 5
+   },
+   "execucoes": [
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-13T12:54:01Z",
+     "databaseId": 43429040197,
+     "event": "workflow_dispatch",
+     "headBranch": "main",
+     "startedAt": "2026-11-13T12:54:01Z",
+     "status": "completed",
+     "updatedAt": "2026-11-13T12:54:24Z"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-13T19:31:55Z",
+     "databaseId": 43493082543,
+     "event": "schedule",
+     "headBranch": "main",
+     "startedAt": "2026-11-13T19:31:55Z",
+     "status": "completed",
+     "updatedAt": "2026-11-13T19:33:51Z"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-14T00:51:12Z",
+     "databaseId": 43536899660,
+     "event": "schedule",
+     "headBranch": "main",
+     "startedAt": "2026-11-14T00:51:12Z",
+     "status": "completed",
+     "updatedAt": "2026-11-14T00:52:51Z"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-14T16:30:05Z",
+     "databaseId": 43615927347,
+     "event": "schedule",
+     "headBranch": "main",
+     "startedAt": "2026-11-14T16:30:05Z",
+     "status": "completed",
+     "updatedAt": "2026-11-14T16:30:32Z"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-14T22:15:08Z",
+     "databaseId": 43647095445,
+     "event": "schedule",
+     "headBranch": "main",
+     "startedAt": "2026-11-14T22:15:08Z",
+     "status": "completed",
+     "updatedAt": "2026-11-14T22:15:28Z"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-15T06:08:01Z",
+     "databaseId": 43684048612,
+     "event": "schedule",
+     "headBranch": "main",
+     "startedAt": "2026-11-15T06:08:01Z",
+     "status": "completed",
+     "updatedAt": "2026-11-15T06:08:32Z"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-15T14:47:28Z",
+     "databaseId": 43726268232,
+     "event": "workflow_dispatch",
+     "headBranch": "main",
+     "startedAt": "2026-11-15T14:47:28Z",
+     "status": "completed",
+     "updatedAt": "2026-11-15T14:47:57Z"
+    }
+   ]
+  },
+  "rpa-diario": {
+   "total": 8,
+   "por_evento": {
+    "workflow_dispatch": 4,
+    "schedule": 4
+   },
+   "execucoes": [
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-12T00:29:55Z",
+     "databaseId": 43127702267,
+     "event": "workflow_dispatch",
+     "headBranch": "main",
+     "startedAt": "2026-11-12T00:29:55Z",
+     "status": "completed",
+     "updatedAt": "2026-11-12T00:30:15Z"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-12T17:23:00Z",
+     "databaseId": 43268840994,
+     "event": "schedule",
+     "headBranch": "main",
+     "startedAt": "2026-11-12T17:23:00Z",
+     "status": "completed",
+     "updatedAt": "2026-11-12T17:28:29Z"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-13T12:54:42Z",
+     "databaseId": 43429139001,
+     "event": "workflow_dispatch",
+     "headBranch": "main",
+     "startedAt": "2026-11-13T12:54:42Z",
+     "status": "completed",
+     "updatedAt": "2026-11-13T12:55:07Z"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-13T16:57:45Z",
+     "databaseId": 43467957203,
+     "event": "schedule",
+     "headBranch": "main",
+     "startedAt": "2026-11-13T16:57:45Z",
+     "status": "completed",
+     "updatedAt": "2026-11-13T16:58:09Z"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-14T15:22:57Z",
+     "databaseId": 43609879807,
+     "event": "workflow_dispatch",
+     "headBranch": "main",
+     "startedAt": "2026-11-14T15:22:57Z",
+     "status": "completed",
+     "updatedAt": "2026-11-14T15:23:24Z"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-14T15:35:54Z",
+     "databaseId": 43611038330,
+     "event": "schedule",
+     "headBranch": "main",
+     "startedAt": "2026-11-14T15:35:54Z",
+     "status": "completed",
+     "updatedAt": "2026-11-14T15:36:16Z"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-15T14:48:19Z",
+     "databaseId": 43726346505,
+     "event": "workflow_dispatch",
+     "headBranch": "main",
+     "startedAt": "2026-11-15T14:48:19Z",
+     "status": "completed",
+     "updatedAt": "2026-11-15T14:48:45Z"
+    },
+    {
+     "conclusion": "success",
+     "createdAt": "2026-11-15T16:06:02Z",
+     "databaseId": 43733549025,
+     "event": "schedule",
+     "headBranch": "main",
+     "startedAt": "2026-11-15T16:06:02Z",
+     "status": "completed",
+     "updatedAt": "2026-11-15T16:06:24Z"
+    }
+   ]
+  }
+ }
+}

@@ -139,7 +139,7 @@ export function tipoDaResposta(r: Pick<RespostaChat, 'origem' | 'disponivel' | '
   const validos: TipoResposta[] = ['FUNDAMENTADA', 'CONSULTA', 'RECUSA', 'FORA_DA_AREA', 'INSUFICIENTE', 'INDISPONIVEL'];
   if (r.tipo_resposta && validos.includes(r.tipo_resposta)) return r.tipo_resposta;
   const origem = origemDaResposta(r);
-  if (origem === 'INDISPONIVEL') return 'INDISPONIVEL';
+  if (!r.disponivel || origem === 'INDISPONIVEL') return 'INDISPONIVEL';
   if (origem === 'FORA_DA_AREA') return 'FORA_DA_AREA';
   if (origem === 'TEMPO_REAL' || origem === 'CADASTRO' || origem === 'BOLETIM') return 'CONSULTA';
   if (r.nao_consta) return 'RECUSA';

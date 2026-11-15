@@ -14,27 +14,50 @@ import java.util.regex.Pattern;
  * então a resposta explica a limitação e manda procurar o órgão da cidade citada, sem inventar regras nem contatos
  * (não encaminha ao 156 nem à SPTrans, que são de São Paulo).
  *
- * <p>Só entram cidades sem homônimo conhecido de bairro ou rua paulistana que costume vir depois de "em", "no" ou
- * "na" (por isso ficam de fora, por exemplo, Belém, Campo Grande, Natal, Vitória, Rio Branco, São Luís e Santos, que
- * também são avenidas ou bairros de São Paulo), e o nome precisa vir depois de
- * uma preposição de lugar.</p>
+ * <p>Regras para não confundir com ruas e bairros paulistanos:</p>
+ * <ul>
+ *   <li>a cidade precisa vir depois de "em", "no", "de", "do", "para", "pra" ou "pro" (com "o" opcional); "na" e "da"
+ *   ficam de fora porque costumam indicar rua ("na Campinas" é a Alameda Campinas);</li>
+ *   <li>nomes que também são ruas ou bairros de São Paulo (Santos, Belém, Natal, Vitória, Rio Branco, São Luís, Campo
+ *   Grande) só contam com qualificador explícito: "cidade de Santos", "Belém do Pará", "Rio Branco, Acre";</li>
+ *   <li>pergunta com código de ponto de São Paulo ("ponto 70016916") é sempre consulta local, mesmo citando outra
+ *   cidade ("sou de Curitiba").</li>
+ * </ul>
  */
 final class ForaDaArea {
 
     private static final Map<String, String> CIDADES = new LinkedHashMap<>();
+    private static final Map<Pattern, String> QUALIFICADAS = new LinkedHashMap<>();
 
     static {
         for (String c : List.of("Rio de Janeiro", "Belo Horizonte", "Porto Alegre", "Curitiba", "Salvador", "Recife",
                 "Fortaleza", "Brasília", "Goiânia", "Manaus", "Florianópolis", "Maceió", "João Pessoa", "Teresina",
-                "Cuiabá", "Aracaju", "Porto Velho", "Macapá", "Palmas", "Niterói",
+                "Cuiabá", "Aracaju", "Porto Velho", "Macapá", "Palmas", "Niterói", "Guarulhos", "Osasco",
                 "Campinas", "Sorocaba", "Ribeirão Preto", "Londrina", "Joinville", "Uberlândia",
                 "Juiz de Fora", "Lisboa", "Buenos Aires", "Nova York")) {
             CIDADES.put(AssistenteTempoReal.normalizar(c), c);
         }
+        Map<String, String> homonimos = new LinkedHashMap<>();
+        homonimos.put("santos", "Santos");
+        homonimos.put("belem", "Belém");
+        homonimos.put("natal", "Natal");
+        homonimos.put("vitoria", "Vitória");
+        homonimos.put("rio branco", "Rio Branco");
+        homonimos.put("sao luis", "São Luís");
+        homonimos.put("campo grande", "Campo Grande");
+        homonimos.forEach((chave, nome) -> QUALIFICADAS.put(Pattern.compile("\\bcidade de " + chave + "\\b"), nome));
+        QUALIFICADAS.put(Pattern.compile("\\bbelem (?:do para|pa)\\b"), "Belém");
+        QUALIFICADAS.put(Pattern.compile("\\brio branco,? (?:no |em )?(?:acre|ac)\\b"), "Rio Branco");
+        QUALIFICADAS.put(Pattern.compile("\\bnatal,? (?:no |em )?(?:rio grande do norte|rn)\\b"), "Natal");
+        QUALIFICADAS.put(Pattern.compile("\\bvitoria,? (?:no |em )?(?:espirito santo|es)\\b"), "Vitória");
+        QUALIFICADAS.put(Pattern.compile("\\bsao luis,? (?:no |em )?(?:maranhao|ma)\\b"), "São Luís");
+        QUALIFICADAS.put(Pattern.compile("\\bcampo grande,? (?:no |em )?(?:mato grosso do sul|ms)\\b"), "Campo Grande");
+        QUALIFICADAS.put(Pattern.compile("\\bbaixada santista\\b"), "Baixada Santista");
     }
 
-    private static final Pattern PADRAO = Pattern.compile("\\b(?:em|no|na|de|do|da|para|pra|pro)\\s+("
+    private static final Pattern PADRAO = Pattern.compile("\\b(?:em|no|de|do|para|pra|pro)\\s+(?:o\\s+)?("
             + String.join("|", CIDADES.keySet().stream().map(Pattern::quote).toList()) + ")\\b");
+    private static final Pattern PONTO_PAULISTANO = Pattern.compile("\\b(?:ponto|parada|codigo)\\s+\\d{5,}\\b|\\b\\d{8,9}\\b");
 
     private ForaDaArea() {
     }
@@ -44,7 +67,16 @@ final class ForaDaArea {
         if (pergunta == null) {
             return Optional.empty();
         }
-        Matcher m = PADRAO.matcher(AssistenteTempoReal.normalizar(pergunta));
+        String t = AssistenteTempoReal.normalizar(pergunta);
+        if (PONTO_PAULISTANO.matcher(t).find()) {
+            return Optional.empty();
+        }
+        for (var q : QUALIFICADAS.entrySet()) {
+            if (q.getKey().matcher(t).find()) {
+                return Optional.of(q.getValue());
+            }
+        }
+        Matcher m = PADRAO.matcher(t);
         return m.find() ? Optional.of(CIDADES.get(m.group(1))) : Optional.empty();
     }
 
