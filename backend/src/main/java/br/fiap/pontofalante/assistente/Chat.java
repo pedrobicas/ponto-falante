@@ -65,6 +65,20 @@ public final class Chat {
         public RespostaChat comContexto(Contexto c, List<Acao> a) {
             return new RespostaChat(resposta, fontes, confianca, naoConsta, disponivel, latenciaMs, origem, c, a, naturezaDados);
         }
+        /**
+         * Tipo da resposta, para a interface não exibir "confiança alta" numa recusa:
+         * INDISPONIVEL, FORA_DA_AREA, CONSULTA (dado do backend, sem LLM), RECUSA (não consta nas fontes),
+         * FUNDAMENTADA (GenAI com fontes citadas e confiança alta ou média) ou INSUFICIENTE (sem fontes ou confiança baixa).
+         */
+        @com.fasterxml.jackson.annotation.JsonProperty("tipo_resposta")
+        public String tipoResposta() {
+            if (!disponivel || "INDISPONIVEL".equals(origem)) return "INDISPONIVEL";
+            if ("FORA_DA_AREA".equals(origem)) return "FORA_DA_AREA";
+            if (List.of("TEMPO_REAL", "CADASTRO", "BOLETIM").contains(origem)) return "CONSULTA";
+            if (naoConsta) return "RECUSA";
+            boolean comFontes = fontes != null && !fontes.isEmpty();
+            return comFontes && ("alta".equals(confianca) || "media".equals(confianca)) ? "FUNDAMENTADA" : "INSUFICIENTE";
+        }
         public RespostaChat comNatureza(String natureza) {
             return new RespostaChat(resposta, fontes, confianca, naoConsta, disponivel, latenciaMs, origem, contexto, acoes,
                     List.of("ESTIMADO", "SIMULADO", "INDISPONIVEL").contains(natureza) ? natureza : null);

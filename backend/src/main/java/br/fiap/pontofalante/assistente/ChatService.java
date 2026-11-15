@@ -121,6 +121,11 @@ public class ChatService {
     }
 
     public RespostaChat perguntar(String pergunta, String idCliente, Chat.Contexto contexto) {
+        // Outra cidade: explica a limitação antes de qualquer consulta, sem mandar ao 156/SPTrans de São Paulo.
+        var foraDaArea = ForaDaArea.responder(pergunta);
+        if (foraDaArea.isPresent()) {
+            return foraDaArea.get().comContexto(contexto == null ? Chat.Contexto.vazio() : contexto, List.of());
+        }
         var doBoletim = respostaDoBoletim(pergunta);
         if (doBoletim.isPresent()) {
             return doBoletim.get();

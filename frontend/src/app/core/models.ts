@@ -120,14 +120,30 @@ export interface RespostaChat {
   dados_simulados?: boolean;
   contexto?: ContextoChat | null;
   acoes?: AcaoChat[];
+  /** Tipo calculado pelo backend; ausente em respostas antigas (a interface deduz com tipoDaResposta). */
+  tipo_resposta?: TipoResposta | null;
 }
 
-export type OrigemResposta = 'TEMPO_REAL' | 'CADASTRO' | 'BOLETIM' | 'BASE_OFICIAL' | 'INDISPONIVEL';
+export type OrigemResposta = 'TEMPO_REAL' | 'CADASTRO' | 'BOLETIM' | 'BASE_OFICIAL' | 'FORA_DA_AREA' | 'INDISPONIVEL';
+export type TipoResposta = 'FUNDAMENTADA' | 'CONSULTA' | 'RECUSA' | 'FORA_DA_AREA' | 'INSUFICIENTE' | 'INDISPONIVEL';
 
 /** Origem efetiva: sem o campo, vale BASE_OFICIAL quando disponível e INDISPONIVEL quando não. */
 export function origemDaResposta(r: Pick<RespostaChat, 'origem' | 'disponivel'>): OrigemResposta {
-  if (r.origem === 'TEMPO_REAL' || r.origem === 'CADASTRO' || r.origem === 'BOLETIM' || r.origem === 'BASE_OFICIAL' || r.origem === 'INDISPONIVEL') return r.origem;
+  if (r.origem === 'TEMPO_REAL' || r.origem === 'CADASTRO' || r.origem === 'BOLETIM' || r.origem === 'BASE_OFICIAL'
+      || r.origem === 'FORA_DA_AREA' || r.origem === 'INDISPONIVEL') return r.origem;
   return r.disponivel ? 'BASE_OFICIAL' : 'INDISPONIVEL';
+}
+
+/** Mesmo critério do backend (Chat.RespostaChat.tipoResposta): recusa nunca vira "confiança alta". */
+export function tipoDaResposta(r: Pick<RespostaChat, 'origem' | 'disponivel' | 'nao_consta' | 'fontes' | 'confianca' | 'tipo_resposta'>): TipoResposta {
+  const validos: TipoResposta[] = ['FUNDAMENTADA', 'CONSULTA', 'RECUSA', 'FORA_DA_AREA', 'INSUFICIENTE', 'INDISPONIVEL'];
+  if (r.tipo_resposta && validos.includes(r.tipo_resposta)) return r.tipo_resposta;
+  const origem = origemDaResposta(r);
+  if (origem === 'INDISPONIVEL') return 'INDISPONIVEL';
+  if (origem === 'FORA_DA_AREA') return 'FORA_DA_AREA';
+  if (origem === 'TEMPO_REAL' || origem === 'CADASTRO' || origem === 'BOLETIM') return 'CONSULTA';
+  if (r.nao_consta) return 'RECUSA';
+  return r.fontes?.length && (r.confianca === 'alta' || r.confianca === 'media') ? 'FUNDAMENTADA' : 'INSUFICIENTE';
 }
 
 export type StatusLinha = 'CRITICA' | 'ATENCAO' | 'OK' | 'SEM_DADOS';

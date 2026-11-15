@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../core/api.service';
-import { ErroApi, OrigemResposta, RespostaChat, origemDaResposta } from '../../core/models';
+import { ErroApi, OrigemResposta, RespostaChat, TipoResposta, origemDaResposta, tipoDaResposta } from '../../core/models';
 import { PreferencesService } from '../../core/preferences.service';
 import { ErroVoz, SpeechService } from '../../core/speech.service';
 import { StatusService } from '../../core/status.service';
@@ -15,14 +15,27 @@ export type { Mensagem } from '../../core/conversa.service';
 
 export const LIMITE = 500;
 
-export function confiancaEmPalavras(c: RespostaChat['confianca']): string {
-  switch (c) {
-    case 'alta':
-      return 'Confiança alta: a resposta está nas fontes consultadas.';
-    case 'media':
-      return 'Confiança média: vale confirmar com a SPTrans ou a prefeitura.';
+/** Frase sob a resposta. Depende do tipo, não só da confiança: uma recusa nunca aparece como "confiança alta". */
+export function situacaoEmPalavras(r: RespostaChat): string {
+  switch (tipoDaResposta(r)) {
+    case 'FUNDAMENTADA':
+      return r.confianca === 'alta'
+        ? 'Resposta baseada nas fontes oficiais citadas abaixo.'
+        : 'Resposta baseada em parte nas fontes citadas: vale confirmar com a SPTrans ou a prefeitura.';
+    case 'CONSULTA':
+      return origemDaResposta(r) === 'BOLETIM'
+        ? 'Consulta direta ao boletim do robô: confira a data e a cobertura antes de decidir.'
+        : origemDaResposta(r) === 'CADASTRO'
+          ? 'Consulta direta ao cadastro oficial da SPTrans, sem inteligência artificial.'
+          : 'Consulta direta à previsão da SPTrans, sem inteligência artificial. Previsão não é chegada confirmada.';
+    case 'RECUSA':
+      return 'Não encontrei isso nas fontes oficiais: confirme antes de decidir.';
+    case 'FORA_DA_AREA':
+      return 'Fora da área atendida: o Ponto Falante só tem informações de São Paulo.';
+    case 'INDISPONIVEL':
+      return 'Assistente indisponível agora.';
     default:
-      return 'Confiança baixa: confirme antes de decidir.';
+      return 'Informação insuficiente nas fontes: confirme antes de decidir.';
   }
 }
 
@@ -139,20 +152,27 @@ export function respostaSimulada(r: RespostaChat, sptransDemo: boolean): boolean
                           }
                         } @else if (origem(r) === 'BOLETIM') {
                           <pf-origem [tipo]="r.natureza_dados === 'SIMULADO' ? 'simulado' : r.natureza_dados === 'ESTIMADO' ? 'estimado' : 'indisponivel'" />
+                        } @else if (origem(r) === 'FORA_DA_AREA') {
+                          <pf-origem tipo="indisponivel" rotulo="Fora da área atendida" semDescricao />
                         } @else {
                           <pf-origem tipo="base-oficial" />
                         }
                       </div>
                       <p class="fala__texto">{{ r.resposta }}</p>
 
-                      @if (r.nao_consta) {
+                      @if (tipo(r) === 'FORA_DA_AREA') {
+                        <div class="nao-consta">
+                          <p class="nao-consta__titulo"><pf-icone nome="info" /> Fora da área atendida</p>
+                          <p>O Ponto Falante cobre só o ônibus municipal de São Paulo. Procure o órgão de transporte da cidade citada.</p>
+                        </div>
+                      } @else if (tipo(r) === 'RECUSA') {
                         <div class="nao-consta">
                           <p class="nao-consta__titulo"><pf-icone nome="info" /> Não consta nas fontes oficiais consultadas</p>
                           <p>Confirme pela Central 156 da Prefeitura ou no site da SPTrans antes de decidir.</p>
                         </div>
                       }
 
-                      <p class="confianca confianca--{{ r.confianca }}">
+                      <p class="confianca confianca--{{ classeSituacao(r) }}" [attr.data-tipo]="tipo(r)">
                         <span class="confianca__barras" aria-hidden="true"><i></i><i></i><i></i></span>
                         <span>{{ confianca(r) }}</span>
                       </p>
@@ -324,8 +344,20 @@ export class Assistente {
     return respostaSimulada(r, this.status.demo());
   }
 
+  protected tipo(r: RespostaChat): TipoResposta {
+    return tipoDaResposta(r);
+  }
+
+  /** Barras: três só para resposta fundamentada com confiança alta ou consulta direta; uma para recusa/insuficiente. */
+  protected classeSituacao(r: RespostaChat): 'alta' | 'media' | 'baixa' {
+    const t = tipoDaResposta(r);
+    if (t === 'CONSULTA') return origemDaResposta(r) === 'BOLETIM' ? 'media' : 'alta';
+    if (t === 'FUNDAMENTADA') return r.confianca === 'alta' ? 'alta' : 'media';
+    return 'baixa';
+  }
+
   protected confianca(r: RespostaChat): string {
-    return confiancaEmPalavras(r.confianca);
+    return situacaoEmPalavras(r);
   }
 
   protected segundos(ms: number): string {

@@ -80,6 +80,22 @@ Execuções reais de 13/11/2026:
 - Boletim do dia 12/11 publicado como **INDISPONÍVEL**: a coleta ainda não existia nesse dia, e o robô não inventou números.
 - Boletim do dia 13/11 (execução de 14/11): 17 consultas válidas, 24 linhas avaliadas, 6 em **ATENÇÃO** e 18 dentro dos limites, com aviso de "amostragem parcial" (17 de 48 janelas). O agendador gratuito do GitHub atrasa e pula execuções, e o boletim informa a cobertura real.
 - Execução local contra a SPTrans real: 6 amostras e boletim ESTIMADO com aviso de "amostragem parcial" (`logs/rpa_2026-11-13.log`).
+- Boletim do dia 14/11 (execução de 15/11): 11 consultas válidas de 48 (22,9%), também publicado com o aviso de amostragem parcial.
+
+**Investigação da cobertura (15/11/2026).** O cron previa 8 coletas por dia, mas o histórico do GitHub Actions mostra
+só 3 execuções para o dia 13 (09h54, 16h31 e 21h51 em São Paulo; a primeira foi disparada à mão) e 2 para o dia 14
+(13h30 e 19h15). O agendador gratuito descartou as demais, e o `rpa-diario` das 06h chegou a rodar com até 8 h de
+atraso. Cada coleta que rodou consultou os 6 pontos. Das 18 consultas do dia 13, 17 foram válidas: às 21h52 a SPTrans
+não tinha previsão para o ponto 630015011 (resposta 404 "sem previsão"), e um HTTP 503 às 16h33 foi recuperado na
+segunda tentativa. No dia 14, a consulta das 19h15 ao ponto 340015324 também voltou "sem previsão". Os logs das
+execuções (artefatos `rpa-coleta-*`) não mostram falha de persistência nem de publicação. A causa da cobertura baixa
+é o agendamento.
+
+Correções: a coleta passou para o minuto 17 de cada horário, longe da virada da hora em que o GitHub mais descarta
+execuções. O script `scripts/genai/garantir-rpa.ps1`, iniciado junto com a GenAI no PC do projeto, confere a última
+execução a cada 15 minutos. Ele dispara o mesmo workflow pelo `gh workflow run` quando a coleta passa de 125 minutos
+sem rodar, entre 07h e 21h, ou quando o boletim do dia ainda não rodou depois das 07h. O script não coleta dados e
+não usa os segredos do RPA. O boletim continua informando a cobertura real e nunca completa as lacunas.
 
 ## 7. Tratamento de exceções e recuperação
 

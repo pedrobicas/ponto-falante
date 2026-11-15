@@ -37,7 +37,8 @@ blockquote{border-left:3px solid #adbeb4;padding-left:10pt;margin:8pt 0;color:#5
 img{display:block;max-width:100%;max-height:215mm;object-fit:contain;margin:10pt auto;break-inside:avoid}
 img[src*="boletim_producao"]{max-height:170mm}
 .diagram{break-inside:avoid;margin:8pt 0}.diagram svg{width:100%;height:auto;max-height:205mm}
-.appendix{break-before:page}.appendix img{width:100%;max-height:none}
+@page paisagem{size:A4 landscape;margin:12mm 14mm 14mm}
+.appendix{page:paisagem;break-before:page}.appendix img{width:auto;max-width:100%;max-height:150mm;margin:6pt auto}
 .caption{font-size:8.5pt;color:#52685f}
 """
 
@@ -78,23 +79,29 @@ def diagrams() -> list[str]:
 
 def appendix() -> str:
     # Detalhes ampliados do BPMN original; nenhuma alteração do fluxo.
+    # Cada recorte começa e termina num espaço vazio entre tarefas (nenhuma caixa, losango ou rótulo é cortado) e vai
+    # numa página em paisagem. As setas que atravessam o corte continuam no recorte seguinte, indicado na legenda.
     original = Image.open(ROOT / 'rpa/docs/fluxo.png')
-    parts = ['<section class="appendix"><h2>Anexo - BPMN ampliado</h2>',
-             '<p class="caption">Recortes com sobreposição do diagrama original. A visão completa está na seção 4; fluxo.bpmn conserva o modelo editável.</p>']
     panels = [
-        ('Coletor: consulta, seleção da fonte e montagem das amostras', (60, 0, 1360, 510)),
-        ('Coletor: publicação, auditoria e recuperação', (1250, 0, 2550, 510)),
-        ('Boletim: leitura, validação e recuperação da indisponibilidade', (70, 570, 1370, 1360)),
-        ('Boletim: classificação e natureza dos dados', (1090, 570, 2390, 1360)),
-        ('Boletim: publicação e auditoria', (2220, 570, 3520, 1360)),
+        ('A1 · Coletor: pontos do YAML, consulta à SPTrans e decisão sobre a fonte', (0, 0, 1330, 500),
+         'Continua em A2 pelas setas que entram em "POST /rpa/amostras".'),
+        ('A2 · Coletor: envio ao MVP, auditoria e reenvio de lotes pendentes', (1310, 0, 2520, 500),
+         'Vem de A1: amostra guardada ou descartada com motivo.'),
+        ('B1 · Boletim: leitura do dia anterior, validação e recuperação da indisponibilidade', (0, 550, 1195, 1390),
+         'Continua em B2 pelas saídas da decisão "Há amostra real válida?"; "Republicar último boletim" segue até a publicação em B3.'),
+        ('B2 · Boletim: classificação estimada, histórico simulado ou boletim indisponível', (1043, 550, 1940, 1390),
+         'Vem de B1; as três saídas convergem em "Gerar boletim", em B3.'),
+        ('B3 · Boletim: geração, publicação no MVP, auditoria e falha de publicação', (1920, 550, 3480, 1390),
+         'Vem de B2 e da republicação em B1.'),
     ]
-    for i, (title, box) in enumerate(panels):
-        if i in (2, 4):
-            parts.append('</section><section class="appendix">')
+    parts = []
+    for i, (title, box, cont) in enumerate(panels):
         path = WORK / f'bpmn-detalhe-{i+1}.png'
         original.crop(box).save(path)
-        parts.append(f'<h3>{title}</h3><img src="{path.as_uri()}" alt="{title}">')
-    parts.append('</section>')
+        head = ('<h2>Anexo - BPMN ampliado</h2><p class="caption">Recortes do diagrama original da seção 4, em páginas '
+                'em paisagem; fluxo.bpmn conserva o modelo editável.</p>') if i == 0 else ''
+        parts.append(f'<section class="appendix">{head}<h3>{title}</h3>'
+                     f'<img src="{path.as_uri()}" alt="{title}"><p class="caption">{cont}</p></section>')
     return ''.join(parts)
 
 
