@@ -52,6 +52,17 @@ class ConversaTransporteTest {
         assertThat(consultas).isZero();
     }
 
+    @ParameterizedTest @ValueSource(strings={"Qual a cor do ônibus do papa?", "Qual o ônibus mais bonito do mundo?"})
+    void perguntaSobreOnibusSemConsultaSegueParaAGenai(String pergunta) {
+        assertThat(a.responder(pergunta)).isEmpty();
+        assertThat(consultas).isZero();
+    }
+
+    @Test void linhasDoPontoContinuamNoCadastro() {
+        var r = a.responder("Quais ônibus passam no ponto 70016916?").orElseThrow();
+        assertThat(r.origem()).isEqualTo("CADASTRO");
+    }
+
     @Test void novoPontoPorNomeNoSeguimentoNaoReutilizaPontoAnterior() {
         var c = new Chat.Contexto(70016916L, null, null, null, null);
         var r = a.responder("E no ponto da Paulista?", c).orElseThrow();
