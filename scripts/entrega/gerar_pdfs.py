@@ -28,9 +28,10 @@ h3{font-size:11.5pt;margin:12pt 0 6pt}h1,h2,h3{break-after:avoid}h2+p{break-afte
 p{margin:6pt 0;orphans:3;widows:3}a{color:#165d77;overflow-wrap:anywhere}
 table{border-collapse:collapse;width:100%;font-size:8.5pt;line-height:1.35;margin:9pt 0;break-inside:avoid}
 th,td{border:1px solid #c3cfc9;padding:4pt;text-align:left;vertical-align:top;overflow-wrap:normal}
-th{hyphens:auto;overflow-wrap:anywhere}.number{white-space:nowrap}.metrics{table-layout:fixed}.metrics th:first-child{width:17%}
+th{overflow-wrap:normal}.metrics th{hyphens:auto;overflow-wrap:anywhere}.number{white-space:nowrap}.metrics{table-layout:fixed}.metrics th:first-child{width:17%}
 th{background:#e7efea}tr{break-inside:avoid}thead{display:table-header-group}
 code{font:8.5pt Consolas,monospace;overflow-wrap:anywhere}
+p:has(+pre),p:has(+table),ul:has(+table),p:has(+ul){break-after:avoid}
 pre{background:#eff3f0;padding:9pt;white-space:pre-wrap;word-break:break-word;break-inside:avoid}
 li{margin:3pt 0;break-inside:avoid}ul,ol{padding-left:18pt}
 blockquote{border-left:3px solid #adbeb4;padding-left:10pt;margin:8pt 0;color:#50655d}
@@ -152,6 +153,9 @@ def main() -> None:
         print(f'{name}: {len(pdf.pages)} páginas, {target.stat().st_size} bytes', flush=True)
         if name == 'RPA':
             shutil.copy2(target, ROOT/'rpa/docs/relatorio.pdf')
+    # Hashes, páginas, links e placeholders sempre conferidos sobre os PDFs recém-gerados.
+    from validar_documentos import main as validar
+    validar()
 
 
 if __name__ == '__main__':

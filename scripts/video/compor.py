@@ -31,6 +31,7 @@ SELOS = {
     "simulado": ("SIMULADO", "ambiente local de teste", (176, 104, 0)),
     "oficial": ("DADOS OFICIAIS", "cadastro GTFS da SPTrans", (22, 120, 72)),
     "genai": ("BASE OFICIAL", "RAG com citações · Ollama local", (88, 64, 160)),
+    "fora": ("FORA DA ÁREA", "regra do backend · sem GenAI", (70, 74, 84)),
     "codigo": ("REPOSITÓRIO", "arquivos reais do projeto", (70, 74, 84)),
     "avaliacao": ("AVALIAÇÃO", "resultados já registrados", (70, 74, 84)),
 }
@@ -184,6 +185,14 @@ def main() -> None:
     total = tempo + edl.get("cauda", 0.8)
     saida = Path(sys.argv[3])
     saida.parent.mkdir(parents=True, exist_ok=True)
+    # Linha do tempo dos planos (base do roteiro de narração): início/fim no vídeo final, capítulo e aceleração.
+    linha = [{"inicio": round(max(0.0, q["_inicio"]), 2), "fim": round(q["_inicio"] + q["_dur"], 2),
+              "capitulo": q.get("capitulo"), "vel": q.get("vel", 1), "nota": q.get("nota")} for q in planos]
+    saida.with_suffix(".linha_do_tempo.json").write_text(
+        json.dumps({"total": round(total, 2), "planos": linha}, ensure_ascii=False, indent=1), encoding="utf-8")
+    if "--so-linha" in sys.argv[4:]:
+        print(f"linha do tempo: {saida.with_suffix('.linha_do_tempo.json')} ({total:.1f} s)")
+        return
     proc = subprocess.Popen([FFMPEG, "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(fps),  # nosemgrep -- lista de argumentos sem shell; FFMPEG é o executável escolhido pelo próprio operador
                              "-i", "-", "-an", "-c:v", "libx264", "-preset", "slow", "-crf", "16", "-profile:v", "high",
                              "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(saida)], stdin=subprocess.PIPE)

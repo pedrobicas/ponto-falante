@@ -6,7 +6,7 @@ Não houve nova execução nem leitura dos conjuntos finais fechados de avaliaç
 
 **Fechamento dos arquivos de GenAI e RPA (vídeos regravados em 14/11, montados e revisados em 15/11):** vídeos, roteiros e relatórios concluídos
 para revisão e narração. Índice local: [`entregaveis/LEIA_ME.md`](../entregaveis/LEIA_ME.md).
-RPA: 132 s; GenAI: 147 s; H.264, 1920 x 1080, 30 fps, sem áudio; ambos decodificados integralmente. Versões anteriores em `entregaveis/versao_anterior_20261114/`.
+RPA: 132 s; GenAI: 142 s (conversa regravada em 15/11); H.264, 1920 x 1080, 30 fps, sem áudio; ambos decodificados integralmente. Versões anteriores em `entregaveis/versao_anterior_20261114/`.
 Restam narração/revisão do dono, hospedagem e URLs, autorização da cópia pública sanitizada e submissão.
 Os vídeos foram regravados com captura real do site publicado e dos comandos; nenhuma avaliação fechada foi reexecutada.
 
@@ -35,7 +35,7 @@ Base oficial: pp. 29-31. O relatório não precisa ser PDF; precisa estar no Git
 | Recall@1/@3, limiar, JSON, citações, recusa e comparação entre configurações | Relatório, seções 6-7 e iterações documentadas | Usar os resultados já salvos e identificar o ciclo mostrado |
 | Cinco erros reais, causas e correções; conclusão | Relatório, seções 8-9; análises posteriores separadas | Nenhuma nova avaliação necessária |
 | Notebooks com saídas, API e reprodução | Quatro notebooks com saídas salvas, API e [README GenAI](../genai/README.md) | Abertura pública e, se possível, reprodução em outra máquina |
-| Link do vídeo no relatório | MP4 silencioso de 147 s e [roteiro final](../entregaveis/ROTEIRO_GENAI.md) validados | Narrar, hospedar e inserir a URL em `genai/RELATORIO.md` e `genai/README.md` |
+| Link do vídeo no relatório | MP4 silencioso de 142 s e [roteiro final](../entregaveis/ROTEIRO_GENAI.md) validados | Narrar, hospedar e inserir a URL em `genai/RELATORIO.md` e `genai/README.md` |
 | Repositório público | Código local e remoto privado preservados | Publicar cópia sanitizada e atualizar os links |
 
 O PDF oficial exige vídeo, mas **não fixa duração para GenAI** nessas páginas. Os três minutos do roteiro são uma
@@ -87,7 +87,7 @@ evidências específicas exigidas abaixo.
 2. **Narração:** revisar e narrar os dois MP4 concluídos, seguindo os tempos dos roteiros. As capturas existentes
    já mostram exemplos públicos, o RPA em ambiente local identificado e a integração em produção.
 3. **Links e PDF:** inserir os dois vídeos, regenerar/revisar o PDF RPA e testar todos os links em janela anônima.
-   A GenAI ficou em 2min27s, sem limite expresso nessas páginas; RPA ficou em 2min12s (limite de 3 minutos).
+   A GenAI ficou em 2min22s, sem limite expresso nessas páginas; RPA ficou em 2min12s (limite de 3 minutos).
 4. **Equipe:** obter os links/artefatos das outras cinco disciplinas e resolver as lacunas da tabela; não tratar o
    endpoint de integração como prova de que o componente inteiro está concluído.
 5. **Envio:** um integrante envia o material de cada disciplina, com os nomes/RMs exigidos, e conserva o comprovante.

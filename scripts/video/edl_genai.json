@@ -173,27 +173,18 @@
   {
    "cena": "genai_chat",
    "de": "enviada_recusa-3.8",
-   "ate": "enviada_recusa+1.0",
-   "capitulo": "Fora da base · recusa honesta",
-   "selo": "genai",
-   "nota": "pergunta sobre outra cidade"
-  },
-  {
-   "cena": "genai_chat",
-   "de": "enviada_recusa+1.0",
    "ate": "resposta_recusa-0.2",
-   "vel": 3,
-   "transicao": 0,
-   "capitulo": "Fora da base · recusa honesta",
-   "selo": "genai"
+   "capitulo": "Fora da área · outra cidade",
+   "selo": "fora",
+   "nota": "pergunta sobre outra cidade"
   },
   {
    "cena": "genai_chat",
    "de": "resposta_recusa-0.2",
    "ate": "resposta_recusa+6.0",
    "transicao": 0,
-   "capitulo": "Fora da base · recusa honesta",
-   "selo": "genai",
+   "capitulo": "Fora da área · outra cidade",
+   "selo": "fora",
    "zoom": [
     [
      0,
@@ -220,7 +211,7 @@
      1320
     ]
    ],
-   "nota": "não consta nas fontes: orienta a confirmar no 156"
+   "nota": "fora da área atendida: indica o órgão de transporte da cidade citada, sem inventar contato"
   },
   {
    "cena": "genai_chat",

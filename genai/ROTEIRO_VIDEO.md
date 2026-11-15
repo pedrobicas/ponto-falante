@@ -1,6 +1,6 @@
 # Demonstração GenAI
 
-**Montagem final (versão 2, gravada em 14/11/2026):** [MP4 de 2min27s, 1920 x 1080, sem áudio](../entregaveis/Ponto_Falante_GenAI.mp4).
+**Montagem final (versão 3: conversa regravada em 15/11/2026):** [MP4 de 2min22s, 1920 x 1080, sem áudio](../entregaveis/Ponto_Falante_GenAI.mp4).
 O [roteiro curto com os tempos definitivos](../entregaveis/ROTEIRO_GENAI.md) acompanha a edição.
 Veja as [evidências de captura e limitações](../docs/evidencias/video_genai_20261115.md).
 O planejamento abaixo fica preservado como referência; os tempos definitivos são os do roteiro de narração.
