@@ -23,6 +23,8 @@ tags:
   - name: transporte
   - name: assistente
   - name: rpa
+  - name: embarque
+    description: Embarque assistido (favoritos, acompanhamento com avisos por voz e conferência do letreiro)
   - name: integracoes
   - name: sistema
 
@@ -309,6 +311,130 @@ paths:
           description: ok
 
   # ---------- Contratos para as outras disciplinas ----------
+  /api/embarque/favoritos:
+    get:
+      tags: [embarque]
+      summary: Trajetos favoritos do aparelho (ponto + linha + sentido + apelido)
+      parameters: [{$ref: '#/components/parameters/Dispositivo'}]
+      responses:
+        "200":
+          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/TrajetoFavorito'}}}}
+          description: ok
+    post:
+      tags: [embarque]
+      summary: Salva um trajeto (idempotente; o mesmo trajeto só atualiza o apelido). Máximo de 30 por aparelho.
+      parameters: [{$ref: '#/components/parameters/Dispositivo'}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/NovoTrajeto'}}}
+      responses:
+        "200":
+          content: {application/json: {schema: {$ref: '#/components/schemas/TrajetoFavorito'}}}
+          description: salvo
+        "400": {description: "DADOS_INVALIDOS ou DISPOSITIVO_INVALIDO"}
+        "409": {description: LIMITE_FAVORITOS}
+        "429": {description: MUITAS_ACOES}
+  /api/embarque/favoritos/{id}:
+    patch:
+      tags: [embarque]
+      summary: Renomeia o trajeto (apelido de até 40 caracteres; marcação HTML é removida)
+      parameters: [{$ref: '#/components/parameters/Dispositivo'}, {name: id, in: path, required: true, schema: {type: integer, format: int64}}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {type: object, properties: {apelido: {type: string, maxLength: 40, nullable: true}}}}}
+      responses:
+        "200": {content: {application/json: {schema: {$ref: '#/components/schemas/TrajetoFavorito'}}}, description: ok}
+        "404": {description: Não é um trajeto deste aparelho}
+    delete:
+      tags: [embarque]
+      summary: Remove o trajeto
+      parameters: [{$ref: '#/components/parameters/Dispositivo'}, {name: id, in: path, required: true, schema: {type: integer, format: int64}}]
+      responses:
+        "204": {description: removido}
+        "404": {description: Não é um trajeto deste aparelho}
+  /api/embarque/sessoes:
+    post:
+      tags: [embarque]
+      summary: Começa a acompanhar até 3 linhas em um ponto (encerra como SUBSTITUIDA o acompanhamento anterior do aparelho)
+      parameters: [{$ref: '#/components/parameters/Dispositivo'}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/NovaSessao'}}}
+      responses:
+        "200": {content: {application/json: {schema: {$ref: '#/components/schemas/SessaoEmbarque'}}}, description: iniciada}
+        "422": {description: "LINHA_NAO_PARA_NO_PONTO: o cadastro oficial (GTFS) mostra que a linha não para neste ponto"}
+  /api/embarque/sessoes/atual:
+    get:
+      tags: [embarque]
+      summary: Acompanhamento em andamento do aparelho (para retomar depois de recarregar a página)
+      parameters: [{$ref: '#/components/parameters/Dispositivo'}]
+      responses:
+        "200": {content: {application/json: {schema: {$ref: '#/components/schemas/SessaoEmbarque'}}}, description: ok}
+        "204": {description: Nenhum acompanhamento aberto}
+  /api/embarque/sessoes/{id}/situacao:
+    get:
+      tags: [embarque]
+      summary: Previsões da SPTrans filtradas pelas linhas e sentidos escolhidos (o app consulta a cada 20 s)
+      parameters: [{$ref: '#/components/parameters/Dispositivo'}, {name: id, in: path, required: true, schema: {type: string, format: uuid}}]
+      responses:
+        "200": {content: {application/json: {schema: {$ref: '#/components/schemas/SituacaoEmbarque'}}}, description: ok}
+        "409": {description: "ACOMPANHAMENTO_ENCERRADO (encerrado ou expirado após 3 h)"}
+        "503": {description: SPTrans indisponível; a falha é contada e o app avisa depois de 2 seguidas}
+  /api/embarque/sessoes/{id}/encerrar:
+    post:
+      tags: [embarque]
+      summary: Encerra o acompanhamento com o desfecho informado pela pessoa
+      parameters: [{$ref: '#/components/parameters/Dispositivo'}, {name: id, in: path, required: true, schema: {type: string, format: uuid}}]
+      requestBody:
+        required: true
+        content: {application/json: {schema: {type: object, required: [desfecho], properties: {desfecho: {type: string, enum: [EMBARQUEI, DESISTI]}}}}}
+      responses:
+        "200": {content: {application/json: {schema: {$ref: '#/components/schemas/SessaoEmbarque'}}}, description: encerrado}
+  /api/embarque/dados:
+    delete:
+      tags: [embarque]
+      summary: Apaga favoritos, acompanhamentos e conferências deste aparelho
+      parameters: [{$ref: '#/components/parameters/Dispositivo'}]
+      responses:
+        "204": {description: apagado}
+  /api/embarque/indicadores:
+    get:
+      tags: [embarque]
+      summary: Indicadores de impacto dos últimos 30 dias (somente acompanhamentos com dados reais)
+      responses:
+        "200": {content: {application/json: {schema: {$ref: '#/components/schemas/IndicadoresEmbarque'}}}, description: ok}
+  /api/embarque/visao:
+    get:
+      tags: [embarque]
+      summary: Diz se a conferência do letreiro pela câmera está conectada a um modelo
+      responses:
+        "200":
+          content: {application/json: {schema: {type: object, properties: {conectada: {type: boolean}, mensagem: {type: string}}}}}
+          description: ok
+  /api/embarque/visao/conferir:
+    post:
+      tags: [embarque]
+      summary: Confere a foto do letreiro com a linha esperada (ver openapi-visao-letreiro.yaml)
+      parameters: [{$ref: '#/components/parameters/Dispositivo'}]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [imagem, linha_esperada]
+              properties:
+                imagem: {type: string, format: binary, description: JPEG ou PNG até 2 MB; não é gravada}
+                linha_esperada: {type: string, example: 875A-10}
+                sessao: {type: string, format: uuid, nullable: true}
+      responses:
+        "200": {content: {application/json: {schema: {$ref: '#/components/schemas/ConferenciaLetreiro'}}}, description: ok}
+        "413": {description: ARQUIVO_GRANDE}
+        "415": {description: IMAGEM_INVALIDA}
+        "429": {description: MUITAS_ACOES}
+        "502": {description: VISAO_RESPOSTA_INVALIDA (o modelo respondeu fora do contrato)}
+        "503": {description: "VISAO_NAO_CONECTADA ou VISAO_INDISPONIVEL"}
+
   /api/integracoes/visao/deteccoes:
     post:
       tags: [integracoes]
@@ -406,6 +532,7 @@ components:
         ultimo_boletim: {type: string, format: date, nullable: true}
         horario_servidor: {type: string, format: date-time}
         assistente_tempo_real: {type: boolean, description: "true = o assistente responde horários/linhas pelo backend mesmo com a GenAI fora"}
+        visao: {type: string, enum: [CONECTADA, NAO_CONECTADA], description: "Conferência do letreiro pela câmera (PF_VISAO_URL configurado)"}
 
     Ponto:
       type: object
@@ -684,3 +811,87 @@ components:
         tipo: {type: string, enum: [BOTAO_PRESSIONADO, HEARTBEAT]}
         ocorrido_em: {type: string, format: date-time}
         bateria_pct: {type: integer, minimum: 0, maximum: 100, nullable: true}
+
+    LinhaEscolhida:
+      type: object
+      required: [letreiro]
+      properties:
+        letreiro: {type: string, pattern: '^[0-9A-Za-z]{2,6}(-[0-9]{1,2})?$', example: 8000-10}
+        sentido: {type: integer, enum: [1, 2], nullable: true, description: "1 ou 2 (SPTrans); null = qualquer sentido"}
+        destino: {type: string, nullable: true}
+    NovoTrajeto:
+      type: object
+      required: [ponto, ponto_nome, linha]
+      properties:
+        ponto: {type: integer, format: int64}
+        ponto_nome: {type: string, maxLength: 120}
+        linha: {type: string, example: 8000-10}
+        sentido: {type: integer, enum: [1, 2], nullable: true}
+        destino: {type: string, nullable: true}
+        apelido: {type: string, maxLength: 40, nullable: true, example: Trabalho}
+        modo: {type: string, enum: [auto, demo]}
+    TrajetoFavorito:
+      allOf:
+        - $ref: '#/components/schemas/NovoTrajeto'
+        - type: object
+          properties:
+            id: {type: integer, format: int64}
+            simulado: {type: boolean}
+            criado_em: {type: string, format: date-time}
+    NovaSessao:
+      type: object
+      required: [ponto, linhas]
+      properties:
+        ponto: {type: integer, format: int64}
+        ponto_nome: {type: string, maxLength: 120}
+        linhas: {type: array, minItems: 1, maxItems: 3, items: {$ref: '#/components/schemas/LinhaEscolhida'}}
+        modo: {type: string, enum: [auto, demo]}
+    SessaoEmbarque:
+      type: object
+      properties:
+        id: {type: string, format: uuid}
+        ponto: {type: integer, format: int64}
+        ponto_nome: {type: string}
+        linhas: {type: array, items: {$ref: '#/components/schemas/LinhaEscolhida'}}
+        simulado: {type: boolean}
+        iniciada_em: {type: string, format: date-time}
+        encerrada_em: {type: string, format: date-time, nullable: true}
+        desfecho: {type: string, enum: [EMBARQUEI, DESISTI, SUBSTITUIDA, EXPIRADA], nullable: true}
+    SituacaoEmbarque:
+      type: object
+      properties:
+        sessao: {$ref: '#/components/schemas/SessaoEmbarque'}
+        fonte: {type: string, enum: [OLHO_VIVO, SIMULADO]}
+        consultado_em: {type: string, format: date-time}
+        horario_referencia: {type: string, format: date-time}
+        onibus: {type: array, description: Só as linhas e sentidos escolhidos, items: {type: object}}
+        proximo: {type: object, nullable: true}
+        frase_falada: {type: string}
+        outras_linhas_previstas: {type: array, items: {type: string}, description: Outras linhas com previsão no ponto (ajuda a perceber o ponto errado)}
+    ConferenciaLetreiro:
+      type: object
+      properties:
+        resultado: {type: string, enum: [CONFERE, NUMERO_CONFERE, NAO_CONFERE, INCONCLUSIVO]}
+        linha_esperada: {type: string}
+        linha_lida: {type: string, nullable: true}
+        confianca: {type: number, nullable: true}
+        frase_falada: {type: string, description: Sempre pede para confirmar com o motorista}
+        modelo: {type: string}
+        latencia_ms: {type: integer, nullable: true}
+    IndicadoresEmbarque:
+      type: object
+      properties:
+        acompanhamentos30_dias: {type: integer}
+        embarques_confirmados30_dias: {type: integer}
+        taxa_confirmacao_pct: {type: number, nullable: true}
+        espera_prevista_media_min: {type: number, nullable: true}
+        trajetos_favoritos: {type: integer}
+        observacao: {type: string}
+
+  parameters:
+    Dispositivo:
+      name: X-PF-Dispositivo
+      in: header
+      required: true
+      description: Identificador aleatório do aparelho (32 a 64 hexadecimais). O servidor guarda apenas um hash.
+      schema: {type: string, pattern: '^[a-f0-9]{32,64}$'}

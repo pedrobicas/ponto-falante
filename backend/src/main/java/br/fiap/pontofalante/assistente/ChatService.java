@@ -136,7 +136,8 @@ public class ChatService {
         if (direta.isPresent()) {
             RespostaChat r = direta.get();
             return new RespostaChat(r.resposta(), r.fontes(), r.confianca(), r.naoConsta(), r.disponivel(),
-                    (int) ((System.nanoTime() - inicioTempoReal) / 1_000_000), r.origem(), r.contexto(), r.acoes());
+                    (int) ((System.nanoTime() - inicioTempoReal) / 1_000_000), r.origem(), r.contexto(),
+                    comAcompanhamento(r.origem(), r.contexto(), r.acoes()));
         }
         Chat.Contexto memoria = contextoRegra(pergunta, contexto);
         String consulta = pergunta;
@@ -182,6 +183,21 @@ public class ChatService {
             abrirCircuito(geracaoDaChamada);
             return indisponivel().comContexto(memoria, List.of());
         }
+    }
+
+    /**
+     * Depois de uma previsão em tempo real com ponto e linha conhecidos, oferece levar a conversa ao Embarque
+     * Assistido, que continua acompanhando e avisa por voz. Só monta o link; nada é iniciado sem a pessoa tocar.
+     */
+    static List<Chat.Acao> comAcompanhamento(String origem, Chat.Contexto c, List<Chat.Acao> acoes) {
+        List<Chat.Acao> lista = new ArrayList<>(acoes == null ? List.of() : acoes);
+        if (!"TEMPO_REAL".equals(origem) || c == null || c.ponto() == null || c.linha() == null
+                || lista.stream().anyMatch(a -> a.rota() != null && a.rota().startsWith("/embarque"))) {
+            return lista;
+        }
+        String rota = "/embarque?ponto=" + c.ponto() + "&linha=" + c.linha() + (c.sentido() == null ? "" : "&sentido=" + c.sentido());
+        lista.add(0, new Chat.Acao("Acompanhar e avisar por voz", null, rota));
+        return lista;
     }
 
     static RespostaChat converter(JsonNode r, long msTotal) {

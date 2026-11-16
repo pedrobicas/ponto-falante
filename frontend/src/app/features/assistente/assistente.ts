@@ -451,7 +451,7 @@ export class Assistente {
   }
 
   protected fonteSegura(url?: string | null): boolean { return !!url && /^https:\/\/[a-z0-9.-]+\//i.test(url); }
-  protected rotaSegura(rota?: string | null): boolean { return !!rota && /^\/(ponto\/\d+|linha\/[\w-]+)(\?sentido=[12])?$|^\/busca\?perto=1$|^\/boletim$/.test(rota); }
+  protected rotaSegura(rota?: string | null): boolean { return !!rota && /^\/(ponto\/\d+|linha\/[\w-]+)(\?sentido=[12])?$|^\/busca\?perto=1$|^\/boletim$|^\/embarque\?ponto=\d{1,12}&linha=[0-9A-Za-z]{2,6}(-[0-9]{1,2})?(&sentido=[12])?$/.test(rota); }
   protected parametros(rota: string): Record<string, string> { return Object.fromEntries(new URLSearchParams(rota.split('?')[1])); }
 
   private async perguntar(pergunta: string, contexto = this.conversa.contexto()): Promise<void> {

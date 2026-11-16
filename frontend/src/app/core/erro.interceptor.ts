@@ -14,8 +14,14 @@ export function mensagemParaStatus(status: number, corpo?: unknown): string {
       return doServidor ?? 'O pedido não está correto. Confira o que você digitou.';
     case 404:
       return doServidor ?? 'Não encontramos o que você procurou.';
+    case 409:
+    case 413:
+    case 415:
+    case 422:
+    case 502:
+      return doServidor ?? 'Não foi possível concluir esta ação. Tente de novo.';
     case 429:
-      return 'Muitas tentativas seguidas. Espere um minuto e tente de novo.';
+      return doServidor ?? 'Muitas tentativas seguidas. Espere um minuto e tente de novo.';
     case 503:
       return doServidor ?? 'O serviço da SPTrans não está respondendo agora.';
     default:

@@ -31,6 +31,22 @@ public class TratadorDeErros {
         return resposta(e.getStatus(), e.getCodigo(), e.getMessage());
     }
 
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    ResponseEntity<Erro> arquivoGrande(Exception e) {
+        return resposta(HttpStatus.PAYLOAD_TOO_LARGE, "ARQUIVO_GRANDE", "A foto é grande demais. Envie uma imagem de até 2 MB.");
+    }
+
+    @ExceptionHandler({org.springframework.web.multipart.support.MissingServletRequestPartException.class,
+            org.springframework.web.multipart.MultipartException.class})
+    ResponseEntity<Erro> semArquivo(Exception e) {
+        return resposta(HttpStatus.BAD_REQUEST, "IMAGEM_AUSENTE", "Envie a foto do letreiro.");
+    }
+
+    @ExceptionHandler(org.springframework.web.HttpMediaTypeNotSupportedException.class)
+    ResponseEntity<Erro> tipoNaoSuportado(Exception e) {
+        return resposta(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "TIPO_NAO_SUPORTADO", "O formato enviado não é aceito aqui.");
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ResponseEntity<Erro> validacao(MethodArgumentNotValidException e) {
         String msg = e.getBindingResult().getFieldErrors().stream().findFirst()
