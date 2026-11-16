@@ -44,6 +44,8 @@ não representam impacto já medido com passageiros.
 | Previsões de ônibus | **Real**: dados da Olho Vivo (SPTrans) pelo gateway oficial da Prefeitura (apilib, OAuth2), marcados como "Dados da SPTrans" e sempre como previsão. O login direto da Olho Vivo recusa qualquer chave hoje ([diagnóstico](docs/DIAGNOSTICO_SPTRANS.md)). Sem credenciais, o sistema volta ao modo demonstração com o selo **SIMULADO**. |
 | Boletim de espera prevista (RPA) | O coletor consulta pontos públicos da SPTrans em 8 janelas diárias; o robô diário está agendado para 6h (Brasília). O boletim declara **ESTIMADO**, **SIMULADO** ou **INDISPONIVEL**, data e cobertura. GitHub Actions pode atrasar ou pular janelas; previsão não mede atraso observado. |
 | Assistente (GenAI) | Implementado e avaliado; roda no PC da equipe (Ollama + FastAPI) e só fica disponível no site quando o túnel Cloudflare estiver ligado. Sem ele, o chat avisa que está indisponível e o resto funciona. |
+| Embarque assistido | Implementado: trajetos favoritos, ponto por GPS ou busca com confirmação, acompanhamento das previsões a cada 20 s com avisos por voz que não se repetem, assistente que executa as ações (com confirmação) e funciona sem a GenAI. [Detalhes](docs/EMBARQUE_ASSISTIDO.md) |
+| Conferência do letreiro pela câmera | Interface e contrato prontos ([contrato](contratos/openapi-visao-letreiro.yaml)); fica **não conectada** até o modelo de visão ser publicado e `PF_VISAO_URL` configurado. Nenhum resultado é simulado. |
 | Integrações visão computacional, Big Data e ESP32 | Endpoints e contratos prontos, protegidos por chave ([contrato](contratos/openapi-mvp.yaml)) |
 
 Regras do produto: dado simulado nunca aparece como real; previsão nunca aparece como chegada observada.
@@ -123,11 +125,12 @@ Assistente real: [scripts/genai/README.md](scripts/genai/README.md) (Ollama + AP
 
 ```powershell
 Push-Location backend; .\mvnw.cmd -B verify; Pop-Location                 # 225 testes, PostgreSQL embutido
-Push-Location frontend; npm.cmd ci; npm.cmd test -- --watch=false; Pop-Location   # 55 testes (axe)
+Push-Location frontend; npm.cmd ci; npm.cmd test -- --watch=false; Pop-Location   # 79 testes (axe)
 Push-Location genai; ..\.venv\Scripts\python.exe -m pytest -q tests; Pop-Location # 155 testes
 Push-Location rpa; ..\.venv\Scripts\python.exe -m pytest -q; Pop-Location         # 53 testes
 .\.venv\Scripts\python.exe -m pytest -q tests/integracao                          # 26 testes
 .\.venv\Scripts\python.exe scripts/integracao/testar_mvp.py --url https://ponto-falante.onrender.com
+.\.venv\Scripts\python.exe scripts/integracao/validar_embarque.py   # E2E do embarque (Playwright, desktop e celular)
 ```
 
 ## CI/CD e segurança

@@ -30,6 +30,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/linha/linha').then((m) => m.LinhaPage),
   },
   {
+    path: 'embarque',
+    title: 'Embarque assistido' + SUFIXO,
+    loadComponent: () => import('./features/embarque/embarque').then((m) => m.EmbarquePage),
+  },
+  {
     path: 'assistente',
     title: 'Assistente' + SUFIXO,
     loadComponent: () => import('./features/assistente/assistente').then((m) => m.Assistente),

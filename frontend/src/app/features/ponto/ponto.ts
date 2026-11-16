@@ -65,6 +65,10 @@ export function fraseOnibus(o: OnibusPrevisto): string {
             >
               <pf-icone nome="estrela" /> {{ favorito() ? 'Ponto salvo' : 'Salvar ponto' }}
             </button>
+            <a class="botao botao--contorno botao--grande" routerLink="/embarque"
+               [queryParams]="{ ponto: d.ponto.codigo, linha: linhaFiltro() || null, modo: d.fonte === 'SIMULADO' ? 'demo' : null }">
+              <pf-icone nome="volume" /> Acompanhar com aviso por voz
+            </a>
           </div>
           @if (!fala.suportaSintese) {
             <p class="ajuda">Este navegador não tem voz sintetizada. A lista ao lado tem as mesmas informações.</p>

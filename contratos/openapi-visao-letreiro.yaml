@@ -1,0 +1,122 @@
+openapi: 3.0.3
+info:
+  title: Ponto Falante · Serviço de leitura de letreiro (visão computacional)
+  version: "1.0.0"
+  description: |
+    Contrato que o modelo de visão computacional da equipe precisa expor para o Embarque Assistido.
+    O backend Spring Boot é o único cliente deste serviço: o aplicativo envia a foto do letreiro para
+    `POST /api/embarque/visao/conferir`, o backend repassa a imagem para `POST /v1/letreiro` deste
+    serviço e compara o texto lido com a linha que a pessoa está esperando.
+
+    Responsabilidades separadas:
+    - Este serviço só LÊ o letreiro: devolve os textos encontrados, com confiança e posição.
+    - A decisão "é o seu ônibus / não é / não deu para ler" é do backend (classe ConferenciaLetreiro),
+      com confiança mínima de 0,6. O serviço não precisa conhecer a linha esperada.
+
+    Como conectar (sem mudar código):
+    - `PF_VISAO_URL`: endereço base do serviço, por exemplo https://visao.exemplo.com
+    - `PF_VISAO_SERVICO_CHAVE`: chave enviada no cabeçalho X-API-Key
+    Enquanto `PF_VISAO_URL` estiver vazio, `GET /api/status` informa `visao: NAO_CONECTADA` e o
+    aplicativo diz com clareza que a conferência pela câmera ainda não está disponível. Nenhum
+    resultado é simulado.
+
+    Limites aplicados pelo backend: imagem JPEG ou PNG de até 2 MB (o aplicativo reduz para no máximo
+    1280 px no maior lado); tempo de conexão de 3 s e de resposta de 8 s. Fora disso, a pessoa recebe
+    "não foi possível conferir agora; confirme com o motorista".
+
+    Privacidade: o backend não grava a imagem. Guarda apenas o resultado da conferência (linha esperada,
+    texto lido, confiança, resultado e nome do modelo). O serviço de visão também não deve guardar as
+    imagens recebidas além do tempo da requisição.
+
+    Relação com `/api/integracoes/visao/deteccoes` (openapi-mvp.yaml): aquele endpoint recebe detecções
+    enviadas por câmeras fixas (push). Este contrato é a consulta síncrona a partir da câmera do celular.
+    Os dois podem usar o mesmo modelo.
+servers:
+  - url: "{PF_VISAO_URL}"
+    variables:
+      PF_VISAO_URL:
+        default: http://localhost:8090
+
+paths:
+  /v1/letreiro:
+    post:
+      summary: Lê o letreiro de ônibus presente na imagem
+      operationId: lerLetreiro
+      parameters:
+        - name: X-API-Key
+          in: header
+          required: true
+          description: Valor de PF_VISAO_SERVICO_CHAVE configurado no backend.
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [imagem]
+              properties:
+                imagem:
+                  type: string
+                  format: binary
+                  description: Foto JPEG ou PNG, até 2 MB.
+      responses:
+        "200":
+          description: |
+            Leitura concluída. Uma lista `leituras` vazia é uma resposta válida e significa
+            "não encontrei letreiro legível" (o aplicativo responde INCONCLUSIVO).
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RespostaLeitura'}
+              examples:
+                leu:
+                  value:
+                    modelo: letreiro-v1
+                    latencia_ms: 420
+                    leituras:
+                      - {texto: "875A-10 METRÔ BARRA FUNDA", confianca: 0.91, caixa: [112, 40, 520, 96]}
+                nada:
+                  value: {modelo: letreiro-v1, latencia_ms: 380, leituras: []}
+        "401": {description: Chave ausente ou inválida.}
+        "413": {description: Imagem grande demais.}
+        "415": {description: Formato de imagem não suportado.}
+        "503": {description: Modelo indisponível no momento.}
+
+components:
+  schemas:
+    RespostaLeitura:
+      type: object
+      required: [modelo, leituras]
+      properties:
+        modelo:
+          type: string
+          maxLength: 80
+          description: Nome e versão do modelo (aparece no resultado e fica registrado). Obrigatório.
+        latencia_ms:
+          type: integer
+          minimum: 0
+          description: Tempo de inferência, opcional.
+        leituras:
+          type: array
+          description: Textos de letreiro encontrados. O backend usa a leitura de maior confiança que contenha um número de linha.
+          items: {$ref: '#/components/schemas/Leitura'}
+    Leitura:
+      type: object
+      required: [texto, confianca]
+      properties:
+        texto:
+          type: string
+          maxLength: 40
+          description: |
+            Texto lido como aparece no letreiro. O backend extrai o número da linha com a expressão
+            N?[0-9]{3,4}[A-Z]? seguida opcionalmente de "-" e da variante (ex.: 875A-10, 8000, N137-11).
+        confianca:
+          type: number
+          minimum: 0
+          maximum: 1
+        caixa:
+          type: array
+          description: Posição do letreiro na imagem [x, y, largura, altura] em pixels. Opcional.
+          minItems: 4
+          maxItems: 4
+          items: {type: integer}

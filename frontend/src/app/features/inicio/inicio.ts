@@ -61,6 +61,14 @@ export const EXEMPLOS_BUSCA = ['Paulista', 'Faria Lima', 'Luz', '990001'];
             </ul>
           </div>
         </div>
+        <a class="inicio__embarque" routerLink="/embarque" [queryParams]="qpModo()">
+          <span class="inicio__embarque-icone" aria-hidden="true"><pf-icone nome="volume" /></span>
+          <span class="inicio__embarque-texto">
+            <strong>Embarque assistido</strong>
+            <span>Escolha o ponto e o ônibus: eu acompanho a SPTrans e aviso por voz quando ele estiver chegando.</span>
+          </span>
+          <pf-icone nome="seta-direita" />
+        </a>
         <a class="inicio__voz" routerLink="/assistente"><pf-icone nome="microfone" /> Prefere perguntar? Fale com o assistente <pf-icone nome="seta-direita" /></a>
       </section>
       <section class="inicio__pontos" aria-labelledby="meus-titulo">

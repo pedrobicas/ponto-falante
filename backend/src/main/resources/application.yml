@@ -27,6 +27,11 @@ spring:
       hibernate.jdbc.time_zone: UTC
   flyway:
     enabled: true
+  servlet:
+    multipart:
+      # Só a conferência do letreiro recebe arquivo (um quadro da câmera, nunca gravado).
+      max-file-size: 2MB
+      max-request-size: 2MB
   jackson:
     property-naming-strategy: SNAKE_CASE
     deserialization:
@@ -66,6 +71,9 @@ pf:
   salt: ${PF_SALT:troque-este-sal-em-producao}
   rpa-api-key: ${RPA_API_KEY:}
   visao-api-key: ${VISAO_API_KEY:}
+  # Modelo de visão do letreiro (Applied Computer Vision). Vazio: a conferência pela câmera responde 503.
+  visao-url: ${PF_VISAO_URL:}
+  visao-servico-chave: ${PF_VISAO_SERVICO_CHAVE:}
   dispositivo-api-key: ${DISPOSITIVO_API_KEY:}
   dados-api-key: ${DADOS_API_KEY:}
   dev-origin: ${PF_DEV_ORIGIN:http://localhost:4200}

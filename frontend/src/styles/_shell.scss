@@ -28,7 +28,7 @@
   .marca__simbolo { width: 2rem; height: 2rem; }
   .marca__nome { font-size: 1.3rem; }
   .trajeto { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; background: var(--superficie); border-top: 1px solid var(--traco); padding: .35rem .25rem calc(.35rem + env(safe-area-inset-bottom)); }
-  .trajeto__lista { gap: 0; display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); }
+  .trajeto__lista { gap: 0; display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); }
   .estacao { min-height: 4rem; padding: .4rem .1rem; flex-direction: column; gap: .35rem; font-size: .7rem; border-radius: 8px; overflow-wrap: normal; }
   .estacao pf-icone { width: 1.4rem; height: 1.4rem; }
   .estacao--atual .estacao__nome { text-underline-offset: .25em; }

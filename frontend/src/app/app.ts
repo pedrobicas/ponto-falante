@@ -87,6 +87,7 @@ export class App {
 
   protected readonly estacoes: Estacao[] = [
     { rota: '/', texto: 'Buscar', exata: true, icone: 'busca' },
+    { rota: '/embarque', texto: 'Embarque', exata: false, icone: 'volume' },
     { rota: '/favoritos', texto: 'Favoritos', exata: false, icone: 'estrela' },
     { rota: '/assistente', texto: 'Assistente', exata: false, icone: 'conversa' },
     { rota: '/boletim', texto: 'Boletim', exata: false, icone: 'boletim' },

@@ -25,7 +25,10 @@ public record PfProps(
         @DefaultValue("") String sptransGatewayChave,
         @DefaultValue("") String sptransGatewaySegredo,
         @DefaultValue("https://gateway.apilib.prefeitura.sp.gov.br/sptrans/olhovivo/v2.1") String sptransGatewayUrl,
-        @DefaultValue("https://gateway.apilib.prefeitura.sp.gov.br/token") String sptransGatewayTokenUrl) {
+        @DefaultValue("https://gateway.apilib.prefeitura.sp.gov.br/token") String sptransGatewayTokenUrl,
+        /** Serviço do modelo de visão que lê o letreiro (vazio = conferência pela câmera desligada). */
+        @DefaultValue("") String visaoUrl,
+        @DefaultValue("") String visaoServicoChave) {
 
     private static boolean preenchido(String s) {
         return s != null && !s.isBlank();

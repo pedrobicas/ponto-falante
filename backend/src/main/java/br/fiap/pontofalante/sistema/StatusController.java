@@ -1,6 +1,7 @@
 package br.fiap.pontofalante.sistema;
 
 import br.fiap.pontofalante.assistente.SaudeGenai;
+import br.fiap.pontofalante.embarque.ReconhecedorLetreiro;
 import br.fiap.pontofalante.rpa.BoletimService;
 import br.fiap.pontofalante.transporte.OlhoVivoProvider;
 import org.slf4j.Logger;
@@ -20,9 +21,10 @@ import java.time.OffsetDateTime;
 public class StatusController {
     private static final Logger log = LoggerFactory.getLogger(StatusController.class);
 
-    /** assistenteTempoReal: o assistente responde perguntas de horário pelo backend mesmo com a GenAI fora. */
+    /** visao: CONECTADA quando o modelo que lê o letreiro está configurado (PF_VISAO_URL); senão NAO_CONECTADA.
+     *  assistenteTempoReal: o assistente responde perguntas de horário pelo backend mesmo com a GenAI fora. */
     public record Status(String versao, String sptrans, String assistente, LocalDate ultimoBoletim,
-                         OffsetDateTime horarioServidor, boolean assistenteTempoReal) {
+                         OffsetDateTime horarioServidor, boolean assistenteTempoReal, String visao) {
     }
 
     private final PfProps props;
@@ -31,9 +33,12 @@ public class StatusController {
     private final BoletimService boletins;
     private final Clock relogio;
     private final String versao;
+    private final ReconhecedorLetreiro visao;
 
     public StatusController(PfProps props, OlhoVivoProvider olhoVivo, SaudeGenai saudeGenai, BoletimService boletins,
-                            Clock relogio, ObjectProvider<BuildProperties> build) {
+                            Clock relogio, ObjectProvider<BuildProperties> build,
+                            ReconhecedorLetreiro visao) {
+        this.visao = visao;
         this.props = props;
         this.olhoVivo = olhoVivo;
         this.saudeGenai = saudeGenai;
@@ -53,6 +58,7 @@ public class StatusController {
             log.warn("Status: banco indisponível ao consultar o último boletim");
         }
         return new Status(versao, sptrans, saudeGenai.disponivel() ? "DISPONIVEL" : "INDISPONIVEL", ultimo,
-                OffsetDateTime.now(relogio), !"INDISPONIVEL".equals(sptrans));
+                OffsetDateTime.now(relogio), !"INDISPONIVEL".equals(sptrans),
+                visao.conectado() ? "CONECTADA" : "NAO_CONECTADA");
     }
 }
