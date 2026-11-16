@@ -67,5 +67,5 @@ integrante; ficam registradas em `entregaveis/O_QUE_FALTA_VOCE_FAZER.md` para de
 
 Revisão de código automatizada e independente em 15/11/2026 (somente leitura, sem rede e sem rodar as avaliações
 da GenAI) sobre os commits `8a7f08c..a9ed0bd`: 9 achados médios e 3 baixos, todos corrigidos no commit seguinte e
-cobertos por testes (lista em `docs/ESTADO_PROJETO.md`, seção de 15/11 à tarde). Depois das correções: backend 218,
+cobertos por testes. Depois das correções: backend 218,
 Angular 55, GenAI 155 e RPA 53 testes passando. A revisão não cobre os conjuntos fechados de avaliação da GenAI.

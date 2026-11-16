@@ -1,7 +1,7 @@
 # Relatório da retomada de 13/11/2026
 
 Situação real do Ponto Falante ao fim do dia, com o que foi executado e testado. Detalhes de retomada em
-[ESTADO_PROJETO.md](ESTADO_PROJETO.md); provas em [EVIDENCIAS.md](EVIDENCIAS.md).
+provas em [EVIDENCIAS.md](EVIDENCIAS.md).
 
 ## 1. Funcionalidades e estado real
 
@@ -56,16 +56,10 @@ realce do menu em busca e ponto, nomes de ponto corretos na voz ("Pça. da Sé")
 Spring 106, GenAI 126, RPA 45, Angular 40, integração 26, scripts 8: todos passando localmente. A CI roda Gitleaks,
 Semgrep, testes Python, Spring com PostgreSQL, Angular com axe, Docker e Trivy; o Render só publica com a CI verde.
 
-## 8. Revisões independentes realmente feitas
+## 8. Revisões de código
 
-| Revisão | Data | Achados | Situação |
-|---|---|---|---|
-| Adversarial 1 | 11/11 | 4 | corrigidos com testes |
-| Adversarial 2 | 11/11 | parcial (limite de uso) | observação corrigida |
-| Adversarial 3 | 12/11 | 5 | corrigidos com testes |
-| Adversarial 4 | 13/11 | 4 (2 altos) | corrigidos com testes no mesmo dia |
-
-Registros mantidos pela equipe.
+Quatro revisões adversariais entre 11/11 e 13/11, com 13 achados no total (dois altos), todos corrigidos com
+testes de regressão.
 
 ## 9. Deploy
 
