@@ -69,6 +69,25 @@ class BuscaRedeTest {
         assertThat(r.aviso()).isNull();
     }
 
+    /** Regressão: "Paulista" listava antes Atracadouro Mar Paulista e Av. Lauzane Paulista, em ordem alfabética. */
+    @ParameterizedTest
+    @ValueSource(strings = {"Paulista", "Avenida Paulista", "av paulista", "AV. PAULISTA"})
+    void nomeDaRuaSemNumeroTrazPrimeiroARuaComEsseNome(String termo) {
+        RespostaPontos r = servico.buscarPontos(termo, null);
+        assertThat(r.pontos()).hasSizeGreaterThanOrEqualTo(5);
+        assertThat(r.pontos().subList(0, 5)).as(termo)
+                .allSatisfy(p -> assertThat(p.nome()).startsWith("Av. Paulista,"));
+    }
+
+    @Test void nucleoESemelhancaDoNome() {
+        assertThat(RedeGtfs.nucleo(RedeGtfs.tokens("Av. Paulista, 1374").toArray(String[]::new)))
+                .containsExactly("paulista");
+        assertThat(RedeGtfs.semelhancaDoNome(List.of("paulista"), List.of("paulista"))).isEqualTo(2);
+        assertThat(RedeGtfs.semelhancaDoNome(List.of("paulista", "norte"), List.of("paulista"))).isEqualTo(1);
+        assertThat(RedeGtfs.semelhancaDoNome(List.of("lauzane", "paulista"), List.of("paulista"))).isZero();
+        assertThat(RedeGtfs.semelhancaDoNome(List.of("paulista"), List.of())).isZero();
+    }
+
     @Test void codigoDevolveSoOPontoDoCodigo() {
         RespostaPontos r = servico.buscarPontos("70016916", null);
         assertThat(r.pontos()).singleElement().satisfies(p -> {

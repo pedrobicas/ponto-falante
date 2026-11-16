@@ -83,8 +83,25 @@ final class ForaDaArea {
     static Optional<RespostaChat> responder(String pergunta) {
         return cidade(pergunta).map(c -> new RespostaChat(
                 "O Ponto Falante atende só o transporte público municipal da cidade de São Paulo e não tem "
-                        + "informações oficiais sobre " + c + ". Para saber as regras de lá, consulte o órgão ou a "
-                        + "empresa responsável pelo transporte público de " + c + ".",
+                        + "informações oficiais sobre " + artigo(c) + c + ". Para saber as regras de lá, consulte o "
+                        + "órgão ou a empresa responsável pelo transporte público " + contracao(c) + c + ".",
                 List.of(), "baixa", true, true, 0, "FORA_DA_AREA"));
+    }
+
+    /** Lugares que pedem artigo em português ("o Rio de Janeiro", "a Baixada Santista"). */
+    private static final Map<String, String> ARTIGOS = Map.of("Rio de Janeiro", "o ", "Recife", "o ",
+            "Baixada Santista", "a ");
+
+    static String artigo(String lugar) {
+        return ARTIGOS.getOrDefault(lugar, "");
+    }
+
+    /** "de" com o artigo do lugar: "do Rio de Janeiro", "da Baixada Santista", "de Curitiba". */
+    static String contracao(String lugar) {
+        return switch (artigo(lugar)) {
+            case "o " -> "do ";
+            case "a " -> "da ";
+            default -> "de ";
+        };
     }
 }

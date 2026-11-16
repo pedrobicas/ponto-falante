@@ -49,10 +49,9 @@ não representam impacto já medido com passageiros.
 Regras do produto: dado simulado nunca aparece como real; previsão nunca aparece como chegada observada.
 
 Exemplos públicos: Avenida Paulista, 1374 (ponto `70016916`) e linha `875A-10`, conferidos no GTFS empacotado.
-O cadastro oficial completo permanece intacto. Exemplos e evidências de demonstração não devem usar referências
-à residência dos integrantes. A lista da assistente, os testes e os roteiros seguem essa regra.
+O cadastro oficial completo permanece intacto; exemplos, testes e roteiros usam apenas locais públicos.
 
-Entrega FIAP: [checklist atual e sequência de envio](docs/ENTREGA_FIAP.md), [critérios](docs/REVISAO_CRITERIOS.md), [roteiro GenAI](genai/ROTEIRO_VIDEO.md)
+Entrega FIAP: [checklist atual e sequência de envio](docs/ENTREGA_FIAP.md), [matriz de critérios](docs/MATRIZ_CRITERIOS_FIAP.md), [roteiro GenAI](genai/ROTEIRO_VIDEO.md)
 e [roteiro RPA](rpa/docs/roteiro_video.md). Não repetir os conjuntos finais fechados para gravar uma demonstração.
 
 ## Arquitetura
@@ -144,10 +143,10 @@ limite de perguntas por usuário (IP resolvido só via proxy confiável), cota i
 GenAI, logs sem texto de pergunta (LGPD), imagem com usuário não root, health checks no Actuator.
 
 Plano gratuito do Render: o serviço dorme após 15 min sem acesso (cerca de 1 min para acordar) e o PostgreSQL gratuito
-expira 30 dias após a criação. Detalhes em [docs/PRIMEIRO_DEPLOY.md](docs/PRIMEIRO_DEPLOY.md).
+expira 30 dias após a criação. A configuração do serviço está em [render.yaml](render.yaml).
 
 ## Documentos
 
-[Arquitetura](docs/ANALISE_E_ARQUITETURA.md) · [Revisão dos critérios FIAP](docs/REVISAO_CRITERIOS.md) ·
-[Integração do MVP](docs/INTEGRACAO_MVP.md) · [SPTrans](docs/SPTRANS.md) · [Relatório GenAI](genai/RELATORIO.md) ·
+[Arquitetura](docs/ANALISE_E_ARQUITETURA.md) · [Matriz de critérios FIAP](docs/MATRIZ_CRITERIOS_FIAP.md) ·
+[SPTrans](docs/SPTRANS.md) · [Relatório GenAI](genai/RELATORIO.md) ·
 [RPA](rpa/README.md) · [Contrato público](contratos/openapi-mvp.yaml) · [Evidências](docs/EVIDENCIAS.md)
