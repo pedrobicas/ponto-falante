@@ -85,9 +85,9 @@ img[src*="boletim_producao"]{{max-height:118mm;border:1px solid #cfd9de}}
 
 
 def aplicar_links() -> dict[str, str]:
-    """Troca o conteúdo entre <!--link:CHAVE--> e <!--/link--> pelo link preenchido ou pelo placeholder."""
+    """Troca o conteúdo entre <!--link:CHAVE--> e <!--/link--> pelo link ou pelo placeholder, nos relatórios e READMEs."""
     links = json.loads(LINKS.read_text(encoding='utf-8'))
-    for _, fonte, _ in RELATORIOS:
+    for fonte in [f for _, f, _ in RELATORIOS] + [ROOT / 'README.md', ROOT / 'genai/README.md', ROOT / 'rpa/README.md']:
         md = fonte.read_text(encoding='utf-8')
         novo = re.sub(r'<!--link:(\w+)-->(.*?)<!--/link-->',
                       lambda m: f'<!--link:{m[1]}-->{(links.get(m[1]) or "").strip() or PLACEHOLDERS[m[1]]}<!--/link-->',
