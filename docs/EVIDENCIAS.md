@@ -40,7 +40,7 @@ Trivy (dependências e imagem) e um teste de fumaça da imagem.
   Instância local isolada com SPTrans e GenAI reais: 462 testes, 11 telas sem overflow/violações axe,
   voz pt-BR, continuidade da conversa e boletim publicado pelo robô no banco local. Sem avaliação final GenAI.
 - Conversa em produção (14/11/2026): [evidencias/conversa_producao_20261114.txt](evidencias/conversa_producao_20261114.txt).
-  Transcrição histórica sanitizada: trechos com referências locais pessoais foram omitidos; respostas de regras e boletim foram preservadas.
+  Transcrição editada para publicação; as respostas de regras e do boletim foram preservadas.
   O roteiro atual em `scripts/integracao/conversar.py` usa exemplos públicos da Avenida Paulista.
 - Busca: os exemplos públicos atuais "Av. Paulista, 1374" e código 70016916 devolvem o mesmo ponto;
   regressão em `backend/src/test/java/br/fiap/pontofalante/transporte/BuscaRedeTest.java`.
