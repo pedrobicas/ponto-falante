@@ -43,7 +43,7 @@ Mesmo modelo, temperatura 0, semente 42, mesmo índice, mesmo limiar e mesmas pe
 | B · RAG simples | 67,5% | 100% | 20,0% | 16,7% | 4,0% | 80,8% |
 | C · RAG + agente (usado na API) | 52,5% | 100% | **5,0%** | 56,7% | **0%** | 81,2% |
 
-O RAG acerta muito mais e alucina muito menos que o mesmo modelo sem contexto. O agente é o mais seguro: alucina 4 vezes menos que o RAG simples e nunca dá resposta sem fundamentação. O custo é recusar mais do que deveria. Detalhes e interpretação estão no [RELATORIO.md](RELATORIO.md#7-performance-do-modelo).
+O RAG acerta muito mais e alucina muito menos que o mesmo modelo sem contexto. O agente é o mais seguro: alucina 4 vezes menos que o RAG simples e nunca dá resposta sem fundamentação. O custo é recusar mais do que deveria. Detalhes e interpretação estão no [RELATORIO.md](RELATORIO.md#8-resultados).
 
 ## Estrutura
 
