@@ -21,7 +21,7 @@ Entrega: links do repositório público no Teams; relatório no GitHub.
 | Rel. 01 | Nome completo e RM | §1 do relatório | `VALIDACAO_DOCUMENTOS.json`: `rms_presentes = true` | OK |
 | Rel. 02–06 | Ficha técnica, diagramas, tabela da base, performance, 5 erros | §2, §4, §5, §8, §9 | PDF revisado página a página em 16/11 | OK |
 | Rel. 07 | Conclusão técnica e links do repositório e do vídeo | §12 e §13 | Links do vídeo e do repositório público ainda são `[INSERIR LINK DO VÍDEO GENAI]` e `[INSERIR LINK DO REPOSITÓRIO PÚBLICO]`, preenchidos a partir de `docs/links_entrega.json` | PENDENTE |
-| Repo | Repositório **público** com `notebooks/`, `base/`, `avaliacao/`, `README.md` | Estrutura existe em `genai/` | O repositório atual é privado; a cópia pública sanitizada depende de autorização | PENDENTE |
+| Repo | Repositório **público** com `notebooks/`, `base/`, `avaliacao/`, `README.md` | Estrutura existe em `genai/` | Repositório ainda privado; a publicação depende do integrante | PENDENTE |
 | Integração | Rodar integrada ao produto, segura e conforme a LGPD | `/api/chat` no MVP publicado; chave de serviço; sem persistência de perguntas | Validação de operação em `docs/evidencias/genai_operacao_20261115.md` | OK, com o PC ligado |
 
 ## Robotic Process Automation (10 pontos)

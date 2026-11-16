@@ -23,7 +23,7 @@ não representam impacto já medido com passageiros.
 | Arquitetura | Angular, Spring Boot, PostgreSQL; GenAI local via FastAPI/Ollama; robôs Python em GitHub Actions |
 | Fontes de dados | Cadastro GTFS e previsões Olho Vivo da SPTrans; documentos oficiais identificados em `genai/base/fontes.csv` |
 | Modelos de IA | Produção: agente com `qwen2.5:7b` local; recuperação FAISS com embeddings multilíngues. Comparações e versões anteriores no relatório GenAI |
-| URL e repositório | Links acima; a publicação de uma cópia sanitizada do repositório ainda precisa ser concluída |
+| URL e repositório | Links acima; o repositório será tornado público para a correção |
 | Indicadores de impacto propostos | Proporção de consultas concluídas por voz; tempo para obter uma previsão; sucesso de uso com leitor de tela; compreensão da origem/data do boletim |
 | ODS conectados | ODS 10 (redução das desigualdades) e ODS 11 (cidades e comunidades sustentáveis), pelo acesso à informação de mobilidade |
 
@@ -122,10 +122,10 @@ Assistente real: [scripts/genai/README.md](scripts/genai/README.md) (Ollama + AP
 ## Testes
 
 ```powershell
-Push-Location backend; .\mvnw.cmd -B verify; Pop-Location                 # 172 testes, PostgreSQL embutido
-Push-Location frontend; npm.cmd ci; npm.cmd test -- --watch=false; Pop-Location   # 47 testes (axe)
+Push-Location backend; .\mvnw.cmd -B verify; Pop-Location                 # 225 testes, PostgreSQL embutido
+Push-Location frontend; npm.cmd ci; npm.cmd test -- --watch=false; Pop-Location   # 55 testes (axe)
 Push-Location genai; ..\.venv\Scripts\python.exe -m pytest -q tests; Pop-Location # 155 testes
-Push-Location rpa; ..\.venv\Scripts\python.exe -m pytest -q; Pop-Location         # 46 testes
+Push-Location rpa; ..\.venv\Scripts\python.exe -m pytest -q; Pop-Location         # 53 testes
 .\.venv\Scripts\python.exe -m pytest -q tests/integracao                          # 26 testes
 .\.venv\Scripts\python.exe scripts/integracao/testar_mvp.py --url https://ponto-falante.onrender.com
 ```

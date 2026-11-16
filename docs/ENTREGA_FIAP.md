@@ -7,7 +7,7 @@ Não houve nova execução nem leitura dos conjuntos finais fechados de avaliaç
 **Fechamento dos arquivos de GenAI e RPA (vídeos regravados em 14/11, montados e revisados em 15/11):** vídeos, roteiros e relatórios concluídos
 para revisão e narração. Índice local: [`entregaveis/LEIA_ME.md`](../entregaveis/LEIA_ME.md).
 RPA: 132 s; GenAI: 142 s (conversa regravada em 15/11); H.264, 1920 x 1080, 30 fps, sem áudio; ambos decodificados integralmente. Versões anteriores em `entregaveis/versao_anterior_20261114/`.
-Restam narração/revisão do dono, hospedagem e URLs, autorização da cópia pública sanitizada e submissão.
+Restam narração, hospedagem dos vídeos, publicação do repositório, preenchimento dos links e submissão.
 Os vídeos foram regravados com captura real do site publicado e dos comandos; nenhuma avaliação fechada foi reexecutada.
 
 ## Prazo e regras comuns
@@ -19,9 +19,8 @@ Os vídeos foram regravados com captura real do site publicado e dos comandos; n
   conforme a regra específica da p. 42.
 - A ficha técnica comum deve abrir o README e orientar a documentação das disciplinas (p. 20).
   Ela está no [README principal](../README.md#ficha-técnica-do-mvp).
-- O repositório atual foi registrado como **privado** no estado salvo. A exigência de acesso público é explícita,
-  não opcional. Publicar uma cópia sanitizada com histórico novo exige decidir o destino e concluir a revisão de
-  privacidade; preservar o repositório e o histórico existentes. Não enviar apenas um link privado ao avaliador.
+- O repositório ainda é **privado**. A exigência de acesso público é explícita; o histórico já foi revisado e o
+  próprio `pedrobicas/ponto-falante` será publicado. Não enviar um link privado ao avaliador.
 
 ## GenAI - relatório no GitHub e link no Teams
 
@@ -36,7 +35,7 @@ Base oficial: pp. 29-31. O relatório não precisa ser PDF; precisa estar no Git
 | Cinco erros reais, causas e correções; conclusão | Relatório, seções 8-9; análises posteriores separadas | Nenhuma nova avaliação necessária |
 | Notebooks com saídas, API e reprodução | Quatro notebooks com saídas salvas, API e [README GenAI](../genai/README.md) | Abertura pública e, se possível, reprodução em outra máquina |
 | Link do vídeo no relatório | MP4 silencioso de 142 s e [roteiro final](../entregaveis/ROTEIRO_GENAI.md) validados | Narrar, hospedar e preencher `video_genai` em `docs/links_entrega.json` |
-| Repositório público | Código local e remoto privado preservados | Publicar cópia sanitizada e atualizar os links |
+| Repositório público | Histórico revisado, repositório ainda privado | Tornar público e preencher o link |
 
 O PDF oficial exige vídeo, mas **não fixa duração para GenAI** nessas páginas. Os três minutos do roteiro são uma
 meta de edição. Na demonstração, consultar exemplos públicos, mostrar a fonte realmente recebida e distinguir
@@ -81,9 +80,8 @@ evidências específicas exigidas abaixo.
 
 ## Ordem prática de conclusão
 
-1. **Privacidade e publicação:** fechar a revisão do histórico e dos artefatos, escolher a cópia sanitizada pública,
-   publicar apenas o estado revisado e atualizar URLs dos relatórios e READMEs. Não mudar a visibilidade do histórico
-   antigo nem reescrevê-lo nesta etapa.
+1. **Publicação:** tornar público `pedrobicas/ponto-falante` (histórico já revisado) e preencher os links em
+   `docs/links_entrega.json`.
 2. **Narração:** revisar e narrar os dois MP4 concluídos, seguindo os tempos dos roteiros. As capturas existentes
    já mostram exemplos públicos, o RPA em ambiente local identificado e a integração em produção.
 3. **Links e PDF:** inserir os dois vídeos, regenerar/revisar o PDF RPA e testar todos os links em janela anônima.
@@ -100,7 +98,7 @@ evidências específicas exigidas abaixo.
 | Campo | Onde finalizar |
 |---|---|
 | URL pública do MVP | https://ponto-falante.onrender.com |
-| URL do repositório sanitizado | Preencher `repositorio` em `docs/links_entrega.json` e rodar `scripts/entrega/gerar_pdfs.py` |
+| URL do repositório público | Preencher `repositorio` em `docs/links_entrega.json` e rodar `scripts/entrega/gerar_pdfs.py` |
 | Vídeo GenAI | Preencher `video_genai` em `docs/links_entrega.json` |
 | Vídeo RPA | Preencher `video_rpa` em `docs/links_entrega.json` e regenerar os PDFs |
 | Anexo do Teams RPA | `entregaveis/Relatorio_RPA.pdf` (cópia idêntica em `rpa/docs/relatorio.pdf`), após inserir URLs |
