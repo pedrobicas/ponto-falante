@@ -38,7 +38,7 @@ export function situacaoEmPalavras(r: RespostaChat, simulada = false): string {
     case 'RECUSA':
       return 'Não encontrei isso nas fontes oficiais: confirme antes de decidir.';
     case 'FORA_DA_AREA':
-      return 'Fora da área atendida: o Ponto Falante só tem informações de São Paulo.';
+      return 'Sem dados oficiais fora de São Paulo: confirme com o órgão de transporte da cidade citada.';
     case 'INDISPONIVEL':
       return 'Assistente indisponível agora.';
     default:
@@ -167,12 +167,7 @@ export function respostaSimulada(r: RespostaChat, sptransDemo: boolean): boolean
                       </div>
                       <p class="fala__texto">{{ r.resposta }}</p>
 
-                      @if (tipo(r) === 'FORA_DA_AREA') {
-                        <div class="nao-consta">
-                          <p class="nao-consta__titulo"><pf-icone nome="info" /> Fora da área atendida</p>
-                          <p>O Ponto Falante cobre só o ônibus municipal de São Paulo. Procure o órgão de transporte da cidade citada.</p>
-                        </div>
-                      } @else if (tipo(r) === 'RECUSA') {
+                      @if (tipo(r) === 'RECUSA') {
                         <div class="nao-consta">
                           <p class="nao-consta__titulo"><pf-icone nome="info" /> Não consta nas fontes oficiais consultadas</p>
                           <p>Confirme pela Central 156 da Prefeitura ou no site da SPTrans antes de decidir.</p>

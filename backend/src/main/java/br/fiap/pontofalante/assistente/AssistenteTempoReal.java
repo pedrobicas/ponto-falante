@@ -200,7 +200,7 @@ public class AssistenteTempoReal {
                 sb.append(". ");
             }
             if (onibus.size() > n) {
-                sb.append("Há mais ").append(onibus.size() - n).append(" previstos na tela do ponto. ");
+                sb.append(maisPrevistos(onibus.size() - n));
             }
             if (p.horarioReferencia() != null && !p.horarioReferencia().isBlank()) {
                 sb.append("Previsão da SPTrans calculada às ").append(p.horarioReferencia()).append(". ");
@@ -307,6 +307,12 @@ public class AssistenteTempoReal {
     }
 
     /** Nome do ponto: palavras da pergunta original (com acentos), sem as palavras de ligação e de intenção. */
+    /** "Há mais 1 ônibus previsto" / "Há mais 3 ônibus previstos", com a concordância certa. */
+    static String maisPrevistos(int quantidade) {
+        return "Há mais " + quantidade + (quantidade == 1 ? " ônibus previsto" : " ônibus previstos")
+                + " na tela do ponto. ";
+    }
+
     static String termoDeBusca(String original, String linha) {
         String semPontuacao = original.toLowerCase(Locale.ROOT).replaceAll("[?!.,;:]", " ");
         List<String> palavras = new ArrayList<>();

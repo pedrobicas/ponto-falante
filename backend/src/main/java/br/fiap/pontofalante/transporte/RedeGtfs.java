@@ -195,6 +195,28 @@ public class RedeGtfs {
         return saida;
     }
 
+    private static final Set<String> TIPOS_DE_VIA = Set.of("avenida", "rua", "alameda", "praca", "travessa",
+            "estrada", "largo", "viaduto", "rodovia", "ponte", "av", "r", "al", "pc", "tv", "estr", "lgo", "vd");
+
+    /** Palavras do nome sem o tipo de via e sem números: "Av. Paulista, 1374" vira [paulista]. */
+    static List<String> nucleo(String[] tokens) {
+        List<String> saida = new ArrayList<>();
+        for (String t : tokens) {
+            if (!TIPOS_DE_VIA.contains(t) && !numero(t)) {
+                saida.add(t);
+            }
+        }
+        return saida;
+    }
+
+    /** 2 quando o nome da parada é exatamente o buscado, 1 quando começa por ele, 0 nos demais casos. */
+    static int semelhancaDoNome(List<String> nome, List<String> busca) {
+        if (busca.isEmpty() || nome.size() < busca.size() || !nome.subList(0, busca.size()).equals(busca)) {
+            return 0;
+        }
+        return nome.size() == busca.size() ? 2 : 1;
+    }
+
     static String chaveLetreiro(String letreiro) {
         return semAcento(letreiro).replaceAll("[^a-z0-9]", "");
     }
@@ -293,7 +315,8 @@ public class RedeGtfs {
             casam.add(casamentos(q));
         }
         int faltasPermitidas = palavras.size() >= 4 ? 1 : 0;
-        record Candidata(int indice, int pontos, int diferencaNumero) {
+        List<String> nucleoBusca = nucleo(palavras.toArray(String[]::new));
+        record Candidata(int indice, int pontos, int diferencaNumero, int nomeIgual) {
         }
         List<Candidata> candidatas = new ArrayList<>();
         for (int i = 0; i < paradas.size(); i++) {
@@ -336,9 +359,12 @@ public class RedeGtfs {
                     }
                 }
             }
-            candidatas.add(new Candidata(i, pontos, diferenca));
+            candidatas.add(new Candidata(i, pontos, diferenca, semelhancaDoNome(nucleo(nome), nucleoBusca)));
         }
+        // Com a mesma pontuação, "Paulista" traz a Av. Paulista antes da Av. Lauzane Paulista ou do Atracadouro
+        // Mar Paulista: primeiro o nome igual ao buscado, depois o nome que começa por ele.
         candidatas.sort(Comparator.comparingInt((Candidata c) -> -c.pontos())
+                .thenComparingInt(c -> -c.nomeIgual())
                 .thenComparingInt(Candidata::diferencaNumero)
                 .thenComparing(c -> paradas.get(c.indice()).nome()));
         List<ParadaEncontrada> saida = new ArrayList<>();

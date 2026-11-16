@@ -92,10 +92,13 @@ describe('Assistente: recusa e fora da área', () => {
         + 'oficiais sobre Curitiba. Para saber as regras de lá, consulte o órgão ou a empresa responsável pelo transporte público de Curitiba.',
       fontes: [], confianca: 'baixa', nao_consta: true, disponivel: true, origem: 'FORA_DA_AREA', tipo_resposta: 'FORA_DA_AREA',
     });
-    const aviso = el.querySelector('.nao-consta')?.textContent ?? '';
-    expect(aviso).toContain('Fora da área atendida');
-    expect(aviso).not.toContain('156');
-    expect(aviso).not.toContain('SPTrans');
-    expect(el.textContent).not.toContain('Não consta nas fontes oficiais consultadas');
+    const texto = el.textContent ?? '';
+    expect(texto).toContain('Fora da área atendida');
+    // Regressão: a limitação aparecia três vezes (selo, quadro extra e rodapé); agora o quadro extra não existe.
+    expect(el.querySelector('.nao-consta')).toBeNull();
+    expect(texto.match(/cobre só o ônibus municipal/g)).toBeNull();
+    expect(el.querySelector('.confianca')?.textContent).toContain('confirme com o órgão de transporte');
+    expect(texto).not.toContain('156');
+    expect(texto).not.toContain('Não consta nas fontes oficiais consultadas');
   });
 });
