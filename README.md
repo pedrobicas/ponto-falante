@@ -7,7 +7,7 @@ bilhetes com base em fontes oficiais, e um boletim diário de espera prevista ge
 Global Solution FIAP 2026.2 · Engenharia de Software.
 
 - **Aplicação publicada:** https://ponto-falante.onrender.com
-- **Repositório:** <!--link:repositorio-->[INSERIR LINK DO REPOSITÓRIO PÚBLICO]<!--/link-->
+- **Repositório:** https://github.com/pedrobicas/ponto-falante
 
 ## Ficha técnica do MVP
 
