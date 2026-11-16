@@ -1,133 +1,143 @@
-# Relatório técnico · Robotic Process Automation
+# Ponto Falante: boletim diário automatizado das linhas de ônibus
 
-**Ponto Falante · FIAP Global Solution 2026.2 · CitizenTech**
-Atividade: *Do Processo Manual à Automação Inteligente* · Professores Bruno Diniz e Cibele Ribeiro
-
-> Este arquivo é a base do PDF de entrega (exportar com os prints de `assets/`). A ordem segue os 12 itens do slide 49.
+Relatório técnico · Robotic Process Automation · Do Processo Manual à Automação Inteligente · FIAP · Engenharia de
+Software, 4º ano · Global Solution 2026.2 · CitizenTech · Novembro de 2026
 
 ## 1. Integrantes
 
 | Nome completo | RM |
 |---|---|
-| Pedro Henrique Bicas Couto | RM 99534 |
-| Bryan Willian | RM 551305 |
-| Felipe Masera Terra | RM 99405 |
-| Gabriel Fernandes Doms | RM 98630 |
-| Lucas Vassão Braga | RM 98607 |
+| Pedro Henrique Bicas Couto | 99534 |
+| Bryan Willian | 551305 |
+| Felipe Masera Terra | 99405 |
+| Gabriel Fernandes Doms | 98630 |
+| Lucas Vassão Braga | 98607 |
 
 ## 2. A CitizenTech e o problema resolvido
 
-O **Ponto Falante** é uma plataforma de acessibilidade para usuários de ônibus de São Paulo, especialmente pessoas com deficiência visual e idosos, que têm dificuldade de ler o letreiro e de usar apps de transporte. O MVP (Angular + Spring Boot + PostgreSQL, publicado em https://ponto-falante.onrender.com) mostra e fala a previsão real dos próximos ônibus (SPTrans), tem um assistente de horários e de regras de gratuidade e um boletim diário das linhas.
+O **Ponto Falante** é uma plataforma de acessibilidade para passageiros de ônibus da cidade de São Paulo,
+especialmente pessoas com deficiência visual e pessoas idosas, que têm dificuldade para ler o letreiro dos veículos e
+para usar aplicativos de transporte convencionais. O MVP, desenvolvido em Angular, Spring Boot e PostgreSQL, mostra e
+fala a previsão real dos próximos ônibus de cada ponto, oferece um assistente de horários e de regras de gratuidade e
+publica um boletim diário sobre as linhas monitoradas.
 
-**Problema operacional:** para avisar os passageiros de que uma linha anda com espera longa, alguém precisaria consultar os pontos várias vezes por dia, anotar as previsões, comparar e escrever um aviso. É manual, repetitivo, sujeito a esquecimento e não escala.
+Esse boletim depende de uma tarefa operacional que, sem automação, seria manual: consultar os mesmos pontos várias
+vezes ao dia, anotar as previsões, comparar as esperas de cada linha e redigir um aviso. É um trabalho repetitivo,
+sujeito a esquecimento e que não escala para mais pontos ou mais linhas.
 
 ## 3. Objetivo da automação e benefício ao cidadão
 
-**Objetivo:** coletar previsões reais ao longo do dia e publicar todo dia, sem intervenção humana, um boletim por linha com dados validados, decisão explicável e origem declarada.
+O objetivo da automação é coletar previsões reais ao longo do dia e publicar, todos os dias e sem intervenção humana,
+um boletim por linha com dados validados, uma decisão explicável e a origem do dado sempre declarada.
 
-**Benefício:** o passageiro com baixa visão ouve, na tela do MVP, quais linhas tiveram espera longa prevista e pode sair mais cedo ou escolher outra linha. A gestora de transporte recebe a lista de linhas em atenção para conferir.
+O passageiro com baixa visão ouve no aplicativo quais linhas tiveram espera longa prevista no dia anterior e pode sair
+mais cedo ou escolher outra linha. A equipe de gestão recebe a lista de linhas em atenção para conferir antes de
+tomar qualquer providência.
 
 ## 4. Processo e desenho do fluxo
 
-![Fluxo BPMN](fluxo.png)
+A automação é formada por dois robôs em Python, agendados no GitHub Actions. O **coletor** roda oito vezes por dia,
+das 7h às 21h, e grava amostras das previsões no MVP. O **robô do boletim** roda uma vez por dia, às 6h, lê as amostras
+do dia anterior, decide a situação de cada linha e publica o boletim. O fluxo completo foi modelado em BPMN 2.0; o
+diagrama está na Figura 1 e ampliado, em páginas inteiras, no Anexo A.
 
-Arquivo editável: `docs/fluxo.bpmn` (BPMN 2.0, gerado por `docs/gerar_fluxo_bpmn.py`). São dois robôs, cada um com o seu agendamento.
+![Fluxo BPMN da automação](fluxo.png)
+
+<p class="legenda">Tabela 1. Etapas do processo automatizado</p>
 
 | Etapa | Entrada | Processamento | Saída |
 |---|---|---|---|
-| Coleta (8 vezes por dia) | `config/monitoramento.yaml` (6 pontos) | `GET /api/pontos/{codigo}/previsoes` no MVP; só respostas com `fonte = OLHO_VIVO` viram amostra | `POST /api/rpa/amostras` com `X-API-Key`; lote pendente em `saida/pendentes/` se falhar |
-| Início do boletim (06:00) | Agendamento diário | Carrega a configuração | Configuração validada |
-| Leitura | `GET /api/rpa/amostras?data=` | 3 tentativas, com esperas de 2 s e 4 s entre elas | Amostras do dia anterior |
-| Validação (laço) | Cada amostra | Campos, período, ponto no escopo, previsões de 0 a 120 min, sentidos separados | Válidas + inválidas com motivo |
-| Deduplicação | Válidas | Mesmo ponto e mesmo horário de consulta contam uma vez | Amostras únicas |
-| Decisão (laço) | Cada linha | Espera típica, maior espera e consultas sem ônibus previsto → CRÍTICA, ATENÇÃO, OK ou SEM DADOS | Situação por linha |
-| Boletim | Situações | JSON + HTML + frase para voz, com a categoria (ESTIMADO, SIMULADO ou INDISPONIVEL) | `saida/boletim_AAAA-MM-DD.*` |
-| Publicação | Boletim | `POST /boletim` com `X-API-Key`; o backend confere a proveniência | `GET /boletim` e tela do MVP |
-| Auditoria | Resultado | Log + `auditoria.jsonl` | Evidência da execução |
+| Coleta (8 vezes por dia) | Lista de 6 pontos monitorados, em arquivo de configuração | Para cada ponto, consulta as previsões no MVP; só respostas da SPTrans em tempo real viram amostra | Amostras gravadas no PostgreSQL pela API do MVP; lote pendente guardado se o envio falhar |
+| Leitura (diária, 6h) | Amostras do dia anterior | Consulta à API do MVP, com até 3 tentativas e esperas crescentes | Lista de amostras |
+| Validação | Cada amostra | Confere campos, período, ponto monitorado e previsões entre 0 e 120 min; separa os sentidos de cada linha | Amostras válidas e inválidas, com o motivo |
+| Deduplicação | Amostras válidas | Mesmo ponto e mesmo horário de consulta contam uma vez | Amostras únicas |
+| Decisão | Cada linha | Calcula a espera típica, a maior espera e as consultas sem ônibus previsto e aplica as regras da seção 6 | CRÍTICA, ATENÇÃO, OK ou SEM DADOS |
+| Boletim | Situação das linhas | Gera JSON, HTML e um resumo para leitura em voz alta, com a origem dos dados | Boletim do dia |
+| Publicação | Boletim | Envio autenticado ao MVP, que confere a origem declarada | Boletim disponível na tela do aplicativo |
+| Auditoria | Resultado da execução | Registro em log e em arquivo de auditoria | Evidência de cada execução |
 
 ## 5. Tecnologias e justificativa
 
-| Tecnologia | Uso | Por quê |
+<p class="legenda">Tabela 2. Tecnologias utilizadas</p>
+
+| Tecnologia | Uso | Justificativa |
 |---|---|---|
-| Python 3.11 | Robôs | Aceito no slide 47; versionável e testável; o grupo já usa Python na IA |
-| requests | HTTP com retry | Simples e padrão de mercado |
-| PyYAML | Configuração | Regras e pontos editáveis sem mexer no código |
-| Jinja2 | HTML do boletim | Escapa conteúdo automaticamente (segurança) |
-| GitHub Actions | Agendamento | Gratuito; `rpa-coleta.yml` e `rpa-diario.yml`, com segredos fora do código |
-| pytest | Testes | Cenários reproduzíveis e automáticos |
-| FastAPI (mock) | Testes e demo sem backend | Mesmo contrato OpenAPI do MVP |
-| bpmn.io | Fluxo | Padrão BPMN 2.0 exigido |
+| Python 3.11 | Os dois robôs | Linguagem aceita pelo enunciado, versionável e testável; já usada pela equipe |
+| requests | Chamadas HTTP com novas tentativas | Biblioteca simples e consolidada |
+| PyYAML | Pontos monitorados e limites das regras | Permite ajustar regras e pontos sem alterar o código |
+| Jinja2 | HTML do boletim | Escape automático de conteúdo, o que evita injeção de HTML |
+| GitHub Actions | Agendamento das execuções | Gratuito, com segredos guardados fora do código |
+| pytest | Testes automatizados | Cenários reproduzíveis de sucesso, decisão e falha |
+| FastAPI | Simulador do MVP para testes | Implementa o mesmo contrato OpenAPI do MVP real |
+| bpmn.io | Modelagem do fluxo | Ferramenta aderente ao padrão BPMN 2.0 |
 
 ## 6. Regras de negócio, decisões e processamento
 
-A Olho Vivo informa **previsões** de chegada, não chegadas observadas, e o GTFS da SPTrans descreve a maioria das linhas por frequência. Uma previsão sozinha não prova atraso. Por isso o boletim é **ESTIMADO** e mede o que o dado real sustenta: a espera prevista em cada consulta.
+A API Olho Vivo da SPTrans informa **previsões** de chegada, e não chegadas observadas. Além disso, a maior parte das
+linhas é programada por frequência, e não por horário fixo. Uma previsão isolada, portanto, não comprova atraso. Por
+isso o boletim é classificado como **ESTIMADO** e mede o que o dado real permite afirmar: a espera prevista no momento
+de cada consulta.
 
-| Situação | Regra (limites no YAML, seção `regras_estimadas`) |
+<p class="legenda">Tabela 3. Regras de decisão por linha</p>
+
+| Situação | Regra |
 |---|---|
-| CRÍTICA | espera típica prevista > 30 min |
-| ATENÇÃO | espera típica > 20 min, **ou** maior espera > 30 min, **ou** sem ônibus previsto em 50% ou mais das consultas |
-| OK | abaixo dos limites |
-| SEM DADOS | menos de 3 consultas com previsão da linha (o robô não decide no escuro) |
+| CRÍTICA | Espera típica prevista acima de 30 minutos |
+| ATENÇÃO | Espera típica acima de 20 minutos, **ou** maior espera acima de 30 minutos, **ou** nenhum ônibus previsto em 50% ou mais das consultas |
+| OK | Abaixo de todos os limites |
+| SEM DADOS | Menos de 3 consultas com previsão para a linha, caso em que o robô não decide |
 
-- Se menos de 50% das janelas de coleta do dia foram cobertas, o boletim avisa "amostragem parcial".
-- Sentidos opostos de uma linha não se somam (não reduzem a espera de quem está no ponto).
-- Sem amostra real, o boletim sai como **INDISPONÍVEL**. Só com o MVP em modo demonstração o robô usa o histórico simulado, sempre rotulado. Real e simulado nunca se misturam.
-- Os limites são hipóteses iniciais documentadas e ficam no YAML, para a gestora ajustar.
+As regras são aplicadas dentro de estruturas de repetição: o coletor percorre a coleção de pontos monitorados e o robô
+do boletim percorre todas as amostras na validação e todas as linhas na decisão. Outras regras completam o
+processamento:
 
-Execuções reais de 13/11/2026:
-
-- Coleta em produção (GitHub Actions): 6 pontos consultados, 111 ônibus previstos em 46 linhas-ponto, 6 amostras gravadas, 0 rejeitadas.
-- Boletim do dia 12/11 publicado como **INDISPONÍVEL**: a coleta ainda não existia nesse dia, e o robô não inventou números.
-- Boletim do dia 13/11 (execução de 14/11): 17 consultas válidas, 24 linhas avaliadas, 6 em **ATENÇÃO** e 18 dentro dos limites, com aviso de "amostragem parcial" (17 de 48 janelas). O agendador gratuito do GitHub atrasa e pula execuções, e o boletim informa a cobertura real.
-- Execução local contra a SPTrans real: 6 amostras e boletim ESTIMADO com aviso de "amostragem parcial" (`logs/rpa_2026-11-13.log`).
-- Boletim do dia 14/11 (execução de 15/11): 11 consultas válidas de 48 (22,9%), também publicado com o aviso de amostragem parcial.
-
-**Investigação da cobertura (15/11/2026).** O cron previa 8 coletas por dia, mas o histórico do GitHub Actions mostra
-só 3 execuções para o dia 13 (09h54, 16h31 e 21h51 em São Paulo; a primeira foi disparada à mão) e 2 para o dia 14
-(13h30 e 19h15). As demais simplesmente não aparecem no histórico (exportado em
-`docs/evidencias/rpa_execucoes_20261115.json`), e o `rpa-diario` das 06h chegou a rodar com até 8 h de atraso. A
-explicação mais provável é o comportamento documentado do GitHub: agendamentos `schedule` podem atrasar ou não rodar
-em horários de alta carga. Não temos log do lado do GitHub que prove o descarte de cada horário. Cada coleta que rodou consultou os 6 pontos. Das 18 consultas do dia 13, 17 foram válidas: às 21h52 a SPTrans
-não tinha previsão para o ponto 630015011 (resposta 404 "sem previsão"), e um HTTP 503 às 16h33 foi recuperado na
-segunda tentativa. No dia 14, a consulta das 19h15 ao ponto 340015324 também voltou "sem previsão". Os logs das
-execuções (artefatos `rpa-coleta-*`) não mostram falha de persistência nem de publicação. A causa da cobertura baixa
-é a falta de execuções agendadas, não a coleta em si.
-
-Correções: a coleta passou para o minuto 17 de cada horário, longe da virada da hora, que o GitHub aponta como o horário de
-maior carga. O script `scripts/genai/garantir-rpa.ps1`, iniciado junto com a GenAI no PC do projeto, confere a última
-execução a cada 15 minutos. Para cada horário do cron, ele espera 25 minutos de tolerância e, se até o fim da janela
-de 2 horas daquele horário nenhuma execução tiver sido criada, dispara o mesmo workflow pelo `gh workflow run` (no
-máximo 3 tentativas por horário). Para o boletim, exige uma execução bem-sucedida no dia depois das 07h; falhas e
-cancelamentos contam como tentativa, também com limite de 3. O script não coleta dados e
-não usa os segredos do RPA. O boletim continua informando a cobertura real e nunca completa as lacunas.
+- se menos da metade das janelas de coleta do dia foi coberta, o boletim avisa que a amostragem foi parcial;
+- sentidos opostos de uma mesma linha não são somados, porque isso reduziria artificialmente a espera de quem está no
+  ponto;
+- sem amostra real, o boletim é publicado como **INDISPONÍVEL**, sem números. O histórico simulado só é usado quando o
+  MVP está em modo de demonstração e aparece sempre rotulado como **SIMULADO**. Dados reais e simulados nunca se
+  misturam;
+- os limites são hipóteses iniciais documentadas no arquivo de configuração, para que a equipe de gestão possa
+  ajustá-los.
 
 ## 7. Tratamento de exceções e recuperação
 
-| Exceção | Tratamento | Saída |
-|---|---|---|
-| MVP fora ao ler as amostras | 3 tentativas com backoff; republica o último boletim marcado como **desatualizado**, com o motivo | 2 |
-| Publicação recusada ou MVP fora ao publicar | Salva o boletim em `saida/` e registra a falha | 1 |
-| Coletor sem acesso ao MVP | Guarda o lote em `saida/pendentes/` e reenvia na execução seguinte | 1 |
-| Chave inválida (401/403) | Não insiste e orienta conferir `RPA_API_KEY` | 1 |
-| Resposta fora do contrato | Descarta a consulta e registra o motivo | 0 |
-| Mais da metade das amostras inconsistente | Gera o boletim com aviso de baixa confiabilidade | 0 |
+<p class="legenda">Tabela 4. Exceções previstas e tratamento</p>
 
-Nenhuma falha é silenciosa: toda exceção aparece no log, na auditoria e, quando afeta o cidadão, no próprio boletim.
+| Exceção | Tratamento | Código de saída |
+|---|---|---|
+| MVP fora do ar ao ler as amostras | 3 tentativas com esperas de 2 s e 4 s; se persistir, republica o último boletim marcado como **desatualizado**, com o motivo | 2 |
+| Publicação recusada ou MVP fora do ar ao publicar | Salva o boletim localmente e registra a falha | 1 |
+| Coletor sem acesso ao MVP | Guarda o lote e o reenvia na execução seguinte | 1 |
+| Chave de acesso inválida | Não insiste e orienta conferir a chave | 1 |
+| Resposta fora do contrato (vazia, HTML ou formato inesperado) | Descarta a consulta e registra o motivo | 0 |
+| Amostras duplicadas ou inconsistentes | Deduplica e descarta com motivo; se mais da metade for inconsistente, publica com aviso de baixa confiabilidade | 0 |
+| Nova execução no mesmo dia | O boletim do dia é substituído, sem duplicar registros | 0 |
+
+Nenhuma falha é silenciosa: toda exceção aparece no log, no registro de auditoria e, quando afeta o passageiro, no
+próprio boletim.
 
 ## 8. Logs e evidências de auditoria
 
-- `logs/rpa_AAAA-MM-DD.log`: data/hora, nível, etapa e mensagem (início, recebidos, validação por motivo, decisão por linha, publicação, fim com código).
-- `logs/auditoria.jsonl`: um JSON por execução com status, código de saída, estatísticas, linhas por situação, fonte dos dados, erros e duração.
-- Sem dados sensíveis: o veículo chega anonimizado e a chave é mascarada por filtro.
+Cada execução gera dois registros, sem dados sensíveis:
 
-Trecho real da coleta em produção (13/11/2026, GitHub Actions):
+- **log diário**, com data e hora, nível, etapa e mensagem: início, itens recebidos, validação por motivo, decisão por
+  linha, publicação e encerramento com o código de saída;
+- **registro de auditoria**, com um JSON por execução contendo situação, código de saída, estatísticas, linhas por
+  situação, origem dos dados, erros e duração.
+
+A chave de acesso é mascarada por um filtro de log, e o identificador do veículo chega anonimizado do MVP.
+
+<p class="legenda">Trecho real do log da coleta em produção (13/11/2026)</p>
+
 ```
 INFO | pf_rpa.coletor | Ponto 260015039: 44 ônibus previstos em 16 linhas (consultado em 2026-11-13T09:54:15-03:00)
 INFO | pf_rpa.coletor | Ponto 340015323: 25 ônibus previstos em 6 linhas (consultado em 2026-11-13T09:54:17-03:00)
 INFO | pf_rpa.coletor | Envio: 6 gravadas, 0 duplicadas, 0 rejeitadas
 ```
 
-Trecho real do boletim sem amostras do dia:
+<p class="legenda">Trecho real do log do boletim de um dia sem amostras</p>
+
 ```
 INFO | pf_rpa.robo | Nenhuma amostra real válida para 2026-11-12 | modo do MVP: REAL | fallback simulado: somente_demo -> INDISPONIVEL
 INFO | pf_rpa.robo | Boletim publicado no MVP (POST /boletim)
@@ -135,44 +145,91 @@ INFO | pf_rpa.robo | Boletim publicado no MVP (POST /boletim)
 
 ## 9. Integração com o MVP
 
-O resultado é consumido por outro componente via API. O coletor lê as previsões no backend Spring Boot (que consulta a SPTrans pelo gateway da Prefeitura) e grava as amostras em PostgreSQL (`POST /api/rpa/amostras`). O robô do boletim lê essas amostras e publica em `POST /boletim`. O backend confere se a proveniência declarada bate com as amostras gravadas, guarda o boletim e o serve em `GET /boletim` para a tela do Angular, que lê o `resumo_falado` em voz alta e mostra o selo **Estimado**, **Simulado** ou **Indisponível**. Contrato: `contratos/openapi-integracao.yaml`.
-
-Execuções no GitHub Actions: https://github.com/pedrobicas/ponto-falante/actions/workflows/rpa-coleta.yml e https://github.com/pedrobicas/ponto-falante/actions/workflows/rpa-diario.yml. Tela `/boletim` do MVP publicado em 14/11/2026, com o primeiro boletim estimado a partir de consultas reais:
+O resultado é consumido por outro componente da CitizenTech por meio de API. O coletor lê as previsões no backend
+Spring Boot, que consulta a SPTrans pelo gateway da Prefeitura, e grava as amostras no PostgreSQL. O robô do boletim lê
+essas amostras e publica o boletim no backend, que confere se a origem declarada corresponde às amostras gravadas antes
+de armazená-lo. A tela de boletim do aplicativo Angular exibe a situação de cada linha, lê o resumo em voz alta e mostra
+o selo **Estimado**, **Simulado** ou **Indisponível**. Todas as chamadas seguem o contrato OpenAPI compartilhado entre
+os componentes e são autenticadas por chave.
 
 ![Boletim de 13/11/2026 no MVP publicado, com o selo Estimado](../assets/boletim_producao_20261114.png)
 
+<p class="legenda">Figura 2. Boletim de 13/11/2026 na tela do MVP publicado, gerado a partir de consultas reais</p>
+
 ## 10. Testes realizados
 
-53 testes automatizados, todos passando em 15/11/2026: os 46 da validação de 14/11 e 7 novos de falha (timeout com
-backoff, resposta vazia ou em HTML, 503 seguido de recuperação e reexecução no mesmo dia sem duplicar). Cenários e
-saídas em `tests/EVIDENCIAS.md`; a suíte também roda na CI a cada push.
+A suíte automatizada tem 53 testes, todos aprovados, e roda na integração contínua a cada alteração do código. Os
+testes de ponta a ponta usam o simulador do MVP com o mesmo contrato da API real.
 
-| Tipo | Cenário | Resultado |
+<p class="legenda">Tabela 5. Cenários de teste</p>
+
+| Tipo | Cenário | Resultado obtido |
 |---|---|---|
-| Sucesso com dado real | Amostras reais → boletim; coletor com sucesso parcial | Boletim ESTIMADO; o coletor grava só amostras da SPTrans |
-| Sucesso (simulado rotulado) | Ponta a ponta contra o mock | Boletim publicado e igual ao `GET /boletim` |
-| Decisão | Perfis de espera e limites exatos | CRÍTICA, ATENÇÃO, OK e SEM DADOS conferidos |
-| Sem dado real | MVP real sem amostras; coletor diante de dado de demonstração | INDISPONÍVEL, sem números inventados; simulação nunca gravada como real |
-| Falha | MVP fora, chave recusada, publicação fora, retry | Boletim anterior marcado como desatualizado; lote pendente reenviado; 3 tentativas com esperas de 2 s e 4 s |
-| Segurança | Chave no log | Mascarada |
+| Sucesso com dado real | Amostras reais até o boletim; coletor com sucesso parcial | Boletim ESTIMADO; só amostras da SPTrans são gravadas |
+| Sucesso simulado | Execução de ponta a ponta contra o simulador | Boletim publicado e idêntico ao consultado na API |
+| Decisão | Perfis de espera nos limites exatos de cada regra | CRÍTICA, ATENÇÃO, OK e SEM DADOS conforme a Tabela 3 |
+| Sem dado real | MVP real sem amostras; coletor diante de dado de demonstração | Boletim INDISPONÍVEL, sem números; dado simulado nunca gravado como real |
+| Falha de disponibilidade | MVP fora do ar (HTTP 503), tempo esgotado, recuperação na tentativa seguinte | 3 tentativas com esperas de 2 s e 4 s; recuperação ou republicação marcada como desatualizada |
+| Falha de dados | Resposta vazia, em HTML ou fora do contrato; registros duplicados | Consulta descartada com motivo; duplicados contados uma única vez |
+| Falha de publicação | Publicação recusada; chave inválida | Boletim salvo localmente; lote pendente reenviado depois |
+| Idempotência | Duas execuções para a mesma data | Um único boletim, sem duplicidade |
+| Segurança | Chave de acesso presente na mensagem de log | Chave mascarada |
 
-**Evidência do vídeo (gravado em 14/11/2026, das 23:08 às 23:19):** todos os comandos rodaram durante a gravação. A coleta real em modo somente leitura consultou 6 pontos pela API publicada e encontrou 27 ônibus previstos, sem gravar nada. O histórico do GitHub Actions mostra as coletas e os boletins agendados. A execução completa contra o MVP local, rotulada **SIMULADO**, recebeu 349 registros: 330 válidos, 9 inválidos e 10 duplicados. Ela classificou 1 linha como CRÍTICA, 2 em ATENÇÃO e 2 OK, gerou JSON e HTML e publicou com código 0. A falha foi provocada no mesmo MVP local: HTTP 503, 3 tentativas com esperas observadas de 2 s e 4 s, boletim anterior republicado como **desatualizado**, código 2 e registro na auditoria. A produção foi só lida: boletim de 13/11 com 17 consultas, 35,4% de cobertura, 24 linhas e 6 em atenção, também citado pela assistente. Registro: `docs/evidencias/video_rpa_20261115.md`. A gravação não incluiu a suíte de testes, executada à parte.
+Parte desses cenários foi executada novamente na gravação do vídeo. Contra o MVP local em modo de demonstração, o robô recebeu
+349 registros (330 válidos, 9 inválidos e 10 duplicados), classificou 1 linha como CRÍTICA, 2 em ATENÇÃO e 2 OK e
+publicou o boletim com código 0. Com o MVP fora do ar (HTTP 503), fez 3 tentativas, republicou o boletim anterior como
+desatualizado e encerrou com código 2, com o registro correspondente na auditoria.
 
-## 11. Segurança e LGPD
+## 11. Resultados em produção
 
-- Não há dado pessoal no processo: só previsões de ônibus; veículo anonimizado por hash.
-- `RPA_API_KEY` e `MVP_URL` só em variáveis de ambiente e nos Secrets do GitHub; `.gitignore` bloqueia `.env`.
-- Publicação e gravação autenticadas por chave; HTML gerado com escape automático.
-- Pessoa no circuito: o boletim recomenda que a gestora confira as linhas em atenção antes de agir.
-- **Origem dos dados:** real (consultas à SPTrans com data e hora), estimado (esperas calculadas a partir de previsões, nunca atrasos medidos), simulado (só em modo demonstração, sempre rotulado) e indisponível (sem dados, sem números).
+O MVP publicado recebe as coletas e os boletins reais desde 13/11/2026. A primeira coleta em produção consultou os 6
+pontos e encontrou 111 ônibus previstos, distribuídos em 46 combinações de linha e ponto, gravando 6 amostras sem
+nenhuma rejeição. O boletim de 12/11 saiu como **INDISPONÍVEL**, porque a coleta ainda não existia nesse dia, e o robô
+não inventou números.
 
-## 12. Links
+<p class="legenda">Tabela 6. Boletins publicados com dados reais</p>
 
-- Repositório GitHub: https://github.com/pedrobicas/ponto-falante (privado, pasta `rpa/`)
-- URL pública do repositório sanitizado: **[PENDENTE: URL_REPOSITORIO_PUBLICO]**.
-- MVP publicado: https://ponto-falante.onrender.com/boletim
-- Vídeo local: `entregaveis/Ponto_Falante_RPA.mp4`, **2 min 12 s (132 s, abaixo do limite de 180 s)**, 1920 x 1080, sem áudio e sem música, pronto para narração.
-- Roteiro final: `entregaveis/ROTEIRO_RPA.md`.
-- URL pública do vídeo: **[PENDENTE: URL_VIDEO_RPA]**. O repositório segue privado; nenhuma entrega no Teams foi realizada.
+| Dia | Consultas válidas | Cobertura das janelas | Linhas avaliadas | Resultado |
+|---|---|---|---|---|
+| 13/11/2026 | 17 de 48 | 35,4% | 24 | 6 em ATENÇÃO e 18 dentro dos limites, com aviso de amostragem parcial |
+| 14/11/2026 | 11 de 48 | 22,9% | 10 | 1 em ATENÇÃO e 9 dentro dos limites; outras 18 linhas, com poucas consultas, ficaram sem decisão; aviso de amostragem parcial |
 
-O vídeo mostra a execução ponta a ponta do robô de boletim no MVP local, do comando à publicação com código 0, entre 01:00 e 01:21. A coleta real, o agendamento e o boletim publicado são trechos de produção identificados pelo selo DADOS REAIS ou ESTIMADO. Entre 01:21 e 01:44 aparecem a falha, a recuperação e a auditoria. O material atende ao conteúdo demonstrativo das pp. 46-50 do enunciado; a aceitação e a nota cabem à avaliação docente.
+A cobertura ficou abaixo do previsto porque várias execuções agendadas no GitHub Actions não chegaram a rodar: o
+histórico mostra 3 coletas no dia 13 e 2 no dia 14, contra 8 programadas. Cada coleta que rodou consultou todos os
+pontos, e os logs não mostram falha de gravação ou de publicação. A explicação mais provável é o comportamento
+documentado do agendador gratuito, que pode atrasar ou não executar tarefas em horários de alta demanda. Como medidas,
+as coletas foram movidas para fora da virada da hora e foi criada uma verificação complementar que dispara a coleta
+quando a execução agendada não acontece. O boletim continua informando a cobertura real e nunca completa lacunas com
+dados estimados.
+
+## 12. Segurança e LGPD
+
+- **Dados pessoais:** o processo não trata dados pessoais, apenas previsões de ônibus; o identificador do veículo
+  chega anonimizado.
+- **Credenciais:** a chave de acesso e o endereço do MVP ficam só em variáveis de ambiente e nos segredos do GitHub,
+  nunca no código ou nos logs.
+- **Autenticação:** a gravação de amostras e a publicação do boletim exigem chave; o HTML é gerado com escape
+  automático.
+- **Pessoa no circuito:** o boletim recomenda que a equipe de gestão confira as linhas em atenção antes de agir.
+- **Transparência da origem:** cada boletim declara se os dados são reais (consultas à SPTrans com data e hora),
+  estimados (esperas calculadas a partir de previsões, nunca atrasos medidos), simulados (só em modo de demonstração,
+  sempre rotulados) ou indisponíveis (sem números).
+
+## 13. Conclusão
+
+A automação substitui uma rotina manual de consulta, comparação e redação por dois robôs agendados que coletam dados
+reais, aplicam regras de decisão explicáveis e publicam o resultado no MVP, onde ele é lido em voz alta para o
+passageiro. O tratamento de exceções cobre indisponibilidade, dados inválidos, duplicidade e falha de publicação, e
+nenhuma falha passa despercebida: todas ficam registradas no log, na auditoria e, quando necessário, no próprio
+boletim.
+
+A principal limitação observada é a irregularidade do agendador gratuito, que reduziu a cobertura dos primeiros dias.
+O sistema lida com isso de forma honesta, publicando a cobertura real em vez de completar as lacunas. Como evolução,
+a equipe considera usar um agendador dedicado e ampliar o número de pontos monitorados.
+
+## 14. Links
+
+- Repositório público: **<!--link:repositorio-->[INSERIR LINK DO REPOSITÓRIO PÚBLICO]<!--/link-->** (código do robô na
+  pasta `rpa/`)
+- Vídeo demonstrativo: **<!--link:video_rpa-->[INSERIR LINK DO VÍDEO RPA]<!--/link-->**
+- MVP publicado, tela do boletim: https://ponto-falante.onrender.com/boletim

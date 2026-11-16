@@ -94,7 +94,7 @@ Teste inédito (40 perguntas, rodado uma única vez, adjudicado às cegas):
 | Agente v1 (padrão do produto) | 47,5% | 66,7% | 0,0% |
 | Agente v2 (qwen2.5:7b) | 55,0% | 20,0% | 15,0% |
 
-No desenvolvimento a v2 chegou a 93,3%; a queda no inédito está analisada na [seção 11 do relatório](genai/RELATORIO.md).
+No desenvolvimento a v2 chegou a 93,3%; a queda no inédito está analisada no [registro técnico da GenAI](genai/docs/REGISTRO_TECNICO.md).
 O produto usa o agente v1 por padrão (não errar é prioridade para quem ouve a resposta); `PF_MODO=v2` ativa a v2.
 
 ## Executar localmente

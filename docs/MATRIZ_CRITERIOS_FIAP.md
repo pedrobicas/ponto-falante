@@ -1,6 +1,6 @@
 # Matriz de critérios oficiais · GenAI, RPA e Secure DevOps
 
-Fonte: `Global_Solution_2026_2_CitizenTech_FIAP.pdf` (enunciado oficial), lido em 15/11/2026. GenAI: pp. 28–31; RPA:
+Fonte: `Global_Solution_2026_2_CitizenTech_FIAP.pdf` (enunciado oficial), lido em 15/11/2026; seções conferidas com os relatórios reescritos em 16/11/2026. GenAI: pp. 28–31; RPA:
 pp. 45–50; Secure DevOps: pp. 51–53. Prazo comum: **19/11/2026, 23h55**, no Teams de cada disciplina.
 Situação: **OK** (cumprido com evidência), **PENDENTE** (depende de ação do integrante) ou **LACUNA** (não existe no repositório).
 
@@ -10,17 +10,17 @@ Entrega: links do repositório público no Teams; relatório no GitHub.
 
 | # | Exigido | Onde está | Como foi testado / evidência | Situação |
 |---|---|---|---|---|
-| 01 (0,5) | Tarefa da IA e casos de teste com gabarito, incluindo "não consta" | `genai/RELATORIO.md` §2 e §6; `genai/avaliacao/perguntas_dev.jsonl`, `perguntas.jsonl`, `v2/`, `v3/` | Conjuntos separados DEV/teste; notebook 02 confere que não compartilham trechos | OK |
-| 02 (1,0) | Base de conhecimento em trechos com fonte | `genai/base/` (244 trechos, `fontes.csv`, `tabela_base.csv`) | Notebook 01 com saídas; §5 do relatório | OK |
-| 03 (1,0) | Recall@1 e @3 medidos, limiar justificado | Notebook 02; `avaliacao/recall_dev.csv`, `recall_teste_final.csv`, `curva_limiar_dev.*` | Escolha no DEV (limiar 0,86), medida final no teste; §7.1 | OK |
+| 01 (0,5) | Tarefa da IA e casos de teste com gabarito, incluindo "não consta" | `genai/RELATORIO.md` §3 e §7; `genai/avaliacao/perguntas_dev.jsonl`, `perguntas.jsonl`, `v2/`, `v3/` | Conjuntos separados DEV/teste; notebook 02 confere que não compartilham trechos | OK |
+| 02 (1,0) | Base de conhecimento em trechos com fonte | `genai/base/` (244 trechos, `fontes.csv`, `tabela_base.csv`) | Notebook 01 com saídas; §5 do relatório (Tabela 2) | OK |
+| 03 (1,0) | Recall@1 e @3 medidos, limiar justificado | Notebook 02; `avaliacao/recall_dev.csv`, `recall_teste_final.csv`, `curva_limiar_dev.*` | Escolha no DEV (limiar 0,86), medida final no teste; §8.1 | OK |
 | 04 (2,0) | Geração fundamentada: JSON válido, citação e recusa | `genai/src/pf_genai/`, `genai/api/`; notebook 03 | 155 testes `pytest` (15/11: 155 aprovados); placar com 100% JSON válido e citações válidas | OK |
-| 05 (2,0) | Especialização (LoRA ou agente) comparada ao RAG simples | Agente em 5 passos; §4, §7.2, §11–13 | Placar das três configurações no teste fechado, rodado uma vez | OK |
-| 06 (2,0) | Placar das três configurações, interpretado | `avaliacao/placar_teste.csv`, `placar_teste.png`; §7.2–7.3 | Leitura honesta inclui onde a v2/v3 não generalizou | OK |
-| 07 (1,0) | 5 erros reais com proposta de correção | `avaliacao/erros.md`; §8 e §12 | Erros tirados do teste, com causa e correção | OK |
+| 05 (2,0) | Especialização (LoRA ou agente) comparada ao RAG simples | Agente em 5 passos; §4.2, §6 e §8.2–8.4 | Placar das três configurações no teste fechado, rodado uma vez | OK |
+| 06 (2,0) | Placar das três configurações, interpretado | `avaliacao/placar_teste.csv`, `placar_teste.png`; §8.2–8.4 | Leitura honesta inclui onde a v2/v3 não generalizou | OK |
+| 07 (1,0) | 5 erros reais com proposta de correção | `avaliacao/erros.md`; §9 (Tabela 10) | Erros tirados do teste, com causa e correção | OK |
 | 08 (0,5) | README e reprodutibilidade | `genai/README.md`; `scripts/genai/` | Comandos de reprodução; CI roda os testes a cada push | OK |
 | Rel. 01 | Nome completo e RM | §1 do relatório | `VALIDACAO_DOCUMENTOS.json`: `rms_presentes = true` | OK |
-| Rel. 02–06 | Ficha técnica, diagramas, tabela da base, performance, 5 erros | §2, §3, §5, §7, §8 | PDF revisado página a página em 15/11 | OK |
-| Rel. 07 | Conclusão técnica e links do repositório e do vídeo | §9 e §14 | Links do vídeo e do repositório público ainda são `[PENDENTE: URL_VIDEO_GENAI]` e `[PENDENTE: URL_REPOSITORIO_PUBLICO]` | PENDENTE |
+| Rel. 02–06 | Ficha técnica, diagramas, tabela da base, performance, 5 erros | §2, §4, §5, §8, §9 | PDF revisado página a página em 16/11 | OK |
+| Rel. 07 | Conclusão técnica e links do repositório e do vídeo | §12 e §13 | Links do vídeo e do repositório público ainda são `[INSERIR LINK DO VÍDEO GENAI]` e `[INSERIR LINK DO REPOSITÓRIO PÚBLICO]`, preenchidos a partir de `docs/links_entrega.json` | PENDENTE |
 | Repo | Repositório **público** com `notebooks/`, `base/`, `avaliacao/`, `README.md` | Estrutura existe em `genai/` | O repositório atual é privado; a cópia pública sanitizada depende de autorização | PENDENTE |
 | Integração | Rodar integrada ao produto, segura e conforme a LGPD | `/api/chat` no MVP publicado; chave de serviço; sem persistência de perguntas | Validação de operação em `docs/evidencias/genai_operacao_20261115.md` | OK, com o PC ligado |
 
@@ -30,7 +30,7 @@ Entrega: PDF com todas as informações, link do vídeo (até 3 min) e do Git, n
 
 | Exigido | Onde está | Como foi testado / evidência | Situação |
 |---|---|---|---|
-| 01 Mapeamento do processo (BPMN) | `rpa/docs/fluxo.bpmn`, `fluxo.png`; PDF §4 e anexo em paisagem (pp. 9–13) | Recortes conferidos visualmente; fluxo bate com o código (3 tentativas, republicação, pendentes, publicação) | OK |
+| 01 Mapeamento do processo (BPMN) | `rpa/docs/fluxo.bpmn`, `fluxo.png`; PDF §4 (Figura 1) e Anexo A em paisagem (pp. 9–11) | Recortes conferidos visualmente; fluxo bate com o código (3 tentativas, republicação, pendentes, publicação) | OK |
 | 02 Desenvolvimento em Python versionado | `rpa/src/pf_rpa/` | 53 testes `pytest` aprovados em 15/11 | OK |
 | 03 Decisão e repetição | `decisao.py` (CRÍTICA/ATENÇÃO/OK/SEM DADOS), laços por ponto e por amostra | `test_regra_estimada_limites`, `test_decisao_com_dados_do_mock` | OK |
 | 04 Exceções e resiliência | `cliente_mvp.py`, `robo.py`, `coletor.py` | MVP fora, 503, timeout, corpo inválido, duplicados, chave recusada, reexecução (`tests/EVIDENCIAS.md`) | OK |
@@ -38,8 +38,8 @@ Entrega: PDF com todas as informações, link do vídeo (até 3 min) e do Git, n
 | 06 Integração com o MVP | `POST /api/rpa/amostras`, `POST /boletim`, tela `/boletim`, assistente | Boletins de 13/11 e 14/11 publicados em produção, com período, última atualização e cobertura | OK |
 | 07 Testes de sucesso, decisão e falha | `rpa/tests/` | 53 aprovados; vídeo mostra sucesso, decisão e falha 503 rotulados | OK |
 | 08 Repositório público com README | `rpa/README.md`, `src/`, `docs/`, `assets/`, `logs/`, `tests/` | Estrutura conferida | PENDENTE (repositório privado) |
-| PDF: integrantes, problema, objetivo, fluxo, tecnologias, regras, exceções, logs, integração, testes, LGPD | `entregaveis/Relatorio_RPA.pdf` (13 pp.), cópia em `rpa/docs/relatorio.pdf` | Revisão visual de todas as páginas em 15/11; hash em `VALIDACAO_DOCUMENTOS.json` | OK |
-| PDF: link do repositório e do vídeo | §12 | `[PENDENTE: URL_REPOSITORIO_PUBLICO]`, `[PENDENTE: URL_VIDEO_RPA]` | PENDENTE |
+| PDF: integrantes, problema, objetivo, fluxo, tecnologias, regras, exceções, logs, integração, testes, LGPD | `entregaveis/Relatorio_RPA.pdf` (11 pp.), cópia em `rpa/docs/relatorio.pdf` | Revisão visual de todas as páginas em 16/11; hash em `VALIDACAO_DOCUMENTOS.json` | OK |
+| PDF: link do repositório e do vídeo | §14 | `[INSERIR LINK DO REPOSITÓRIO PÚBLICO]`, `[INSERIR LINK DO VÍDEO RPA]`, preenchidos a partir de `docs/links_entrega.json` | PENDENTE |
 | Vídeo até 3 min: problema, ponta a ponta, decisão, integração, falha | `entregaveis/Ponto_Falante_RPA.mp4` (132 s, sem áudio) e `ROTEIRO_RPA.md` | Decodificação completa; trechos simulados rotulados | PENDENTE (narração e hospedagem) |
 
 Observação sobre os dados: a cobertura de 13/11 (35,4%) e 14/11 (22,9%) é baixa porque o agendador gratuito do GitHub

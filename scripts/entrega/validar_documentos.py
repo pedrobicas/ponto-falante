@@ -2,7 +2,7 @@
 
 Uso na raiz: .venv/Scripts/python.exe scripts/entrega/validar_documentos.py
 Também é chamado no fim de gerar_pdfs.py. Registra páginas, tamanho, SHA-256, links clicáveis, presença dos RMs
-e dos placeholders padronizados [PENDENTE: ...] que ainda precisam ser trocados pelas URLs reais.
+e dos placeholders [INSERIR LINK ...] que ainda dependem de docs/links_entrega.json.
 """
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ def validar(pdf: Path) -> dict:
         'sha256': hashlib.sha256(dados).hexdigest(),
         'urls': urls,
         'rms_presentes': all(rm in planos for rm in RMS),
-        'pendencias': sorted(set(re.findall(r'\[PENDENTE: [A-Z_]+\]', planos))),
+        'pendencias': sorted(set(re.findall(r'\[INSERIR LINK [^\]]+\]', planos))),
         'paginas_sem_texto': [i + 1 for i, p in enumerate(leitor.pages) if not (p.extract_text() or '').strip()],
     }
 

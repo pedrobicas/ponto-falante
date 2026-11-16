@@ -35,7 +35,7 @@ Base oficial: pp. 29-31. O relatório não precisa ser PDF; precisa estar no Git
 | Recall@1/@3, limiar, JSON, citações, recusa e comparação entre configurações | Relatório, seções 6-7 e iterações documentadas | Usar os resultados já salvos e identificar o ciclo mostrado |
 | Cinco erros reais, causas e correções; conclusão | Relatório, seções 8-9; análises posteriores separadas | Nenhuma nova avaliação necessária |
 | Notebooks com saídas, API e reprodução | Quatro notebooks com saídas salvas, API e [README GenAI](../genai/README.md) | Abertura pública e, se possível, reprodução em outra máquina |
-| Link do vídeo no relatório | MP4 silencioso de 142 s e [roteiro final](../entregaveis/ROTEIRO_GENAI.md) validados | Narrar, hospedar e inserir a URL em `genai/RELATORIO.md` e `genai/README.md` |
+| Link do vídeo no relatório | MP4 silencioso de 142 s e [roteiro final](../entregaveis/ROTEIRO_GENAI.md) validados | Narrar, hospedar e preencher `video_genai` em `docs/links_entrega.json` |
 | Repositório público | Código local e remoto privado preservados | Publicar cópia sanitizada e atualizar os links |
 
 O PDF oficial exige vídeo, mas **não fixa duração para GenAI** nessas páginas. Os três minutos do roteiro são uma
@@ -100,9 +100,9 @@ evidências específicas exigidas abaixo.
 | Campo | Onde finalizar |
 |---|---|
 | URL pública do MVP | https://ponto-falante.onrender.com |
-| URL do repositório sanitizado | Atualizar `README.md`, `genai/README.md`, `genai/RELATORIO.md`, `rpa/README.md` e `rpa/docs/relatorio.md` após publicação |
-| Vídeo GenAI | Preencher em `genai/RELATORIO.md` e `genai/README.md` |
-| Vídeo RPA | Preencher em `rpa/docs/relatorio.md` e `rpa/README.md`, então regenerar o PDF |
+| URL do repositório sanitizado | Preencher `repositorio` em `docs/links_entrega.json` e rodar `scripts/entrega/gerar_pdfs.py` |
+| Vídeo GenAI | Preencher `video_genai` em `docs/links_entrega.json` |
+| Vídeo RPA | Preencher `video_rpa` em `docs/links_entrega.json` e regenerar os PDFs |
 | Anexo do Teams RPA | `entregaveis/Relatorio_RPA.pdf` (cópia idêntica em `rpa/docs/relatorio.pdf`), após inserir URLs |
 | Envio do Teams GenAI | Link do repositório público, apontando para `genai/` e seu relatório |
 | Comprovantes de envio | Guardar somente depois da submissão real; sem declarar entrega antecipadamente |
