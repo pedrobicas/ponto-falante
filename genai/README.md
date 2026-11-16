@@ -163,7 +163,8 @@ use as instruções de serviço em [`scripts/genai/README.md`](../scripts/genai/
 
 ## Links
 
-- Repositório atual: https://github.com/pedrobicas/ponto-falante (privado; cópia pública sanitizada depende de autorização).
-- Vídeo final local: [Ponto_Falante_GenAI.mp4](../entregaveis/Ponto_Falante_GenAI.mp4), 2min22s (142 s), 1920 x 1080, sem áudio e sem música.
-- [Roteiro para narração humana](../entregaveis/ROTEIRO_GENAI.md) · [Evidências e limites observados](../docs/evidencias/video_genai_20261115.md).
-- Hospedagem e URL pública do vídeo ainda pendentes. `entregaveis/` é uma pasta local ignorada pelo Git.
+- Repositório: <!--link:repositorio-->[INSERIR LINK DO REPOSITÓRIO PÚBLICO]<!--/link-->
+- Vídeo da GenAI integrada ao produto (2min22s): <!--link:video_genai-->[INSERIR LINK DO VÍDEO GENAI]<!--/link-->
+- Relatório: [RELATORIO.md](RELATORIO.md) · Registro técnico detalhado: [docs/REGISTRO_TECNICO.md](docs/REGISTRO_TECNICO.md)
+- Evidências e limites observados no vídeo: [video_genai_20261115.md](../docs/evidencias/video_genai_20261115.md)
+- MVP publicado: https://ponto-falante.onrender.com/assistente
