@@ -1,6 +1,6 @@
 # Primeiro deploy público
 
-Atualização (11/11): a branch `integracao/mvp` foi integrada à `main` (merge 0340e03) e o Blueprint agora aponta para `main`. O Blueprint, usa apenas planos **Free**, inicia SPTrans em demonstração e deixa GenAI opcional/desligado no primeiro deploy.
+Atualização (11/11): a branch de integração do MVP foi integrada à `main` (merge 0340e03) e o Blueprint agora aponta para `main`. O Blueprint, usa apenas planos **Free**, inicia SPTrans em demonstração e deixa GenAI opcional/desligado no primeiro deploy.
 
 ## O que falta autorizar/conectar
 
@@ -14,7 +14,7 @@ No diretório da branch de integração, apontar `origin` para a URL escolhida e
 
 ```powershell
 git remote add origin https://github.com/pedrobicas/REPOSITORIO.git
-git push -u origin integracao/mvp
+git push -u origin main
 ```
 
 Não enviar `.env`, `.validation`, caches ou arquivos de túnel. A CI deve passar: Python, Spring/PostgreSQL, Angular/acessibilidade, Gitleaks, Semgrep, build Docker, Trivy e teste HTTP da imagem. Não ignorar checks que falhem; examinar e corrigir antes de publicar.
@@ -29,7 +29,7 @@ python scripts/integracao/testar_mvp.py --url https://SERVICO.onrender.com
 
 Verificar no navegador busca `paulista`, abertura do ponto, selo de dados simulados, previsões, ajustes de contraste/letra, botão de voz, chat indisponível de forma amigável e navegação direta em `/sobre`. Publicar um boletim com o RPA e confirmar após reiniciar o serviço. Nunca publicar um sucesso de GenAI se o serviço não estiver ligado.
 
-Para agendar o RPA: **GitHub → Settings → Secrets and variables → Actions**, cadastrar `MVP_URL=https://SERVICO.onrender.com/api` e `RPA_API_KEY` com o valor seguro exibido no Environment do Render. Executar manualmente `rpa-diario` antes de depender do cron. O workflow agendado só roda a partir da branch padrão do GitHub: definir `integracao/mvp` como padrão no primeiro deploy, ou integrar em `main` e atualizar `branch` no Blueprint quanda equipe voltar.
+Para agendar o RPA: **GitHub → Settings → Secrets and variables → Actions**, cadastrar `MVP_URL=https://SERVICO.onrender.com/api` e `RPA_API_KEY` com o valor seguro exibido no Environment do Render. Executar manualmente `rpa-diario` antes de depender do cron. O workflow agendado só roda a partir da branch padrão do GitHub: definir `main` como padrão no primeiro deploy, ou integrar em `main` e atualizar `branch` no Blueprint quanda equipe voltar.
 
 ## GenAI e limites do plano gratuito
 

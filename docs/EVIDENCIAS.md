@@ -89,17 +89,10 @@ Em [evidencias/telas](evidencias/telas): início, ponto, assistente, boletim e a
 
 ## 7. Revisões independentes de código
 
-- Revisão de código 1: registro interno 1.
-  Quatro achados (X-Forwarded-For no limite do chat, login SPTrans concorrente, proveniência do boletim, cota
-  compartilhada da GenAI), todos corrigidos no commit `43720dd` com testes de regressão.
-- Revisão de código 2 (parcial, interrompida pelo limite de uso; a observação registrada foi corrigida):
-  registro interno 2.
-- Revisão de código 3 (12/11/2026, backend: gateway, assistente de tempo real, boletim):
-  registro interno 3. Cinco achados, corrigidos com testes.
-- Revisão de código 4 (13/11/2026, registro do túnel, scripts e poda da v3):
-  registro interno 4. Quatro achados (dois altos),
-  todos corrigidos com testes: desafio HMAC de identidade no registro, registro serializado, disjuntor por geração do
-  endereço e poda desligada no padrão.
+Foram feitas quatro revisões de código entre 11/11 e 13/11/2026 (limite de chamadas do chat, login
+SPTrans concorrente, proveniência do boletim, cota da GenAI, gateway, registro do túnel e poda da v3). Todos os achados
+foram corrigidos com testes de regressão, entre eles o desafio HMAC de identidade no registro, o registro serializado, o
+disjuntor por geração do endereço e a poda desligada no padrão.
 
 ## 8. SPTrans
 
