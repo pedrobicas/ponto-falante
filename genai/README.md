@@ -164,6 +164,6 @@ use as instruções de serviço em [`scripts/genai/README.md`](../scripts/genai/
 ## Links
 
 - Repositório: https://github.com/pedrobicas/ponto-falante
-- Vídeo da GenAI integrada ao produto (2min22s): [INSERIR LINK DO VÍDEO GENAI]
+- Vídeo da GenAI integrada ao produto (2min23s): https://youtu.be/8b0Vu1Txdq4
 - Relatório: [RELATORIO.md](RELATORIO.md) · Registro técnico detalhado: [docs/REGISTRO_TECNICO.md](docs/REGISTRO_TECNICO.md)
 - MVP publicado: https://ponto-falante.onrender.com/assistente

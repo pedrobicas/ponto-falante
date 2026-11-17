@@ -8,6 +8,8 @@ Global Solution FIAP 2026.2 · Engenharia de Software.
 
 - **Aplicação publicada:** https://ponto-falante.onrender.com
 - **Repositório:** https://github.com/pedrobicas/ponto-falante
+- **Vídeos de demonstração:** [Generative AI](https://youtu.be/8b0Vu1Txdq4) · [RPA](https://youtu.be/NPmEduM5GCY) ·
+  [Visão Computacional](https://youtu.be/rMHjmrluxjI)
 
 ## Ficha técnica do MVP
 
@@ -88,16 +90,18 @@ repositório (Gitleaks na CI).
 
 ## GenAI em uma tabela
 
-Teste inédito (40 perguntas, rodado uma única vez, adjudicado às cegas):
+Teste final (46 perguntas inéditas, mesmo `qwen2.5:7b` em todas as configurações, rodado uma única vez), conforme a
+Tabela 8 do [relatório da GenAI](genai/RELATORIO.md):
 
-| Configuração | Acerto | Recusa indevida | Erros factuais/pergunta |
-|---|---|---|---|
-| RAG v1 (qwen2.5:3b) | 47,5% | 3,3% | 27,5% |
-| Agente v1 (padrão do produto) | 47,5% | 66,7% | 0,0% |
-| Agente v2 (qwen2.5:7b) | 55,0% | 20,0% | 15,0% |
+| Configuração | Acerto | Recusa indevida | Recusa correta | Erros factuais/pergunta |
+|---|---|---|---|---|
+| Sem contexto | 8,7% | 0,0% | 15,4% | 34,8% |
+| RAG simples | 65,2% | 9,1% | 69,2% | 15,2% |
+| **RAG com agente (padrão do produto)** | **65,2%** | 21,2% | **84,6%** | **8,7%** |
 
-No desenvolvimento a v2 chegou a 93,3%; a queda no inédito está analisada no [registro técnico da GenAI](genai/docs/REGISTRO_TECNICO.md).
-O produto usa o agente v1 por padrão (não errar é prioridade para quem ouve a resposta); `PF_MODO=v2` ativa a v2.
+O contexto multiplicou o acerto e reduziu os erros factuais em relação ao mesmo modelo sem contexto. O agente empatou
+com o RAG em acerto e errou menos, por isso é o padrão do produto: quem ouve a resposta nem sempre consegue conferi-la.
+Variações testadas depois e a análise completa estão no [registro técnico da GenAI](genai/docs/REGISTRO_TECNICO.md).
 
 ## Executar localmente
 

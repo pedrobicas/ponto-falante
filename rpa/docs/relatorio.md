@@ -229,7 +229,7 @@ a equipe considera usar um agendador dedicado e ampliar o número de pontos moni
 
 ## 14. Links
 
-- Repositório público: **https://github.com/pedrobicas/ponto-falante** (código do robô na
+- Repositório público: https://github.com/pedrobicas/ponto-falante (código do robô na
   pasta `rpa/`)
-- Vídeo demonstrativo: **[INSERIR LINK DO VÍDEO RPA]**
+- Vídeo demonstrativo: https://youtu.be/NPmEduM5GCY
 - MVP publicado, tela do boletim: https://ponto-falante.onrender.com/boletim

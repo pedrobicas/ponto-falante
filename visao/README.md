@@ -22,7 +22,7 @@ Turma 4ES · Engenharia de Software · FIAP
 |---|---|
 | Repositório com documentação e código completo | esta pasta (`visao/`) do monorepo [pedrobicas/ponto-falante](https://github.com/pedrobicas/ponto-falante) |
 | Documento PDF (título, integrantes, resumo, introdução, objetivo, ferramentas, metodologia, resultados, conclusão) | [`resultados/Relatorio_Visao_Ponto_Falante.pdf`](resultados/Relatorio_Visao_Ponto_Falante.pdf) |
-| Vídeo de demonstração da solução funcionando | [INSERIR LINK DO VÍDEO VISÃO] |
+| Vídeo de demonstração da solução funcionando | https://youtu.be/rMHjmrluxjI |
 | Treino customizado de uma arquitetura de visão | YOLO11n com as classes `onibus` e `letreiro` ([dataset](#dataset), [`ferramentas/treinar.py`](ferramentas/treinar.py), [`modelos/best.pt`](modelos/best.pt)) |
 
 - MVP publicado (conferência do letreiro pelo celular): https://ponto-falante.onrender.com/embarque

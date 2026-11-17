@@ -169,6 +169,6 @@ tests/             testes automatizados e evidências
 O vídeo mostra o sistema e as ferramentas executando de verdade na gravação de 14/11/2026, das 23:08 às 23:19. A coleta real somente leitura consultou 6 pontos com 27 ônibus previstos, e o histórico do GitHub Actions mostra as execuções agendadas. A execução completa usa o **MVP local de teste, SIMULADO**: 349 registros recebidos, 330 válidos, 9 inválidos e 10 duplicados; 1 linha CRÍTICA, 2 em ATENÇÃO e 2 OK; código 0. A falha HTTP 503 tem 3 tentativas com esperas de 2 s e 4 s, republicação do boletim anterior como **desatualizado** e código 2. A produção foi só lida: 17 consultas, cobertura de 35,4%, 24 linhas e 6 em atenção no boletim de 13/11.
 
 - Repositório: https://github.com/pedrobicas/ponto-falante
-- Vídeo demonstrativo (2 min 12 s, abaixo do limite de 3 min): [INSERIR LINK DO VÍDEO RPA]
+- Vídeo demonstrativo (2 min 26 s, abaixo do limite de 3 min): https://youtu.be/NPmEduM5GCY
 - Relatório técnico: [docs/relatorio.pdf](docs/relatorio.pdf) (fonte em [docs/relatorio.md](docs/relatorio.md))
 - Boletim publicado no MVP: https://ponto-falante.onrender.com/boletim
