@@ -9,8 +9,7 @@ FIAP · Engenharia de Software 4º ano · Global Solution 2026.2 · CitizenTech 
 
 **Versão de entrega, 14/11/2026.** As seções 6 a 9 preservam o ciclo original com o modelo 3B.
 As seções 11 a 13 registram as iterações posteriores; o produto e o vídeo usam o agente com
-`qwen2.5:7b`. Os placares permanecem congelados. Vídeo e roteiro estão concluídos localmente;
-faltam as URLs de hospedagem do vídeo e do repositório público sanitizado.
+`qwen2.5:7b`. Os placares permanecem congelados.
 
 ## 1. Integrantes
 
@@ -311,7 +310,7 @@ da configuração, com acesso aos trechos-fonte; `adjudicacao_entrada_cega.json`
 
 Concordância entre rubrica automática e adjudicação: 28 a 39 de 40 por configuração.
 
-**Leitura honesta**
+**Interpretação**
 
 - **As metas não foram atingidas no teste inédito.** Acerto ≥ 80% e recusa indevida < 20% foram batidos no desenvolvimento (93,3% e 0%), mas no teste inédito a melhor configuração ficou em 55% e 20%. A diferença entre os dois conjuntos mostra sobreajuste ao desenvolvimento: o agente foi afinado em 30 perguntas e o teste trouxe perguntas compostas ("e no metrô?", "e se não chegar?"), em que a v2 responde só a primeira parte (6 incompletas).
 - **Os erros factuais da v2_7b são reais e graves para o público-alvo:** confundir 30 com 60 minutos (metrô/trem), inverter "não inferior a 1 km", atribuir ao cartão a validade de 90 dias do formulário, exigir comprovante "em seu nome". O verificador por afirmação não pegou trocas de valor entre frases parecidas.
@@ -381,7 +380,7 @@ tempo real). Números da rubrica automática v3.1, sem nenhuma correção manual
 | v3_7b (12/11) | 50,0% | 39,4% | 36,4% | 6,1% | 76,9% | 10,9% | 8,0 s |
 | v3_final | 58,7% | 51,5% | 21,2% | 9,1% | 76,9% | 13,0% | 8,4 s |
 
-**Leitura honesta**
+**Interpretação**
 
 - **A v3 não generalizou.** No DEV ela passou o RAG simples (88,0% contra 82,4%); no teste inédito ficou abaixo dele e
   do agente v1 (58,7% contra 65,2%). As mudanças de 13/11 ajudaram no sentido certo (v3_final +8,7 pontos sobre a v3 de
@@ -412,7 +411,7 @@ O caso 5 mostra o limite da rubrica automática: o placar acima pode ter pequeno
 cada falha foi lida à mão antes de qualquer ajuste.
 
 **Configuração do produto.** O site usa `PF_MODO=agente` com `PF_MODELO=qwen2.5:7b` (a configuração mais segura no
-teste). `PF_MODO=v3` continua disponível, com limiar -2,5 (`PF_LIMIAR_V3`) e **sem** a poda: a revisão adversarial de 13/11 mostrou que a poda deixa passar afirmações sem número da fonte
+teste). `PF_MODO=v3` continua disponível, com limiar -2,5 (`PF_LIMIAR_V3`) e **sem** a poda: a revisão de código de 13/11 mostrou que a poda deixa passar afirmações sem número da fonte
 podada ("a segunda via é gratuita"), e ela saiu do padrão, com teste de regressão. A v3_final do teste fica
 reproduzível em `scripts/rodar_v3.py`. Validado em produção em 13/11: "Tenho 66 anos. Preciso pagar a passagem de ônibus em
 São Paulo?" respondida com 3 fontes (Estatuto da Pessoa Idosa e SPTrans), e "cachorro no ônibus em Curitiba" recusada
@@ -446,19 +445,14 @@ acurácia geral.
 
 ## 14. Links e demonstração final
 
-- Repositório atual (privado): https://github.com/pedrobicas/ponto-falante
-- URL pública do repositório sanitizado: **[PENDENTE: URL_REPOSITORIO_PUBLICO]**.
+- Repositório: https://github.com/pedrobicas/ponto-falante
 - MVP publicado: https://ponto-falante.onrender.com
-- Vídeo final local: [Ponto_Falante_GenAI.mp4](../../entregaveis/Ponto_Falante_GenAI.mp4), **2min22s** (142 s), 1920 x 1080, sem áudio e sem música, preparado para narração humana.
-- [Roteiro de narração](../../entregaveis/ROTEIRO_GENAI.md) e [evidências da captura](../../docs/evidencias/video_genai_20261115.md). A URL pública do vídeo ainda depende de hospedagem; o arquivo local não substitui esse link na entrega FIAP.
-- URL pública do vídeo: **[PENDENTE: URL_VIDEO_GENAI]**.
+- Vídeo de demonstração (2min22s): [INSERIR LINK DO VÍDEO GENAI]
 - Notebooks com saídas: `notebooks/01_base_conhecimento.ipynb`, `02_indice_recall_limiar.ipynb`, `03_geracao_fundamentada.ipynb`, `04_agente_e_placar.ipynb`
 
 ### Demonstração gravada em 14 e 15/11/2026 (versão 3)
 
-O vídeo usa captura direta do site publicado (Edge sem interface controlado pelo Playwright, quadros
-de 1920 x 1080) e montagem reprodutível em `scripts/video/` (`cap_genai.js`, `compor.py`, `edl_genai.json`).
-Ele mostra uma conversa contínua em produção, regravada em 15/11: rota para o Centro pelo cadastro oficial (resposta em
+O vídeo foi gravado diretamente no site publicado, em 1920 x 1080, e mostra uma conversa contínua em produção, regravada em 15/11: rota para o Centro pelo cadastro oficial (resposta em
 cerca de 1,6 s), "quanto falta" e "no sentido contrário" com previsão em tempo real da SPTrans (cerca de 1,5 s cada),
 gratuidade para pessoa de 66 anos com duas fontes citadas (cerca de 7 s), leitura em voz alta, pergunta sobre outra
 cidade (Curitiba) e letra grande com alto contraste, com a conversa preservada. Seguem os diagramas de arquitetura do
@@ -485,5 +479,4 @@ pergunta). Não foi alterado modelo, limiar ou timeout. O agente v1 mantém a re
 "qual o valor da tarifa" podem receber "não encontrei", sempre com indicação para confirmar no 156. O vídeo é silencioso:
 mostra o acionamento da Web Speech API, sem comprovar a reprodução audível em todos os aparelhos.
 
-Nenhuma avaliação final fechada foi aberta ou reexecutada. O repositório permanece privado; hospedagem do vídeo,
-cópia pública sanitizada e envio no Teams continuam pendentes.
+Nenhuma avaliação final fechada foi aberta ou reexecutada para a gravação.

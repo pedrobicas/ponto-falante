@@ -23,7 +23,7 @@ não representam impacto já medido com passageiros.
 | Arquitetura | Angular, Spring Boot, PostgreSQL; GenAI local via FastAPI/Ollama; robôs Python em GitHub Actions |
 | Fontes de dados | Cadastro GTFS e previsões Olho Vivo da SPTrans; documentos oficiais identificados em `genai/base/fontes.csv` |
 | Modelos de IA | Produção: agente com `qwen2.5:7b` local; recuperação FAISS com embeddings multilíngues. Comparações e versões anteriores no relatório GenAI |
-| URL e repositório | Links acima; o repositório será tornado público para a correção |
+| URL e repositório | Links acima |
 | Indicadores de impacto propostos | Proporção de consultas concluídas por voz; tempo para obter uma previsão; sucesso de uso com leitor de tela; compreensão da origem/data do boletim |
 | ODS conectados | ODS 10 (redução das desigualdades) e ODS 11 (cidades e comunidades sustentáveis), pelo acesso à informação de mobilidade |
 
@@ -43,7 +43,7 @@ não representam impacto já medido com passageiros.
 | Spring Boot + PostgreSQL (Flyway) | Publicado no Render (plano gratuito) |
 | Previsões de ônibus | **Real**: dados da Olho Vivo (SPTrans) pelo gateway oficial da Prefeitura (apilib, OAuth2), marcados como "Dados da SPTrans" e sempre como previsão. O login direto da Olho Vivo recusa qualquer chave hoje ([diagnóstico](docs/DIAGNOSTICO_SPTRANS.md)). Sem credenciais, o sistema volta ao modo demonstração com o selo **SIMULADO**. |
 | Boletim de espera prevista (RPA) | O coletor consulta pontos públicos da SPTrans em 8 janelas diárias; o robô diário está agendado para 6h (Brasília). O boletim declara **ESTIMADO**, **SIMULADO** ou **INDISPONIVEL**, data e cobertura. GitHub Actions pode atrasar ou pular janelas; previsão não mede atraso observado. |
-| Assistente (GenAI) | Implementado e avaliado; roda no PC do dono (Ollama + FastAPI) e só fica disponível no site quando o túnel Cloudflare estiver ligado. Sem ele, o chat avisa que está indisponível e o resto funciona. |
+| Assistente (GenAI) | Implementado e avaliado; roda no PC da equipe (Ollama + FastAPI) e só fica disponível no site quando o túnel Cloudflare estiver ligado. Sem ele, o chat avisa que está indisponível e o resto funciona. |
 | Embarque assistido | Implementado: trajetos favoritos, ponto por GPS ou busca com confirmação, acompanhamento das previsões a cada 20 s com avisos por voz que não se repetem, assistente que executa as ações (com confirmação) e funciona sem a GenAI. [Detalhes](docs/EMBARQUE_ASSISTIDO.md) |
 | Visão computacional (conferência do letreiro) | **Integrada**: o celular fotografa o letreiro e o modelo da equipe (YOLO11n treinado com ônibus de SP + EasyOCR, [pasta `visao/`](visao/README.md)) confere se é a linha esperada. O modelo precisa de ~1,5 GB de memória, então roda no PC da equipe (na CPU, de 3 a 6,5 s por foto) e entra no site pelo túnel, como a GenAI; com o PC desligado a tela diz "indisponível agora" e não abre a câmera. Nenhum resultado é simulado. [Detalhes](visao/INTEGRACAO.md) |
 | Câmera fixa do ponto (visão) | `visao/src/demo.py --contrato mvp` envia ao MVP o que a câmera viu (`POST /api/integracoes/visao/deteccoes`, inclusive "ônibus sem linha lida"); a câmera do ponto é simulada com vídeo/fotos |
@@ -52,10 +52,7 @@ não representam impacto já medido com passageiros.
 Regras do produto: dado simulado nunca aparece como real; previsão nunca aparece como chegada observada.
 
 Exemplos públicos: Avenida Paulista, 1374 (ponto `70016916`) e linha `875A-10`, conferidos no GTFS empacotado.
-O cadastro oficial completo permanece intacto; exemplos, testes e roteiros usam apenas locais públicos.
-
-Entrega FIAP: [checklist atual e sequência de envio](docs/ENTREGA_FIAP.md), [matriz de critérios](docs/MATRIZ_CRITERIOS_FIAP.md), [roteiro GenAI](genai/ROTEIRO_VIDEO.md)
-e [roteiro RPA](rpa/docs/roteiro_video.md). Não repetir os conjuntos finais fechados para gravar uma demonstração.
+O cadastro oficial completo permanece intacto; exemplos e testes usam apenas locais públicos.
 
 ## Arquitetura
 
@@ -64,7 +61,7 @@ flowchart LR
   U[Usuário<br/>navegador / leitor de tela] -->|HTTPS| R[Render: imagem Docker única<br/>Angular + Spring Boot 3 / Java 21]
   R --> DB[(PostgreSQL)]
   R -->|Olho Vivo v2.1| S[SPTrans]
-  R -->|X-API-Key, Cloudflare Tunnel| G[FastAPI GenAI<br/>PC do dono]
+  R -->|X-API-Key, Cloudflare Tunnel| G[FastAPI GenAI<br/>PC da equipe]
   G --> O[Ollama qwen2.5<br/>local]
   G --> F[(FAISS e5-large<br/>8 docs, 244 trechos)]
   A[GitHub Actions cron] -->|RPA Python| R
@@ -87,7 +84,7 @@ repositório (Gitleaks na CI).
 | `visao/` | Visão computacional: dataset, treino YOLO11n, OCR, métricas, [relatório](visao/resultados/Relatorio_Visao_Ponto_Falante.pdf) e o serviço HTTP usado pelo MVP ([integração](visao/INTEGRACAO.md)) |
 | `contratos/` | OpenAPI público do MVP e contrato da API GenAI |
 | `scripts/` | Execução local, testes de integração, SPTrans e scripts PowerShell do GenAI/túnel |
-| `docs/` | Arquitetura, revisão dos critérios, integração, deploy e diagnóstico SPTrans |
+| `docs/` | Arquitetura, embarque assistido, SPTrans e evidências de testes em produção |
 
 ## GenAI em uma tabela
 
@@ -157,6 +154,5 @@ expira 30 dias após a criação. A configuração do serviço está em [render.
 
 ## Documentos
 
-[Arquitetura](docs/ANALISE_E_ARQUITETURA.md) · [Matriz de critérios FIAP](docs/MATRIZ_CRITERIOS_FIAP.md) ·
-[SPTrans](docs/SPTRANS.md) · [Relatório GenAI](genai/RELATORIO.md) ·
-[RPA](rpa/README.md) · [Contrato público](contratos/openapi-mvp.yaml) · [Evidências](docs/EVIDENCIAS.md)
+[Arquitetura](docs/ARQUITETURA.md) · [SPTrans](docs/SPTRANS.md) · [Relatório GenAI](genai/RELATORIO.md) ·
+[RPA](rpa/README.md) · [Visão](visao/README.md) · [Contrato público](contratos/openapi-mvp.yaml) · [Evidências](docs/EVIDENCIAS.md)

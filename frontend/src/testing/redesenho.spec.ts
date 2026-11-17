@@ -70,7 +70,7 @@ describe('Assistente', () => {
     fixture.detectChanges();
   }
 
-  it('mostra disponibilidade parcial com honestidade', async () => {
+  it('mostra disponibilidade parcial com clareza', async () => {
     const fixture = await montar({ sptrans: 'DEMO', assistente: 'INDISPONIVEL', assistente_tempo_real: true });
     const texto = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(texto).toContain('Responde sobre horários em tempo real; dúvidas gerais indisponíveis no momento');

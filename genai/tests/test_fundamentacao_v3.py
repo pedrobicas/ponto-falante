@@ -123,7 +123,7 @@ def test_poda_remove_fonte_sem_evidencia_mas_audita_numeros(monkeypatch):
 
 
 def test_padrao_recusa_fonte_usada_sem_evidencia_mesmo_sem_numero(monkeypatch):
-    # Revisão adversarial de 13/11: a afirmação qualitativa da fonte sem citação não pode passar.
+    # Revisão de código de 13/11: a afirmação qualitativa da fonte sem citação não pode passar.
     a = achado("A primeira via do cartão é gratuita.")
     b = achado("A segunda via exige pagamento de tarifa.", "sptrans-bilhete-pcd")
     g = {"resposta": "A primeira e a segunda via são gratuitas.", "nao_consta": False,

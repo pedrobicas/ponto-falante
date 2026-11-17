@@ -62,7 +62,7 @@ Fluxo completo em [`docs/fluxo.bpmn`](docs/fluxo.bpmn) (abre em https://demo.bpm
 
 ## Integração com o MVP
 
-Contrato em [`../contratos/openapi-integracao.yaml`](../contratos/openapi-integracao.yaml) e guia para o backend Spring Boot em [`../contratos/GUIA_BACKEND_SPRING.md`](../contratos/GUIA_BACKEND_SPRING.md).
+Contrato em [`../contratos/openapi-integracao.yaml`](../contratos/openapi-integracao.yaml); a implementação no backend fica em `../backend/src/main/java/br/fiap/pontofalante/rpa/`.
 
 ```
 Coletor --GET /pontos/{cod}/previsoes--> Spring Boot --> SPTrans (gateway da Prefeitura)
@@ -144,7 +144,7 @@ data/              gtfs_ficticio/ (rede fictícia) e gtfs_sptrans/ (GTFS real, o
 src/pf_rpa/        robo.py (orquestrador), cliente_mvp.py, gtfs.py, validacao.py, decisao.py,
                    boletim.py, armazenamento.py, registro.py, agendador.py
 tools/mock_mvp.py  imita o backend para testes e demo sem o Spring Boot
-docs/              fluxo.bpmn, fluxo.png, relatorio.md (base do PDF), roteiro_video.md
+docs/              fluxo.bpmn, fluxo.png, relatorio.md e relatorio.pdf
 assets/            exemplos de boletim e prints
 logs/              amostras de logs sem dados sensíveis
 tests/             testes automatizados e evidências
@@ -166,9 +166,9 @@ tests/             testes automatizados e evidências
 
 ## Links
 
-O vídeo mostra o sistema e as ferramentas executando de verdade na gravação de 14/11/2026, das 23:08 às 23:19. A coleta real somente leitura consultou 6 pontos com 27 ônibus previstos, e o histórico do GitHub Actions mostra as execuções agendadas. A execução completa usa o **MVP local de teste, SIMULADO**: 349 registros recebidos, 330 válidos, 9 inválidos e 10 duplicados; 1 linha CRÍTICA, 2 em ATENÇÃO e 2 OK; código 0. A falha HTTP 503 tem 3 tentativas com esperas de 2 s e 4 s, republicação do boletim anterior como **desatualizado** e código 2. A produção foi só lida: 17 consultas, cobertura de 35,4%, 24 linhas e 6 em atenção no boletim de 13/11. Evidência: [`video_rpa_20261115.md`](../docs/evidencias/video_rpa_20261115.md).
+O vídeo mostra o sistema e as ferramentas executando de verdade na gravação de 14/11/2026, das 23:08 às 23:19. A coleta real somente leitura consultou 6 pontos com 27 ônibus previstos, e o histórico do GitHub Actions mostra as execuções agendadas. A execução completa usa o **MVP local de teste, SIMULADO**: 349 registros recebidos, 330 válidos, 9 inválidos e 10 duplicados; 1 linha CRÍTICA, 2 em ATENÇÃO e 2 OK; código 0. A falha HTTP 503 tem 3 tentativas com esperas de 2 s e 4 s, republicação do boletim anterior como **desatualizado** e código 2. A produção foi só lida: 17 consultas, cobertura de 35,4%, 24 linhas e 6 em atenção no boletim de 13/11.
 
-- Repositório: <!--link:repositorio-->[INSERIR LINK DO REPOSITÓRIO PÚBLICO]<!--/link-->
-- Vídeo demonstrativo (2 min 12 s, abaixo do limite de 3 min): <!--link:video_rpa-->[INSERIR LINK DO VÍDEO RPA]<!--/link-->
+- Repositório: https://github.com/pedrobicas/ponto-falante
+- Vídeo demonstrativo (2 min 12 s, abaixo do limite de 3 min): [INSERIR LINK DO VÍDEO RPA]
 - Relatório técnico: [docs/relatorio.pdf](docs/relatorio.pdf) (fonte em [docs/relatorio.md](docs/relatorio.md))
 - Boletim publicado no MVP: https://ponto-falante.onrender.com/boletim

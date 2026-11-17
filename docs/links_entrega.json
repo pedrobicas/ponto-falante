@@ -1,6 +1,0 @@
-{
-  "_como_usar": "Preencha as URLs publicas e rode: .venv/Scripts/python.exe scripts/entrega/gerar_pdfs.py. O script troca os placeholders nos relatorios (Markdown) e regenera os dois PDFs. Deixe vazio o que ainda nao foi publicado.",
-  "repositorio": "",
-  "video_genai": "",
-  "video_rpa": ""
-}

@@ -42,7 +42,7 @@ CONFIGS_V3 = {
     "v3_7b_poda": replace(BASE_V3, nome="v3_7b_poda", podar_sem_evidencia=True),
     "v3_7b_poda_l25": replace(BASE_V3, nome="v3_7b_poda_l25", podar_sem_evidencia=True, limiar_rerank=-2.5),
     # v3_final = configuração do teste final de 13/11 (mesmos parâmetros de v3_7b_poda_l25). Explícita porque a poda
-    # saiu do padrão da ConfigV3 depois da revisão adversarial.
+    # saiu do padrão da ConfigV3 depois da revisão de código.
     "v3_final": ConfigV3("v3_final", limiar_rerank=-2.5, podar_sem_evidencia=True),
 }
 OUTRAS = ["sem_contexto", "rag_v1", "agente_v1", "v2_7b"]

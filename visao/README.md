@@ -22,7 +22,7 @@ Turma 4ES · Engenharia de Software · FIAP
 |---|---|
 | Repositório com documentação e código completo | esta pasta (`visao/`) do monorepo [pedrobicas/ponto-falante](https://github.com/pedrobicas/ponto-falante) |
 | Documento PDF (título, integrantes, resumo, introdução, objetivo, ferramentas, metodologia, resultados, conclusão) | [`resultados/Relatorio_Visao_Ponto_Falante.pdf`](resultados/Relatorio_Visao_Ponto_Falante.pdf) |
-| Vídeo de demonstração da solução funcionando | link do YouTube (não listado): *a inserir após a publicação* · roteiro e narração em [`docs/roteiro_video.md`](docs/roteiro_video.md) |
+| Vídeo de demonstração da solução funcionando | [INSERIR LINK DO VÍDEO VISÃO] |
 | Treino customizado de uma arquitetura de visão | YOLO11n com as classes `onibus` e `letreiro` ([dataset](#dataset), [`ferramentas/treinar.py`](ferramentas/treinar.py), [`modelos/best.pt`](modelos/best.pt)) |
 
 - MVP publicado (conferência do letreiro pelo celular): https://ponto-falante.onrender.com/embarque
@@ -100,8 +100,7 @@ src/cliente_api.py     integração com a API do MVP (timeout, retry, fila local
 src/privacidade.py     borra rostos e região da placa
 src/demo.py            demonstração em tempo real (vídeo, pasta de imagens ou webcam)
 src/api_fake.py        API falsa com o mesmo contrato, para testar sem o MVP
-relatorio/             gerador do relatório PDF (lê resultados/metricas.json) e info.txt
-docs/                  dataset e licenças, créditos das imagens, roteiro do vídeo
+docs/                  dataset, licenças e créditos das imagens
 tests/                 testes automatizados (pytest)
 modelos/best.pt        pesos treinados do YOLO11n (5 MB)
 modelos/face_detection_yunet_2023mar.onnx  detector de rostos (OpenCV Zoo) para anonimização
@@ -145,11 +144,9 @@ pytest -q
 ```
 
 ### 5. Relatório
-```bash
-python relatorio/gerar_relatorio.py --resultados resultados --saida resultados/Relatorio_Visao_Ponto_Falante.pdf
-```
-Os integrantes e os links ficam em `relatorio/info.txt`; depois de publicar o vídeo, preencha `VIDEO:` e gere o PDF de novo.
-A seção de integração com o MVP vem de `resultados/integracao_mvp.json` (conferências reais no site publicado).
+O relatório está em [`resultados/Relatorio_Visao_Ponto_Falante.pdf`](resultados/Relatorio_Visao_Ponto_Falante.pdf). As métricas
+vêm de `resultados/metricas.json` e a seção de integração, de `resultados/integracao_mvp.json` (conferências reais no
+site publicado).
 
 ## Integração com o MVP
 O modelo está integrado ao Ponto Falante publicado: a tela de Embarque Assistido usa a câmera do celular para

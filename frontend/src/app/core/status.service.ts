@@ -14,7 +14,7 @@ export class StatusService {
   private pedido: Promise<void> | null = null;
   private sequencia = 0;
 
-  /** Situação honesta do assistente: a IA local pode estar fora e os horários em tempo real continuarem. */
+  /** Situação real do assistente: a IA local pode estar fora e os horários em tempo real continuarem. */
   readonly assistente = computed<SituacaoAssistente>(() => {
     // Um status antigo não deve continuar anunciando a IA como disponível
     // quando a verificação mais recente falhou.

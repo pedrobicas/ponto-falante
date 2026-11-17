@@ -4,7 +4,7 @@ info:
   version: "1.0.0"
   description: |
     Contratos entre o backend (Spring Boot) e os módulos Python de GenAI e RPA.
-    Segue o "Prompt 0" do grupo; acréscimos marcados como NOVO.
+    Segue o contrato comum do grupo; acréscimos marcados como NOVO.
     Segredos (RPA_API_KEY, LLM_URL) só em variável de ambiente.
 servers:
   - url: http://localhost:8080

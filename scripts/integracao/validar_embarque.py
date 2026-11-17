@@ -6,7 +6,7 @@ Uso (com o app rodando, por exemplo `python scripts/integracao/rodar_mvp_local.p
 
 Cobre: escolher e confirmar o ponto, escolher a linha, acompanhar com aviso falado, salvar o trajeto,
 comandos da assistente com confirmação, retomar após recarregar, usar o favorito, câmera ainda não conectada
-(mensagem honesta, sem resultado inventado), "Embarquei", apagar dados, acessibilidade (axe, WCAG 2.1 AA)
+(mensagem clara, sem resultado inventado), "Embarquei", apagar dados, acessibilidade (axe, WCAG 2.1 AA)
 em desktop e celular, e ausência de rolagem horizontal no celular. Salva capturas em output/playwright/.
 """
 import argparse
@@ -100,7 +100,7 @@ def fluxo_desktop(page: Page, base: str, r: dict) -> None:
     page.get_by_role("button", name="Repetir aviso").click()
     page.wait_for_function(f"(window.__falas || []).length > {qtd}")
 
-    # 5. Câmera sem modelo conectado: mensagem honesta e nenhum resultado.
+    # 5. Câmera sem modelo conectado: mensagem clara e nenhum resultado.
     page.get_by_role("button", name="Conferir o letreiro pela câmera").click()
     expect(page.locator(".camera")).to_contain_text("ainda não está conectada", timeout=10000)
     if page.locator(".camera__resultado").count():

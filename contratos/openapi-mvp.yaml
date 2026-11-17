@@ -6,7 +6,7 @@ info:
     Única API que o Angular consome. Todas as rotas ficam sob /api. O Angular compilado é
     servido pelo próprio Spring Boot (mesma origem, sem CORS).
 
-    Regras de honestidade dos dados (valem para toda resposta):
+    Regras de transparência dos dados (valem para toda resposta):
     - `fonte` diz de onde veio o dado: OLHO_VIVO (API real da SPTrans) ou SIMULADO (modo demonstrativo).
     - `tipo` = PREVISAO para horários estimados pela SPTrans. Uma previsão NUNCA é apresentada
       como chegada. Passagens registradas no histórico têm `tipo_registro`.

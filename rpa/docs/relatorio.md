@@ -224,12 +224,12 @@ nenhuma falha passa despercebida: todas ficam registradas no log, na auditoria e
 boletim.
 
 A principal limitação observada é a irregularidade do agendador gratuito, que reduziu a cobertura dos primeiros dias.
-O sistema lida com isso de forma honesta, publicando a cobertura real em vez de completar as lacunas. Como evolução,
+O sistema lida com isso de forma transparente, publicando a cobertura real em vez de completar as lacunas. Como evolução,
 a equipe considera usar um agendador dedicado e ampliar o número de pontos monitorados.
 
 ## 14. Links
 
-- Repositório público: **<!--link:repositorio-->[INSERIR LINK DO REPOSITÓRIO PÚBLICO]<!--/link-->** (código do robô na
+- Repositório público: **https://github.com/pedrobicas/ponto-falante** (código do robô na
   pasta `rpa/`)
-- Vídeo demonstrativo: **<!--link:video_rpa-->[INSERIR LINK DO VÍDEO RPA]<!--/link-->**
+- Vídeo demonstrativo: **[INSERIR LINK DO VÍDEO RPA]**
 - MVP publicado, tela do boletim: https://ponto-falante.onrender.com/boletim

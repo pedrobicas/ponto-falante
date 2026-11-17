@@ -179,7 +179,7 @@ describe('tela de embarque', () => {
     fixture.destroy();
   });
 
-  it('câmera não conectada é honesta: não abre a câmera nem mostra resultado inventado', async () => {
+  it('câmera não conectada avisa claramente: não abre a câmera nem mostra resultado inventado', async () => {
     TestBed.configureTestingModule({ imports: [ConferirLetreiro], providers: providers() });
     const fixture = TestBed.createComponent(ConferirLetreiro);
     fixture.componentRef.setInput('linha', '8000-10');

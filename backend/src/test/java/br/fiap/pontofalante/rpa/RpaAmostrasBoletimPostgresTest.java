@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** Coletor de amostras reais (POST/GET /api/rpa/amostras) e categorias de honestidade do boletim. */
+/** Coletor de amostras reais (POST/GET /api/rpa/amostras) e categorias de transparência do boletim. */
 @SpringBootTest(properties = {"PF_SPTRANS_MODO=demo", "pf.sptrans-token=", "pf.genai-url=",
         "pf.rpa-api-key=chave-rpa-teste"})
 @AutoConfigureMockMvc

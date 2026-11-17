@@ -1,4 +1,4 @@
-# GenAI no PC do dono
+# GenAI no PC da equipe
 
 Requisitos locais: Windows PowerShell 5.1, Ollama no PATH, Python >= 3.11
 com `genai/requirements.txt`, modelo Ollama e indice preparados conforme
@@ -18,9 +18,9 @@ Spring. Perguntas sobre regras usam a base documental da GenAI.
    com uma chave aleatoria. Configure a mesma chave no Spring Boot e envie-a
    no header `X-API-Key`, nunca na URL.
 2. Se necessario, defina `GENAI_PYTHON` com o caminho completo do Python do
-   ambiente virtual. A busca padrao usa `.venv/Scripts/python.exe` do worktree,
+   ambiente virtual. A busca padrao usa `.venv/Scripts/python.exe` da pasta atual,
    depois do checkout principal, depois `python.exe` do PATH.
-3. Execute da raiz do worktree em um PowerShell que permita scripts locais:
+3. Execute da raiz do repositorio em um PowerShell que permita scripts locais:
 
    ```powershell
    powershell.exe -NoProfile -File scripts/genai/iniciar.ps1 -SomenteLocal
@@ -89,9 +89,8 @@ fora do repositorio, no diretorio local de configuracao do cloudflared.
 O Spring publicado no Render nao consegue acessar o `127.0.0.1` do PC. Para
 esse cenario e necessario um caminho de rede autorizado ate a FastAPI local.
 Isso nao muda a execucao da LLM: ela continua no Ollama do PC.
-Nenhum tunel, DNS ou credencial foi configurado por esta retomada.
 
-**Os passos abaixo expoem a API e so devem ser executados pelo dono apos decidir
+**Os passos abaixo expoem a API na internet; execute-os so quando quiser
 essa exposicao.** Mantenha `GENAI_AUTH_DESATIVADA=0`, a chave no Spring e na API
 e as portas 8001/11434 em loopback. Nunca exponha o Ollama diretamente.
 
@@ -101,7 +100,7 @@ processo e reiniciado. Nao possui garantia de disponibilidade e destina-se a
 testes. [Documentacao oficial de Quick Tunnels](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/).
 
 ```powershell
-# Executar somente apos a autorizacao de exposicao, em terminal proprio.
+# Em terminal proprio.
 cloudflared tunnel --url http://127.0.0.1:8001
 ```
 
@@ -114,8 +113,7 @@ o Quick Tunnel, use Ctrl+C no proprio terminal; `parar.ps1` nao administra esse
 processo externo.
 
 Para URL estavel, um tunel nomeado requer conta/configuracao e pode envolver DNS.
-Nao altere `pedrobicas.com` como parte da demonstracao. Use apenas um dominio
-explicitamente autorizado pelo dono. Siga a
+Use um dominio proprio. Siga a
 [documentacao de tunel nomeado da Cloudflare](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/local-management/create-local-tunnel/):
 
 ```powershell
@@ -144,7 +142,7 @@ Nao basta o processo `cloudflared` estar ativo para declarar integracao concluid
 
 O iniciar fixa `OLLAMA_HOST=127.0.0.1:11434`. Um Ollama ja iniciado e reutilizado
 se estiver em loopback; listener publico provoca erro e precisa ser encerrado
-pelo dono antes de reiniciar. A API usa `127.0.0.1:8001`, um worker e access log
+antes de reiniciar. A API usa `127.0.0.1:8001`, um worker e access log
 desativado. Nao publique essas portas diretamente. `CF-Connecting-IP` tem
 prioridade no limitador; acesso externo a API deve ocorrer apenas pelo Tunnel.
 
@@ -152,7 +150,7 @@ prioridade no limitador; acesso externo a API deve ocorrer apenas pelo Tunnel.
 Reexecutar iniciar nao duplica processos gerenciados. Para aplicar mudancas nas
 variaveis, execute parar e iniciar. Mudancas no modo de autenticacao exigem
 esse reinicio antes de reutilizar a API. Parar encerra a arvore dos processos que
-este worktree iniciou, conferindo PID, instante de criacao e executavel para
+esta copia do repositorio iniciou, conferindo PID, instante de criacao e executavel para
 proteger contra PID reutilizado. Ollama e cloudflared externos sao preservados.
 Os logs sao mantidos ao parar e substituidos na proxima inicializacao.
 

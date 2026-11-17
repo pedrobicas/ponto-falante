@@ -76,7 +76,7 @@ pf:
   # pela câmera responde 503 e a tela diz que não está disponível.
   visao-url: ${PF_VISAO_URL:}
   # Chave entre o backend e o serviço de visão. Sem PF_VISAO_SERVICO_CHAVE, usa a GENAI_API_KEY: os dois serviços
-  # rodam no mesmo PC do dono e as provas de identidade usam prefixos diferentes.
+  # rodam no mesmo PC da equipe e as provas de identidade usam prefixos diferentes.
   visao-servico-chave: ${PF_VISAO_SERVICO_CHAVE:${GENAI_API_KEY:}}
   dispositivo-api-key: ${DISPOSITIVO_API_KEY:}
   dados-api-key: ${DADOS_API_KEY:}
