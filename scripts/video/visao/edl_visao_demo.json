@@ -1,0 +1,159 @@
+{
+ "fps": 30,
+ "cauda": 0.8,
+ "planos": [
+  {
+   "imagem": "scripts/video/visao/01_abertura.jpg",
+   "fundo": "#F7F5F0",
+   "dur": 5,
+   "transicao": 0,
+   "nota": "abertura"
+  },
+  {
+   "cena": "visao_terminal",
+   "de": 9.0,
+   "ate": 12.0,
+   "capitulo": "Modelo rodando · src/demo.py",
+   "selo": "modelo",
+   "nota": "demo.py iniciado (fotos simulam a câmera)"
+  },
+  {
+   "cena": "visao_terminal",
+   "de": 90.5,
+   "ate": 96.0,
+   "capitulo": "Modelo rodando · src/demo.py",
+   "selo": "modelo",
+   "nota": "1º anúncio 647P-10"
+  },
+  {
+   "cena": "visao_terminal",
+   "de": 96.0,
+   "ate": 365.5,
+   "vel": 60,
+   "capitulo": "Modelo rodando · src/demo.py",
+   "selo": "modelo",
+   "nota": "5109-10 (acelerado)"
+  },
+  {
+   "cena": "visao_terminal",
+   "de": 365.5,
+   "ate": 371.0,
+   "capitulo": "Modelo rodando · src/demo.py",
+   "selo": "modelo",
+   "nota": "não consegui ler a linha"
+  },
+  {
+   "cena": "visao_terminal",
+   "de": 371.0,
+   "ate": 524.0,
+   "vel": 50,
+   "capitulo": "Modelo rodando · src/demo.py",
+   "selo": "modelo",
+   "nota": "2100-10, 288, 695H-10 (acelerado)"
+  },
+  {
+   "cena": "visao_terminal",
+   "de": 524.0,
+   "ate": 531.0,
+   "capitulo": "Modelo rodando · src/demo.py",
+   "selo": "modelo",
+   "nota": "detecções recebidas pela API"
+  },
+  {
+   "cena": "demo_equipe",
+   "de": "inicio",
+   "ate": "fim",
+   "selo": "saida",
+   "nota": "vídeo anotado (resultados/demo.mp4)"
+  },
+  {
+   "cena": "visao_confere_borrada",
+   "de": "linhas-0.5",
+   "ate": "linhas+5.5",
+   "capitulo": "No MVP publicado · linha esperada 647P-10",
+   "selo": "site",
+   "nota": "marca a linha esperada"
+  },
+  {
+   "cena": "visao_confere_borrada",
+   "de": "enviada-2",
+   "ate": "enviada+1",
+   "capitulo": "No MVP publicado · linha esperada 647P-10",
+   "selo": "site",
+   "nota": "envia a foto"
+  },
+  {
+   "cena": "visao_confere_borrada",
+   "de": "enviada+1",
+   "ate": "resultado",
+   "vel": 3,
+   "capitulo": "No MVP publicado · linha esperada 647P-10",
+   "selo": "site",
+   "nota": "espera do modelo (acelerada)"
+  },
+  {
+   "cena": "visao_confere_borrada",
+   "de": "resultado",
+   "ate": "resultado+5.5",
+   "capitulo": "No MVP publicado · linha esperada 647P-10",
+   "selo": "site",
+   "nota": "CONFERE"
+  },
+  {
+   "cena": "visao_outra_linha_borrada",
+   "de": "enviada-1.5",
+   "ate": "enviada+1",
+   "capitulo": "Linha esperada 477P-10 · foto de um 647P-10",
+   "selo": "site",
+   "nota": "envia a foto"
+  },
+  {
+   "cena": "visao_outra_linha_borrada",
+   "de": "enviada+1",
+   "ate": "resultado",
+   "vel": 3,
+   "capitulo": "Linha esperada 477P-10 · foto de um 647P-10",
+   "selo": "site",
+   "nota": "espera (acelerada)"
+  },
+  {
+   "cena": "visao_outra_linha_borrada",
+   "de": "resultado",
+   "ate": "resultado+5",
+   "capitulo": "Linha esperada 477P-10 · foto de um 647P-10",
+   "selo": "site",
+   "nota": "outra linha"
+  },
+  {
+   "cena": "visao_inconclusivo_borrada",
+   "de": "enviada-1.5",
+   "ate": "enviada+1",
+   "capitulo": "Letreiro só com o destino",
+   "selo": "site",
+   "nota": "envia a foto"
+  },
+  {
+   "cena": "visao_inconclusivo_borrada",
+   "de": "enviada+1",
+   "ate": "resultado",
+   "vel": 3,
+   "capitulo": "Letreiro só com o destino",
+   "selo": "site",
+   "nota": "espera (acelerada)"
+  },
+  {
+   "cena": "visao_inconclusivo_borrada",
+   "de": "resultado",
+   "ate": "resultado+5",
+   "capitulo": "Letreiro só com o destino",
+   "selo": "site",
+   "nota": "inconclusivo"
+  },
+  {
+   "imagem": "scripts/video/visao/10_conclusao.jpg",
+   "fundo": "#F7F5F0",
+   "dur": 6,
+   "nota": "repositório"
+  }
+ ]
+}

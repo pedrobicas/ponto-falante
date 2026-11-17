@@ -16,7 +16,9 @@ const VISAO = path.join(RAIZ, 'visao');
 const SITE = 'https://ponto-falante.onrender.com';
 const PONTO = { busca: 'Avenida Brigadeiro Faria Lima 3015', codigo: '3407210' };
 const DEMO = path.join(VISAO, 'amostras', 'imagens', 'demo');
-const [CENAS, TRAB] = process.argv.slice(2, 4).map((p) => path.resolve(p));
+const [CENAS, TRAB] = process.argv.slice(2, 4).map((p) => path.resolve(p));  // nosemgrep -- pastas de saída escolhidas pelo próprio operador na linha de comando
+const NOME_SEGURO = /^[a-z0-9_]+$/;
+const FOTO_SEGURA = /^[A-Za-z0-9_-]+\.jpg$/;
 const SO = process.argv.slice(4);
 const quer = (n) => !SO.length || SO.includes(n);
 
@@ -27,6 +29,7 @@ function pythonVisao() {
 }
 
 async function conferencia(nav, nome, linha, foto) {
+  if (!NOME_SEGURO.test(nome) || !FOTO_SEGURA.test(foto)) throw new Error('cena ou foto inválida: ' + nome + ' ' + foto);
   const info = { cena: nome, ponto: PONTO.codigo, linha_esperada: linha, foto };
   await gravar(nav, CENAS, nome, async (c, page) => {
     await page.goto(SITE + '/embarque', { waitUntil: 'networkidle', timeout: 120000 });
@@ -79,7 +82,7 @@ async function conferencia(nav, nome, linha, foto) {
     const pedido = page.waitForRequest((r) => r.url().includes('/api/embarque/visao/conferir'), { timeout: 30000 });
     const resposta = page.waitForResponse((r) => r.url().includes('/api/embarque/visao/conferir'), { timeout: 120000 });
     await espera(700);
-    await seletor.setFiles(path.join(DEMO, foto));
+    await seletor.setFiles(path.join(DEMO, foto));  // nosemgrep -- foto fixa do roteiro, validada por FOTO_SEGURA
     const req = await pedido;
     const t0 = Date.now();
     c.marcar('enviada');
@@ -103,9 +106,9 @@ async function conferencia(nav, nome, linha, foto) {
     await c.mover(1215, 640, 700);  // tira o cursor de cima do resultado
     await espera(4200);
     c.marcar('parado');
-    await page.screenshot({ path: path.join(CENAS, '..', nome + '.png') });
+    await page.screenshot({ path: path.join(CENAS, '..', nome + '.png') });  // nosemgrep -- nome fixo da cena, validado por NOME_SEGURO
   });
-  fs.writeFileSync(path.join(CENAS, nome, 'resultado.json'), JSON.stringify(info, null, 2));
+  fs.writeFileSync(path.join(CENAS, nome, 'resultado.json'), JSON.stringify(info, null, 2));  // nosemgrep -- nome fixo da cena, validado por NOME_SEGURO
   console.log(nome, info.data_resultado, JSON.stringify(info.resposta_api), info.tempo_conferencia_ms + ' ms');
 }
 
