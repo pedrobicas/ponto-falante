@@ -1,0 +1,9 @@
+ultralytics>=8.3
+easyocr>=1.7
+opencv-python>=4.8
+numpy
+requests
+reportlab
+pytest
+# só para a pré-rotulagem (ferramentas/pre_rotular.py, Grounding DINO):
+transformers>=4.45

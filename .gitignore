@@ -12,6 +12,8 @@ __pycache__/
 *.gguf
 *.safetensors
 *.onnx
+# Detector de rostos (OpenCV Zoo, 230 KB) usado pela visão para anonimizar
+!visao/modelos/face_detection_yunet_2023mar.onnx
 
 # Node / Angular
 node_modules/

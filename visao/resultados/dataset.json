@@ -1,0 +1,13 @@
+[
+  {
+    "origem": "Wikimedia Commons (ônibus da cidade de São Paulo) — pré-rotulado + revisão humana",
+    "imagens": 198,
+    "descartadas_na_revisao": 13,
+    "caixas_onibus": 225,
+    "caixas_letreiro": 152,
+    "train": 138,
+    "val": 39,
+    "test": 21,
+    "licenca": "CC BY / CC BY-SA / domínio público — ver docs/creditos_imagens.csv"
+  }
+]

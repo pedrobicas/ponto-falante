@@ -1,0 +1,22 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+logs/
+fila_deteccoes.jsonl
+runs/
+dataset/
+dados_brutos/
+*.zip
+# imagens e vídeos brutos não vão para o Git (licenças e tamanho)
+amostras/*.mp4
+amostras/imagens/*
+!amostras/imagens/demo/
+
+# dataset baixado/gerado (fica fora do Git: tamanho e licenças)
+dados/
+
+# modelos professores da pré-rotulagem (centenas de MB; baixados automaticamente)
+modelos/professores/
+# pesos base baixados pelo Ultralytics fora de modelos/
+/*.pt
