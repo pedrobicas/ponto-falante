@@ -1,0 +1,42 @@
+imagem,split,tipo,linha_correta,observacao
+sp_0009_A2_Transportes_6_8449_Flickr_Rafael_Delazari.jpg,test,codigo,5018-10,
+sp_0010_A2_Transportes_6_8811_Flickr_Rafael_Delazari.jpg,test,codigo,5128-10,letreiro mostra so 5128
+sp_0046_Area_7_Term_Santo_Amaro.jpg,test,codigo,695H-10,foto com dois onibus (o outro mostra destino)
+sp_0110_Cidade_Dutra_6_1021_Flickr_Rafael_Delazari.jpg,test,codigo,695X-10,
+sp_0203_Mobibrasil_6_3736_Flickr_Rafael_Delazari.jpg,test,codigo,576C-10,
+sp_0311_Transkuba_7_7876_Flickr_Rafael_Delazari.jpg,test,codigo,647P-10,
+sp_0340_Tr_lebus_de_SP_nos_anos_90.jpg,test,codigo,2100-10,foto antiga; letreiro mostra 2100
+sp_0001_1_Balsa_Ilha_do_Boror_panoramio.jpg,val,codigo,6L11-10,
+sp_0015_Area_1_Term_Jd_Britania.jpg,val,codigo,8013-10,letreiro borrado
+sp_0037_Area_7_Term_Agua_Espraiada.jpg,val,codigo,5701-10,
+sp_0087_Bus_at_Avenida_Paulista.jpg,val,codigo,175P-10,letreiro mostra 175P
+sp_0113_Cidade_Dutra_6_1201_Flickr_Rafael_Delazari.jpg,val,codigo,695X-10,LED fraco
+sp_0144_Fenix_2_5220_Flickr_Rafael_Delazari.jpg,val,codigo,177X-10,letreiro mostra 177-X
+sp_0172_MARSILAC10.jpg,val,codigo,6L01-10,letreiro mostra 6L01
+sp_0174_MASP_33_graus.jpg,val,codigo,917H-10,letreiro mostra 917H
+sp_0189_Metra_7220_Flickr_Rafael_Delazari.jpg,val,codigo,290,linha intermunicipal EMTU
+sp_0190_Metra_8161_Flickr_Rafael_Delazari_cropped.jpg,val,codigo,288,linha intermunicipal EMTU
+sp_0213_Parada_Dian_polis_Expresso_Tiradentes.jpg,val,codigo,5109-10,
+sp_0268_S_o_Paulo_Marcopolo_Volvo_trolleybus_1949_in_2009.jpg,val,codigo,4113-10,letreiro mostra 4113
+sp_0326_Transwolff_7_8742.jpg,val,codigo,7005-51,
+sp_0330_Trolebus8000nalinha2100MarcosElias.jpg,val,codigo,2100-10,letreiro mostra 2100
+sp_0339_Tr_lebus_S.jpg,val,codigo,4113-10,letreiro mostra 4113
+sp_0347_Tupi_6_2138_Flickr_Rafael_Delazari.jpg,val,codigo,574A-21,
+sp_0350_Tupi_Transportes_6_2060_Flickr_Rafael_Delazari.jpg,val,codigo,574A-21,
+sp_0355_Via_Sul_5_1941_Flickr_Rafael_Delazari.jpg,val,destino,,SHOP PLAZA SUL
+sp_0377_nibus_a_bateria_S_o_Paulo_frente.jpg,val,codigo,6030-10,fonte de LED estilizada
+sp_0008_A2_Transportes_6_8173_Flickr_Rafael_Delazari.jpg,test,destino,,SAO JUDAS
+sp_0069_Av_Rangel_Pestana_S_S_o_Paulo_Brasil_31_panoramio.jpg,test,destino,,PCA DA SE
+sp_0112_Cidade_Dutra_6_1160_Flickr_Rafael_Delazari.jpg,test,destino,,TERM VARGINHA
+sp_0114_Cidade_Dutra_6_1203_Flickr_Rafael_Delazari.jpg,test,destino,,JABAQUARA
+sp_0124_Corredor_verde_9_de_Julho.jpg,test,destino,,TERM PRINC ISABEL
+sp_0241_Santa_Brigida_11058.jpg,test,destino,,PAISSANDU
+sp_0323_Transppass_8_1861_Flickr_Rafael_Delazari.jpg,test,destino,,VIA ANHANGABAU
+sp_0357_Viasul_5_1756_Flickr_Rafael_Delazari.jpg,test,destino,,SACOMA
+sp_0073_Avenida_Paulista_2025_01.jpg,val,destino,,PERDIZES
+sp_0088_Bus_for_Terminal_Pinheiros_at_the_Terminal_Parque_Dom_Pedro.jpg,val,destino,,T PINHEIROS
+sp_0102_Campo_Belo_7_2061_Flickr_Rafael_Delazari.jpg,val,destino,,TERM CAMPO LIMPO
+sp_0111_Cidade_Dutra_6_1135_Flickr_Rafael_Delazari.jpg,val,destino,,SHOP INTERLAGOS
+sp_0182_Marcopolo_Viale_Volkswagen_EOT_17_260_EOT_da_Transppass_serv.jpg,val,destino,,VILA GOMES
+sp_0310_Transcooper_1_6113_Flickr_Rafael_Delazari.jpg,val,destino,,VIA PARAPUA
+sp_0346_Tupi_6_2128_Flickr_Rafael_Delazari.jpg,val,destino,,ELDORADO

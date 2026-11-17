@@ -45,6 +45,9 @@ public class ChavesApiInterceptor implements HandlerInterceptor {
         } else if ("PUT".equals(metodo) && caminho.equals("/api/genai/endereco")) {
             cabecalho = "X-API-Key";
             esperada = props.genaiApiKey();
+        } else if ("PUT".equals(metodo) && caminho.equals("/api/visao/endereco")) {
+            cabecalho = "X-API-Key";
+            esperada = props.visaoServicoChave();
         } else if ("GET".equals(metodo) && caminho.equals("/api/integracoes/dados/passagens")) {
             cabecalho = "X-API-Key";
             esperada = props.dadosApiKey();

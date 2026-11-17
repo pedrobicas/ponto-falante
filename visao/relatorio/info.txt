@@ -1,0 +1,10 @@
+# Dados do relatório. Um item por linha. Linhas com # são ignoradas.
+# Nome completo e RM de TODOS os integrantes do grupo.
+INTEGRANTE: Bryan Willian - RM551305
+INTEGRANTE: Felipe Terra - RM99405
+INTEGRANTE: Gabriel Doms - RM98630
+INTEGRANTE: Lucas Vassão Braga - RM98607
+INTEGRANTE: Pedro Bicas - RM99534
+TURMA: 4ES
+REPOSITORIO: https://github.com/SEU-USUARIO/visao-ponto-falante
+VIDEO: https://youtu.be/SEU-VIDEO
