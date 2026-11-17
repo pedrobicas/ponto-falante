@@ -1,0 +1,14 @@
+# Fotos descartadas na revisão humana das folhas em dados/revisao/ (uma por linha; # = comentário)
+sp_0002_2_1353_Samba_ba.jpg  # 2: close/miniatura
+sp_0011_ACF_Bril_3093.jpg  # 11: trólebus histórico
+sp_0098_Caio_Millennium01.jpg  # 92: miniatura (maquete)
+sp_0125_De_que_lado_voc_samba.jpg  # 116: multidão, ônibus parcial
+sp_0145_Fora_Ricardo_Teixeira6.jpg  # 134: manifestação, ônibus encoberto
+sp_0187_Metra_7058_Flickr_Rafael_Delazari.jpg  # 172: letreiro marcado errado
+sp_0194_Millennium_II_Samba_ba.jpg  # 179: miniatura (maquete)
+sp_0196_Mitsubishi_E_bus_EMTU_02_2015_S_o_Paulo_109.jpg  # 181: letreiro marcado errado
+sp_0270_S_o_Paulo_em_quarentena_49931074362.jpg  # 240: letreiro marcado errado (adesivo)
+sp_0328_Trolebus_EMTU_1989.jpg  # 295: cartaz/propaganda
+sp_0329_Trolebus_Mafersa_M_210_EMTU_Cecom_1989.jpg  # 296: foto antiga digitalizada
+sp_0334_Tr_lebus_Cobrasma_no_Corredor_Metropolitano_S_o_Mateus_Jabaq.jpg  # 300: foto histórica P&B
+sp_0358_Via_o_Colombo_101_Flickr_Rafael_Delazari.jpg  # 320: ônibus antigo de museu
