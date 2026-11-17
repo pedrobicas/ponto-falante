@@ -1,9 +1,10 @@
 openapi: 3.0.3
 info:
   title: Ponto Falante · Serviço de leitura de letreiro (visão computacional)
-  version: "1.0.0"
+  version: "1.1.0"
   description: |
-    Contrato que o modelo de visão computacional da equipe precisa expor para o Embarque Assistido.
+    Contrato do serviço de visão computacional da equipe (implementado em visao/servico/app.py: YOLO11n treinado +
+    EasyOCR) usado pelo Embarque Assistido.
     O backend Spring Boot é o único cliente deste serviço: o aplicativo envia a foto do letreiro para
     `POST /api/embarque/visao/conferir`, o backend repassa a imagem para `POST /v1/letreiro` deste
     serviço e compara o texto lido com a linha que a pessoa está esperando.
@@ -11,14 +12,17 @@ info:
     Responsabilidades separadas:
     - Este serviço só LÊ o letreiro: devolve os textos encontrados, com confiança e posição.
     - A decisão "é o seu ônibus / não é / não deu para ler" é do backend (classe ConferenciaLetreiro),
-      com confiança mínima de 0,6. O serviço não precisa conhecer a linha esperada.
+      com confiança mínima de 0,45. O backend envia, opcionalmente, as linhas que param no ponto (`linhas`):
+      o serviço só VALIDA uma leitura que case exatamente com uma delas.
 
     Como conectar (sem mudar código):
-    - `PF_VISAO_URL`: endereço base do serviço, por exemplo https://visao.exemplo.com
-    - `PF_VISAO_SERVICO_CHAVE`: chave enviada no cabeçalho X-API-Key
-    Enquanto `PF_VISAO_URL` estiver vazio, `GET /api/status` informa `visao: NAO_CONECTADA` e o
-    aplicativo diz com clareza que a conferência pela câmera ainda não está disponível. Nenhum
-    resultado é simulado.
+    - `PF_VISAO_URL`: endereço base fixo do serviço, por exemplo http://127.0.0.1:8090 (uso local); ou
+    - registro pelo PC: `PUT /api/visao/endereco` do backend com `{"url": "https://<nome>.trycloudflare.com"}`,
+      depois de o backend conferir `/health` e `/identidade` deste serviço (scripts/visao/iniciar.ps1 -TunelRapido).
+    - `PF_VISAO_SERVICO_CHAVE`: chave enviada no cabeçalho X-API-Key (vazia: o backend usa GENAI_API_KEY).
+    Sem endereço, `GET /api/status` informa `visao: NAO_CONECTADA`; com endereço mas sem `/health` ok,
+    `INDISPONIVEL`. Nos dois casos o aplicativo diz que a conferência não está disponível. Nenhum resultado é
+    simulado.
 
     Limites aplicados pelo backend: imagem JPEG ou PNG de até 2 MB (o aplicativo reduz para no máximo
     1280 px no maior lado); tempo de conexão de 3 s e de resposta de 8 s. Fora disso, a pessoa recebe
@@ -59,7 +63,14 @@ paths:
                 imagem:
                   type: string
                   format: binary
-                  description: Foto JPEG ou PNG, até 2 MB.
+                  description: Foto JPEG ou PNG, até 2 MB e 4096 px no maior lado.
+                linhas:
+                  type: string
+                  description: |
+                    Opcional. Linhas do ponto separadas por vírgula (ex.: "875A-10,875C-10,6450-10"); as que a
+                    pessoa espera vêm primeiro. Com a lista, o serviço só valida leitura com casamento exato
+                    (tolerando O/0, I/1, S/5, B/8, G/6) e devolve fora da lista como `validada: false`, com a
+                    confiança reduzida. Sem a lista, nenhuma leitura é validada.
       responses:
         "200":
           description: |
@@ -71,16 +82,40 @@ paths:
               examples:
                 leu:
                   value:
-                    modelo: letreiro-v1
-                    latencia_ms: 420
+                    modelo: pf-visao 1.0.0 (YOLO11n letreiro + EasyOCR)
+                    latencia_ms: 865
                     leituras:
-                      - {texto: "875A-10 METRÔ BARRA FUNDA", confianca: 0.91, caixa: [112, 40, 520, 96]}
-                nada:
-                  value: {modelo: letreiro-v1, latencia_ms: 380, leituras: []}
+                      - {texto: "647P-10", confianca: 0.811, validada: true, caixa: [164, 267, 342, 79]}
+                    deteccoes: {onibus: 1, letreiros: 1}
+                    linhas_validadas: true
+                so_destino:
+                  value: {modelo: pf-visao 1.0.0 (YOLO11n letreiro + EasyOCR), latencia_ms: 875, leituras: [],
+                          deteccoes: {onibus: 1, letreiros: 1}, linhas_validadas: true}
         "401": {description: Chave ausente ou inválida.}
         "413": {description: Imagem grande demais.}
         "415": {description: Formato de imagem não suportado.}
-        "503": {description: Modelo indisponível no momento.}
+        "503": {description: Modelo carregando ou ocupado com outra foto.}
+  /health:
+    get:
+      summary: Estado do modelo (sem chave). 200 só com o modelo carregado.
+      responses:
+        "200":
+          description: Pronto
+          content:
+            application/json:
+              example: {status: ok, modelo: "pf-visao 1.0.0 (YOLO11n letreiro + EasyOCR)", dispositivo: cuda}
+        "503": {description: "status: carregando ou erro"}
+  /identidade:
+    get:
+      summary: Prova que o serviço conhece a chave, sem enviá-la (usada antes de aceitar um túnel novo)
+      parameters:
+        - {name: desafio, in: query, required: true, schema: {type: string, pattern: "^[0-9a-f]{16,128}$"}}
+      responses:
+        "200":
+          description: 'prova = hex(HMAC-SHA256(chave, "pf-visao-identidade:" + desafio))'
+          content:
+            application/json:
+              example: {prova: "15e824b3f92d100986132704c3b77fc10c24f1d93b940d7eb2384f5a1ae11c73"}
 
 components:
   schemas:
@@ -96,6 +131,15 @@ components:
           type: integer
           minimum: 0
           description: Tempo de inferência, opcional.
+        deteccoes:
+          type: object
+          description: Opcional. Quantos ônibus e letreiros o detector achou (o backend usa para orientar o enquadramento).
+          properties:
+            onibus: {type: integer, minimum: 0}
+            letreiros: {type: integer, minimum: 0}
+        linhas_validadas:
+          type: boolean
+          description: Opcional. A lista `linhas` foi recebida e usada.
         leituras:
           type: array
           description: Textos de letreiro encontrados. O backend usa a leitura de maior confiança que contenha um número de linha.
@@ -114,6 +158,9 @@ components:
           type: number
           minimum: 0
           maximum: 1
+        validada:
+          type: boolean
+          description: Opcional. true = casou exatamente com uma linha de `linhas`.
         caixa:
           type: array
           description: Posição do letreiro na imagem [x, y, largura, altura] em pixels. Opcional.

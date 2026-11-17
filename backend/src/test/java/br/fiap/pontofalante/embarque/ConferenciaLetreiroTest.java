@@ -71,4 +71,47 @@ class ConferenciaLetreiroTest {
         assertThat(ok.leituras().get(0).caixa()).containsExactly(1, 2, 3, 4);
         assertThat(ok.latenciaMs()).isEqualTo(80);
     }
+    @Test
+    void qualquerUmaDasLinhasAcompanhadasConfere() {
+        var r = ConferenciaLetreiro.comparar(List.of("875A-10", "875C-10"), leu("875C-10 LAPA", 0.7), 1, 1);
+        assertThat(r.resultado()).isEqualTo(ResultadoConferencia.CONFERE);
+        assertThat(r.frase()).contains("875C-10");
+        var outra = ConferenciaLetreiro.comparar(List.of("875A-10", "875C-10"), leu("6450-10", 0.7), 1, 1);
+        assertThat(outra.resultado()).isEqualTo(ResultadoConferencia.NAO_CONFERE);
+        assertThat(outra.frase()).contains("875A-10 ou 875C-10");
+    }
+
+    @Test
+    void limiarEOMesmoDoAnunciadorDaVisao() {
+        // 0,507 foi a confiança real do modelo na foto de demonstração 06_695H-10 (lida certo).
+        assertThat(ConferenciaLetreiro.comparar("695H-10", leu("695H-10", 0.507)).resultado())
+                .isEqualTo(ResultadoConferencia.CONFERE);
+        assertThat(ConferenciaLetreiro.comparar("695H-10", leu("695H-10", 0.44)).resultado())
+                .isEqualTo(ResultadoConferencia.INCONCLUSIVO);
+    }
+
+    @Test
+    void dicaDeEnquadramentoUsaOQueODetectorViu() {
+        assertThat(ConferenciaLetreiro.comparar(List.of("875A-10"), List.of(), 0, 0).frase())
+                .startsWith("Não encontrei ônibus na foto");
+        assertThat(ConferenciaLetreiro.comparar(List.of("875A-10"), List.of(), 1, 0).frase())
+                .contains("mais para cima");
+        assertThat(ConferenciaLetreiro.comparar(List.of("875A-10"), List.of(), 1, 1).frase())
+                .contains("mostrando só o destino");
+        assertThat(ConferenciaLetreiro.comparar(List.of("875A-10"), List.of(), null, null).frase())
+                .startsWith("Não consegui ler o letreiro com segurança");
+    }
+
+    @Test
+    void respostaDoServicoDaEquipeTrazContagensEValidacao() throws Exception {
+        var ok = ReconhecedorLetreiro.converter(new ObjectMapper().readTree(
+                "{\"modelo\":\"pf-visao 1.0.0\",\"latencia_ms\":865,\"leituras\":[{\"texto\":\"647P-10\",\"confianca\":0.811,"
+                        + "\"caixa\":[164,267,342,79]}],\"deteccoes\":{\"onibus\":1,\"letreiros\":1},\"linhas_validadas\":true}"));
+        assertThat(ok.onibus()).isEqualTo(1);
+        assertThat(ok.letreiros()).isEqualTo(1);
+        assertThat(ok.validada()).isTrue();
+        var antigo = ReconhecedorLetreiro.converter(new ObjectMapper().readTree("{\"modelo\":\"m\",\"leituras\":[]}"));
+        assertThat(antigo.onibus()).isNull();
+        assertThat(antigo.validada()).isFalse();
+    }
 }

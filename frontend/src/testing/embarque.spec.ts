@@ -190,8 +190,53 @@ describe('tela de embarque', () => {
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('ainda não está conectada');
+    expect(el.textContent).toContain('Indisponível agora');
     expect(el.querySelector('video:not(.camera__video--oculto)')).toBeNull();
     expect(el.querySelector('.camera__resultado')).toBeNull();
+    const resultado = await axe.run(el, axeOpcoes);
+    expect(resultado.violations.map((v) => v.id)).toEqual([]);
+    fixture.destroy();
+  });
+  it('conectada: tira outra foto sozinha quando não deu para ler e fala só o resultado final', async () => {
+    TestBed.configureTestingModule({ imports: [ConferirLetreiro], providers: providers() });
+    const fixture = TestBed.createComponent(ConferirLetreiro);
+    fixture.componentRef.setInput('linha', '875A-10');
+    fixture.componentRef.setInput('sessao', 's-1');
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/embarque/visao').flush({ conectada: true, mensagem: 'Aponte a câmera para o letreiro da frente do ônibus.' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const c = fixture.componentInstance as any;
+    c.esperaEntreFotosMs = 0;
+    c.aberta.set(true);
+    c.capturar = async () => new Blob(['x'], { type: 'image/jpeg' });
+    const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
+    Object.defineProperty(video, 'videoWidth', { value: 1280 });
+    const falas: string[] = [];
+    TestBed.inject(EmbarqueStore).dizer = (t: string) => { falas.push(t); };
+    const fim = c.conferir();
+    const responder = async (corpo: object) => {
+      for (let i = 0; i < 20; i++) {
+        const pend = http.match('/api/embarque/visao/conferir');
+        if (pend.length) { pend[0].flush(corpo); return; }
+        await new Promise((ok) => setTimeout(ok, 0));
+      }
+      throw new Error('a conferência não foi enviada');
+    };
+    await responder({ resultado: 'INCONCLUSIVO', linha_esperada: '875A-10', linha_lida: null, confianca: null,
+      frase_falada: 'Encontrei o letreiro, mas não consegui ler o número da linha.', modelo: 'pf-visao 1.0.0', latencia_ms: 900 });
+    await responder({ resultado: 'CONFERE', linha_esperada: '875A-10', linha_lida: '875A-10', confianca: 0.81,
+      frase_falada: 'O letreiro parece ser da linha 875A-10, a que você espera. Confirme com o motorista antes de embarcar.',
+      modelo: 'pf-visao 1.0.0', latencia_ms: 850 });
+    await fim;
+    fixture.detectChanges();
+    http.verify();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('.camera__resultado')?.getAttribute('data-resultado')).toBe('CONFERE');
+    expect(el.textContent).toContain('pf-visao 1.0.0');
+    expect(falas).toEqual(['O letreiro parece ser da linha 875A-10, a que você espera. Confirme com o motorista antes de embarcar.']);
     const resultado = await axe.run(el, axeOpcoes);
     expect(resultado.violations.map((v) => v.id)).toEqual([]);
     fixture.destroy();

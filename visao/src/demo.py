@@ -100,6 +100,8 @@ def main():
     ap.add_argument("--ponto", default="PONTO-DEMO", help="código do ponto no MVP")
     ap.add_argument("--api", default=None, help="URL da API (padrão: env PONTO_FALANTE_API ou localhost:8000)")
     ap.add_argument("--sem-api", action="store_true", help="não chama a API (modo offline)")
+    ap.add_argument("--contrato", choices=["equipe", "mvp"], default="equipe",
+                    help="equipe = api_fake.py; mvp = Spring Boot do Ponto Falante (chave em VISAO_API_KEY)")
     ap.add_argument("--linhas", default="", help="linhas do ponto separadas por vírgula, se a API estiver fora")
     ap.add_argument("--saida", default=None, help="salva o vídeo anotado (anonimizado)")
     ap.add_argument("--mostrar", action="store_true", help="abre janela com o vídeo")
@@ -113,7 +115,7 @@ def main():
 
     from detector import DetectorOnibus  # import tardio: só aqui precisamos do YOLO
     detector = DetectorOnibus(args.pesos, conf=args.conf, gpu=args.gpu)
-    api = None if args.sem_api else ClienteAPI(args.api)
+    api = None if args.sem_api else ClienteAPI(args.api, contrato=args.contrato)
     linhas_fixas = [l.strip() for l in args.linhas.split(",") if l.strip()]
     anunciador = Anunciador()
 

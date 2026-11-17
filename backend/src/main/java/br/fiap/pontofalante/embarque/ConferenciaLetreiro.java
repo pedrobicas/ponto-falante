@@ -3,6 +3,7 @@ package br.fiap.pontofalante.embarque;
 import br.fiap.pontofalante.embarque.EmbarqueDtos.LeituraLetreiro;
 import br.fiap.pontofalante.embarque.EmbarqueDtos.ResultadoConferencia;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -14,8 +15,13 @@ import java.util.regex.Pattern;
  * modelo de visão pode errar e embarcar no ônibus errado tem custo alto para quem não enxerga.
  */
 public final class ConferenciaLetreiro {
-    /** Abaixo disso a leitura não é usada para afirmar nada. */
-    static final double CONFIANCA_MINIMA = 0.6;
+    /**
+     * Abaixo disso a leitura não é usada para afirmar nada. É o mesmo limiar por quadro do anunciador da equipe de
+     * Visão (visao/src/anunciador.py). Na avaliação do relatório (25 letreiros com código + 16 só com destino), as
+     * leituras validadas contra as linhas do ponto tiveram 0 linha errada em qualquer confiança; leituras sem
+     * validação chegam do serviço com a confiança reduzida em 40%.
+     */
+    static final double CONFIANCA_MINIMA = 0.45;
     private static final Pattern LETREIRO = Pattern.compile("\\b(N?[0-9]{3,4}[A-Z]?)(?:\\s*-\\s*([0-9]{1,2}))?\\b");
 
     private ConferenciaLetreiro() {
@@ -39,8 +45,22 @@ public final class ConferenciaLetreiro {
     }
 
     public static Resultado comparar(String linhaEsperada, List<LeituraLetreiro> leituras) {
-        Letreiro esperado = extrair(linhaEsperada);
-        if (esperado == null) {
+        return comparar(List.of(linhaEsperada), leituras, null, null);
+    }
+
+    /**
+     * @param linhasEsperadas linhas que servem para a pessoa (a primeira é a principal, usada nas frases)
+     * @param onibus          ônibus que o detector viu na foto (null = o serviço não informou)
+     * @param letreiros       letreiros que o detector viu na foto (null = o serviço não informou)
+     */
+    public static Resultado comparar(List<String> linhasEsperadas, List<LeituraLetreiro> leituras, Integer onibus,
+                                     Integer letreiros) {
+        List<Letreiro> esperados = new ArrayList<>();
+        for (String l : linhasEsperadas == null ? List.<String>of() : linhasEsperadas) {
+            Letreiro e = extrair(l);
+            if (e != null && !esperados.contains(e)) esperados.add(e);
+        }
+        if (esperados.isEmpty()) {
             throw new IllegalArgumentException("linha esperada inválida");
         }
         LeituraLetreiro melhor = null;
@@ -55,14 +75,17 @@ public final class ConferenciaLetreiro {
         }
         if (melhor == null || melhor.confianca() < CONFIANCA_MINIMA) {
             return new Resultado(ResultadoConferencia.INCONCLUSIVO, lido == null ? null : lido.texto(),
-                    melhor == null ? null : melhor.confianca(),
-                    "Não consegui ler o letreiro com segurança. Aponte a câmera para a frente do ônibus e tente de novo, "
-                            + "ou pergunte ao motorista qual é a linha.");
+                    melhor == null ? null : melhor.confianca(), dicaInconclusivo(melhor != null, onibus, letreiros));
         }
         double conf = melhor.confianca();
-        if (!lido.numero().equals(esperado.numero())) {
+        final Letreiro leitura = lido;
+        Letreiro esperado = esperados.stream().filter(e -> e.numero().equals(leitura.numero()))
+                .filter(e -> leitura.variante() == null || e.variante() == null || e.variante().equals(leitura.variante()))
+                .findFirst()
+                .orElse(esperados.stream().filter(e -> e.numero().equals(leitura.numero())).findFirst().orElse(null));
+        if (esperado == null) {
             return new Resultado(ResultadoConferencia.NAO_CONFERE, lido.texto(), conf,
-                    "Atenção: o letreiro parece ser da linha " + lido.texto() + ", não da " + esperado.texto()
+                    "Atenção: o letreiro parece ser da linha " + lido.texto() + ", não da " + descrever(esperados)
                             + " que você espera. Confirme com o motorista antes de embarcar.");
         }
         if (lido.variante() == null || esperado.variante() == null) {
@@ -78,5 +101,29 @@ public final class ConferenciaLetreiro {
         return new Resultado(ResultadoConferencia.CONFERE, lido.texto(), conf,
                 "O letreiro parece ser da linha " + esperado.texto() + ", a que você espera. "
                         + "Confirme com o motorista antes de embarcar.");
+    }
+
+    private static String descrever(List<Letreiro> esperados) {
+        if (esperados.size() == 1) return esperados.get(0).texto();
+        List<String> textos = esperados.stream().map(Letreiro::texto).toList();
+        return String.join(", ", textos.subList(0, textos.size() - 1)) + " ou " + textos.get(textos.size() - 1);
+    }
+
+    /** Orienta quem não enxerga a apontar melhor, a partir do que o detector viu na foto. */
+    static String dicaInconclusivo(boolean leuAlgo, Integer onibus, Integer letreiros) {
+        if (!leuAlgo && letreiros != null && onibus != null && letreiros == 0 && onibus == 0) {
+            return "Não encontrei ônibus na foto. Aponte a câmera para a frente do ônibus que está chegando e tente "
+                    + "de novo, ou pergunte ao motorista qual é a linha.";
+        }
+        if (!leuAlgo && letreiros != null && letreiros == 0) {
+            return "Vi o ônibus, mas não encontrei o letreiro. Aponte a câmera um pouco mais para cima, para o "
+                    + "letreiro da frente, e tente de novo, ou pergunte ao motorista.";
+        }
+        if (!leuAlgo && letreiros != null) {
+            return "Encontrei o letreiro, mas não consegui ler o número da linha. Ele pode estar mostrando só o "
+                    + "destino: espere trocar e tente de novo, ou pergunte ao motorista.";
+        }
+        return "Não consegui ler o letreiro com segurança. Aponte a câmera para a frente do ônibus e tente de novo, "
+                + "ou pergunte ao motorista qual é a linha.";
     }
 }

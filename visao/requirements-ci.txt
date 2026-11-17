@@ -1,0 +1,9 @@
+# Testes da visão na CI, sem PyTorch/YOLO/EasyOCR (o detector é simulado; o modelo real é testado com
+# PF_VISAO_TESTE_REAL=1 em tests/test_servico_modelo_real.py).
+opencv-python-headless>=4.8
+numpy
+requests
+pytest
+fastapi>=0.110
+python-multipart>=0.0.9
+httpx

@@ -1,8 +1,13 @@
 """
-Comunicação com a API central do Ponto Falante (contrato do Prompt 0).
+Comunicação com a API central do Ponto Falante.
 
-- GET  /pontos/{codigo}/previsoes -> linhas que passam no ponto (para validar o OCR)
-- POST /deteccoes                 -> envia o que a câmera viu
+Dois contratos:
+- "equipe" (padrão, usado pela api_fake.py e no relatório):
+    GET  /pontos/{codigo}/previsoes -> linhas que passam no ponto (para validar o OCR)
+    POST /deteccoes                 -> envia o que a câmera viu
+- "mvp" (o Spring Boot publicado, contratos/openapi-mvp.yaml):
+    GET  /api/pontos/{codigo}/linhas (cadastro GTFS) e, se vazio, /api/pontos/{codigo}/previsoes
+    POST /api/integracoes/visao/deteccoes com X-API-Key = VISAO_API_KEY
 
 Resiliente: timeout curto, novas tentativas e, se a API estiver fora, a detecção
 vai para uma fila local (arquivo .jsonl) e é reenviada depois. Nunca trava a câmera.
@@ -24,7 +29,13 @@ log = logging.getLogger("ponto_falante.api")
 class ClienteAPI:
     def __init__(self, base_url: str | None = None, timeout: float = 3.0,
                  tentativas: int = 2, fila: str | Path = "fila_deteccoes.jsonl",
-                 cache_s: float = 60.0):
+                 cache_s: float = 60.0, contrato: str = "equipe", chave: str | None = None,
+                 dispositivo: str | None = None):
+        if contrato not in ("equipe", "mvp"):
+            raise ValueError("contrato deve ser 'equipe' ou 'mvp'")
+        self.contrato = contrato
+        self.chave = chave if chave is not None else os.getenv("VISAO_API_KEY", "")
+        self.dispositivo = (dispositivo or os.getenv("PF_VISAO_DISPOSITIVO", "camera-ponto"))[:64]
         self.base_url = (base_url or os.getenv("PONTO_FALANTE_API", "http://localhost:8000")).rstrip("/")
         self.timeout = timeout
         self.tentativas = tentativas
@@ -53,22 +64,46 @@ class ClienteAPI:
         if ponto in self._cache_linhas and agora - self._cache_linhas[ponto][0] < self.cache_s:
             return self._cache_linhas[ponto][1]
         try:
-            dados = self._requisicao("GET", f"/pontos/{ponto}/previsoes").json()
-            itens = dados if isinstance(dados, list) else dados.get("previsoes", [])
-            linhas = sorted({p["linha"] for p in itens if p.get("linha")})
-        except (ConnectionError, ValueError, KeyError) as e:
+            if self.contrato == "mvp":
+                linhas = self._linhas_mvp(ponto)
+            else:
+                dados = self._requisicao("GET", f"/pontos/{ponto}/previsoes").json()
+                itens = dados if isinstance(dados, list) else dados.get("previsoes", [])
+                linhas = sorted({p["linha"] for p in itens if p.get("linha")})
+        except (ConnectionError, ValueError, KeyError, AttributeError, TypeError) as e:
             log.warning("Sem lista de linhas do ponto %s: %s", ponto, e)
             # Mantém o último cache válido, se houver.
             return self._cache_linhas.get(ponto, (0, []))[1]
         self._cache_linhas[ponto] = (agora, linhas)
         return linhas
 
-    def enviar_deteccao(self, ponto: str, linha: str | None, confianca: float) -> bool:
-        corpo = {"ponto": ponto, "linha_lida": linha, "confianca": round(float(confianca), 3),
-                 "criado_em": datetime.now(timezone.utc).isoformat()}
-        try:
+    def _linhas_mvp(self, ponto: str) -> list[str]:
+        """Linhas do ponto no MVP: cadastro oficial; sem cadastro (modo demonstração), as linhas previstas agora."""
+        dados = self._requisicao("GET", f"/api/pontos/{int(ponto)}/linhas").json()
+        linhas = {l["letreiro"] for l in dados.get("linhas", []) if l.get("letreiro")}
+        if not linhas:
+            dados = self._requisicao("GET", f"/api/pontos/{int(ponto)}/previsoes").json()
+            linhas = {o["letreiro"] for o in dados.get("onibus", []) if o.get("letreiro")}
+        return sorted(linhas)
+
+    def _corpo(self, ponto: str, linha: str | None, confianca: float) -> dict:
+        agora = datetime.now(timezone.utc).isoformat()
+        if self.contrato == "mvp":
+            return {"ponto": int(ponto), "linha_reconhecida": linha, "confianca": round(float(confianca), 3),
+                    "capturado_em": agora, "dispositivo": self.dispositivo}
+        return {"ponto": ponto, "linha_lida": linha, "confianca": round(float(confianca), 3), "criado_em": agora}
+
+    def _post_deteccao(self, corpo: dict) -> None:
+        if self.contrato == "mvp":
+            self._requisicao("POST", "/api/integracoes/visao/deteccoes", json=corpo, headers={"X-API-Key": self.chave})
+        else:
             self._requisicao("POST", "/deteccoes", json=corpo)
-            log.info("Detecção enviada: %s", corpo)
+
+    def enviar_deteccao(self, ponto: str, linha: str | None, confianca: float) -> bool:
+        corpo = self._corpo(ponto, linha, confianca)
+        try:
+            self._post_deteccao(corpo)
+            log.info("Detecção enviada: %s", {k: v for k, v in corpo.items() if k != "dispositivo"})
             return True
         except ConnectionError:
             with self.fila.open("a", encoding="utf-8") as f:
@@ -84,7 +119,7 @@ class ClienteAPI:
         restantes, enviados = [], 0
         for corpo in pendentes:
             try:
-                self._requisicao("POST", "/deteccoes", json=corpo)
+                self._post_deteccao(corpo)
                 enviados += 1
             except ConnectionError:
                 restantes.append(corpo)

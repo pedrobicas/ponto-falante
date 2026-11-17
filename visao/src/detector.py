@@ -41,11 +41,31 @@ def versoes_recorte(recorte: np.ndarray) -> list[np.ndarray]:
     return [ampliado, suavizado, clahe]
 
 
+def ler_resultados_ocr(resultados, linhas_permitidas, limiar=0.75, rejeitar_ambiguas=False,
+                       ler_fora_da_lista=False) -> LeituraLinha:
+    """Valida o OCR contra as linhas do ponto. Com ler_fora_da_lista, um código legível que não está na lista volta
+    marcado como não validado (confiança reduzida), em vez de ser descartado ou forçado para a linha mais parecida:
+    assim o celular pode avisar "parece ser outra linha" sem nunca afirmar uma linha que o letreiro não mostrou."""
+    leitura = ler_linha(resultados, linhas_permitidas, limiar=limiar, rejeitar_ambiguas=rejeitar_ambiguas)
+    if leitura.linha is None and linhas_permitidas and ler_fora_da_lista:
+        fora = ler_linha(resultados, None)
+        if fora.linha:
+            fora.validada = False
+            return fora
+    return leitura
+
+
 class DetectorOnibus:
-    def __init__(self, pesos: str = "modelos/best.pt", conf: float = 0.35, usar_ocr: bool = True, gpu: bool = False):
+    def __init__(self, pesos: str = "modelos/best.pt", conf: float = 0.35, usar_ocr: bool = True, gpu: bool = False,
+                 rejeitar_ambiguas: bool = False, limiar: float = 0.75, ler_fora_da_lista: bool = False):
+        """Os três últimos parâmetros mudam a leitura só para a conferência pelo celular (servico/app.py); os
+        padrões reproduzem o comportamento avaliado no relatório."""
         from ultralytics import YOLO  # import aqui para os testes não exigirem a biblioteca
         self.modelo = YOLO(pesos)
         self.conf = conf
+        self.rejeitar_ambiguas = rejeitar_ambiguas
+        self.limiar = limiar
+        self.ler_fora_da_lista = ler_fora_da_lista
         self.ocr = None
         if usar_ocr:
             import easyocr
@@ -62,7 +82,8 @@ class DetectorOnibus:
             resultados += [(texto, float(conf)) for _, texto, conf in
                            self.ocr.readtext(versao, allowlist=CARACTERES_OCR, detail=1)]
         # ler_linha valida cada leitura contra as linhas do ponto e fica com a mais confiável
-        return ler_linha(resultados, linhas_permitidas)
+        return ler_resultados_ocr(resultados, linhas_permitidas, self.limiar, self.rejeitar_ambiguas,
+                                  self.ler_fora_da_lista)
 
     def detectar(self, frame: np.ndarray, linhas_permitidas: list[str] | None = None) -> ResultadoFrame:
         res = self.modelo.predict(frame, conf=self.conf, verbose=False)[0]

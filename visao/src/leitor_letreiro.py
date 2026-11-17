@@ -26,6 +26,17 @@ class LeituraLinha:
     linha: str | None        # linha reconhecida (ex.: "8000-10") ou None
     confianca: float         # 0 a 1
     texto_bruto: str         # o que o OCR leu, para log e relatório
+    codigo_lido: str | None = None   # o código como apareceu no letreiro (ex.: "875A", sem o sufixo)
+    validada: bool = True            # False = lida fora da lista de linhas do ponto (confiança já reduzida)
+
+    def texto_confirmado(self) -> str | None:
+        """O que o letreiro de fato mostrou, sem completar nada: se o letreiro só exibia "875A",
+        devolve "875A" mesmo que a linha casada seja "875A-10" (o sufixo não foi visto)."""
+        if self.linha is None:
+            return None
+        if self.codigo_lido and "-" not in self.codigo_lido:
+            return self.linha.split("-")[0]
+        return self.linha
 
 
 def normalizar_texto(texto: str) -> str:
@@ -66,14 +77,26 @@ def similaridade(candidato: str, linha: str) -> float:
 
 
 def casar_com_linhas(candidatos: list[str], linhas_permitidas: list[str],
-                     limiar: float = 0.75) -> tuple[str | None, float]:
-    """Escolhe a linha permitida mais parecida com algum candidato."""
+                     limiar: float = 0.75, rejeitar_ambiguas: bool = False) -> tuple[str | None, float]:
+    """Escolhe a linha permitida mais parecida com algum candidato.
+
+    rejeitar_ambiguas: se duas linhas de NÚMERO diferente ficam quase empatadas para o mesmo candidato
+    (ex.: "8750-10" parecido com 875A-10 e 875C-10), não escolhe nenhuma. Usado pela conferência pelo
+    celular, em que afirmar a linha errada para quem não enxerga é o pior erro possível.
+    """
     melhor, melhor_score = None, 0.0
     for cand in candidatos:
-        for linha in linhas_permitidas:
-            s = similaridade(cand, linha)
-            if s > melhor_score:
-                melhor, melhor_score = linha, s
+        # ordenação estável: em empate, vale a ordem da lista (como na versão original)
+        scores = sorted(((similaridade(cand, linha), linha) for linha in linhas_permitidas), key=lambda t: -t[0])
+        if not scores:
+            continue
+        s, linha = scores[0]
+        if rejeitar_ambiguas and s < 1.0:
+            numero = linha.split("-")[0]
+            if any(outra.split("-")[0] != numero and s - so < 0.05 for so, outra in scores[1:]):
+                continue
+        if s > melhor_score:
+            melhor, melhor_score = linha, s
     if melhor_score < limiar:
         return None, melhor_score
     return melhor, melhor_score
@@ -81,7 +104,7 @@ def casar_com_linhas(candidatos: list[str], linhas_permitidas: list[str],
 
 def ler_linha(resultados_ocr: list[tuple[str, float]],
               linhas_permitidas: list[str] | None = None,
-              limiar: float = 0.75) -> LeituraLinha:
+              limiar: float = 0.75, rejeitar_ambiguas: bool = False) -> LeituraLinha:
     """Converte o resultado do OCR em uma linha de ônibus.
 
     resultados_ocr: lista de (texto, confiança) devolvida pelo OCR.
@@ -97,13 +120,17 @@ def ler_linha(resultados_ocr: list[tuple[str, float]],
         if not candidatos:
             continue
         if linhas_permitidas:
-            linha, score = casar_com_linhas(candidatos, linhas_permitidas, limiar)
+            linha, score, lido = None, 0.0, None
+            for cand in candidatos:   # guarda qual candidato casou, para saber se o sufixo foi lido
+                l, s = casar_com_linhas([cand], linhas_permitidas, limiar, rejeitar_ambiguas)
+                if l is not None and s > score:
+                    linha, score, lido = l, s, cand
             if linha is None:
                 continue
             conf = conf_ocr * score
         else:
             # Sem lista de referência: penaliza a confiança (não há como validar).
-            linha, conf = candidatos[0], conf_ocr * 0.6
+            linha, conf, lido = candidatos[0], conf_ocr * 0.6, candidatos[0]
         if conf > melhor.confianca:
-            melhor = LeituraLinha(linha, round(conf, 3), texto_bruto)
+            melhor = LeituraLinha(linha, round(conf, 3), texto_bruto, lido)
     return melhor

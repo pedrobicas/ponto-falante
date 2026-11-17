@@ -126,8 +126,7 @@ python src/api_fake.py --linhas "647P-10,5109-10,2100-10,288,695H-10,8000-10"
 python src/demo.py --fonte amostras/imagens/demo --ponto 260015039 --saida resultados/demo.mp4 --repetir-imagem 30 --gpu
 python src/demo.py --fonte amostras/imagens/demo --sem-api --linhas "647P-10,5109-10"   # sem API
 ```
-A pasta `amostras/imagens/demo` não vai para o Git: copie para ela algumas fotos de `dataset/test/images`
-(ou de `dados/commons/images`).
+A pasta `amostras/imagens/demo` traz 6 fotos do Wikimedia Commons ([créditos](amostras/imagens/demo/CREDITOS.md)).
 Variáveis de ambiente: `PONTO_FALANTE_API` (URL da API, padrão `http://localhost:8000`).
 Logs em `logs/visao.log`.
 
@@ -142,15 +141,22 @@ python relatorio/gerar_relatorio.py --resultados resultados --saida resultados/R
 ```
 Preencha antes `relatorio/info.txt` (integrantes, links).
 
-## Contrato com o MVP
+## Integração com o MVP
+O modelo está integrado ao Ponto Falante publicado: a tela de Embarque Assistido usa a câmera do celular para
+conferir o letreiro com este modelo, servido por [`servico/app.py`](servico/app.py). Arquitetura, decisão de onde
+o modelo roda, como ligar no PC e testes: [`INTEGRACAO.md`](INTEGRACAO.md).
+
 | Chamada | Uso |
 |---|---|
-| `GET /pontos/{codigo}/previsoes` | lista de linhas do ponto, para validar o OCR (cache de 60 s) |
-| `POST /deteccoes` | `{"ponto": str, "linha_lida": str \| null, "confianca": float, "criado_em": ISO-8601}` |
+| `POST /v1/letreiro` (servico/app.py) | o backend envia a foto do celular e as linhas do ponto; recebe a leitura ([contrato](../contratos/openapi-visao-letreiro.yaml)) |
+| `GET /pontos/{codigo}/previsoes` | contrato da equipe (api_fake): linhas do ponto, para validar o OCR (cache de 60 s) |
+| `POST /deteccoes` | contrato da equipe: `{"ponto": str, "linha_lida": str \| null, "confianca": float, "criado_em": ISO-8601}` |
+| `POST /api/integracoes/visao/deteccoes` | câmera fixa no MVP real: `demo.py --contrato mvp` (chave em `VISAO_API_KEY`) |
 
 ## Créditos e licenças
 Fotos: Wikimedia Commons (domínio público, CC0, CC BY, CC BY-SA), com autor, licença e URL de cada uma em
-[`docs/creditos_imagens.csv`](docs/creditos_imagens.csv). As imagens não são redistribuídas no repositório; o
-script `baixar_commons.py` as obtém da fonte original.
+[`docs/creditos_imagens.csv`](docs/creditos_imagens.csv). O dataset não é redistribuído no repositório (o script
+`baixar_commons.py` o obtém da fonte original); só as 6 fotos de demonstração, com créditos em
+[`amostras/imagens/demo/CREDITOS.md`](amostras/imagens/demo/CREDITOS.md).
 Modelos de terceiros: YOLO11 (Ultralytics, AGPL-3.0), Grounding DINO (IDEA-Research, Apache-2.0),
 EasyOCR (Apache-2.0), YuNet (OpenCV Zoo, MIT).
