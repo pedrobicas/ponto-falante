@@ -19,6 +19,8 @@ export const TENTATIVAS = 3;
  * Conferência do letreiro pela câmera. A foto vai ao backend, que a repassa ao modelo de visão da equipe (YOLO11n
  * treinado com ônibus de São Paulo + OCR, pasta visao/). Sem o modelo ligado, a tela diz isso e NÃO abre a câmera nem
  * mostra resultado algum. Quando a foto não dá leitura segura, tira outra sozinha (até TENTATIVAS) antes de responder.
+ * Também aceita uma foto escolhida da galeria ou do computador ("Enviar uma foto"), útil para testar e para quem já
+ * fotografou o ônibus: a imagem é reduzida no aparelho (LADO_MAXIMO_PX, JPEG) e segue pelo mesmo caminho, uma vez só.
  */
 @Component({
   selector: 'pf-conferir-letreiro',
@@ -41,10 +43,16 @@ export const TENTATIVAS = 3;
           </div>
         </div>
       } @else {
-        <p class="ajuda">Aponte a câmera para o letreiro da frente do ônibus e toque em Conferir. Se a primeira foto não der para ler, o aplicativo tira até {{ tentativas }} fotos seguidas; mantenha a câmera apontada. As fotos são usadas só nesta conferência e não são guardadas.</p>
-        @if (!aberta()) {
-          <button type="button" class="botao botao--primario botao--grande" (click)="abrir()"><pf-icone nome="busca" /> Abrir a câmera</button>
-        }
+        <p class="ajuda">Aponte a câmera para o letreiro da frente do ônibus e toque em Conferir. Se a primeira foto não der para ler, o aplicativo tira até {{ tentativas }} fotos seguidas; mantenha a câmera apontada. Você também pode enviar uma foto que já tirou. As fotos são usadas só nesta conferência e não são guardadas.</p>
+        <div class="camera__acoes">
+          @if (!aberta()) {
+            <button type="button" class="botao botao--primario botao--grande" (click)="abrir()"><pf-icone nome="busca" /> Abrir a câmera</button>
+          }
+          <button type="button" class="botao botao--contorno botao--grande" (click)="arquivo.click()" [disabled]="conferindo()">
+            <pf-icone nome="enviar" /> Enviar uma foto do letreiro
+          </button>
+          <input #arquivo type="file" accept="image/jpeg,image/png,image/webp,image/*" hidden (change)="enviarArquivo(arquivo)" />
+        </div>
         <video #video class="camera__video" [class.camera__video--oculto]="!aberta()" playsinline muted aria-label="Imagem da câmera"></video>
         @if (aberta()) {
           <div class="camera__acoes">
@@ -55,6 +63,9 @@ export const TENTATIVAS = 3;
           </div>
         }
         <p class="ajuda" role="status">{{ progresso() }}</p>
+        @if (previa()) {
+          <img class="camera__previa" [src]="previa()" alt="Foto enviada para a conferência" />
+        }
         @if (resultado(); as r) {
           <div class="camera__resultado" [attr.data-resultado]="r.resultado" role="alert">
             <p class="camera__veredito">{{ rotulo(r) }}</p>
@@ -84,6 +95,8 @@ export class ConferirLetreiro {
   protected readonly erro = signal('');
   protected readonly progresso = signal('');
   protected readonly tentativas = TENTATIVAS;
+  /** Miniatura da foto enviada (URL local do navegador; nada sai do aparelho além da conferência). */
+  protected readonly previa = signal<string | null>(null);
   /** Intervalo entre as fotos de uma conferência (o letreiro troca de número para destino a cada poucos segundos). */
   esperaEntreFotosMs = 1200;
   private readonly video = viewChild<ElementRef<HTMLVideoElement>>('video');
@@ -91,7 +104,10 @@ export class ConferirLetreiro {
   private stream: Livre = null;
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.pararCamera());
+    inject(DestroyRef).onDestroy(() => {
+      this.pararCamera();
+      this.trocarPrevia(null);
+    });
     void this.verificar();
     queueMicrotask(() => this.titulo()?.nativeElement.focus());
   }
@@ -144,6 +160,7 @@ export class ConferirLetreiro {
     this.conferindo.set(true);
     this.erro.set('');
     this.resultado.set(null);
+    this.trocarPrevia(null);
     try {
       let r: ConferenciaLetreiro | null = null;
       for (let i = 1; i <= TENTATIVAS && this.aberta(); i++) {
@@ -167,6 +184,65 @@ export class ConferirLetreiro {
       this.progresso.set('');
       this.conferindo.set(false);
     }
+  }
+
+  /** Foto escolhida pelo botão "Enviar uma foto": reduz no aparelho e confere uma vez. */
+  protected async enviarArquivo(campo: HTMLInputElement): Promise<void> {
+    const arquivo = campo.files?.[0];
+    campo.value = '';
+    if (!arquivo || this.conferindo()) return;
+    await this.conferirArquivo(arquivo);
+  }
+
+  async conferirArquivo(arquivo: Blob): Promise<void> {
+    this.erro.set('');
+    this.resultado.set(null);
+    if (!arquivo.type.startsWith('image/')) {
+      this.erro.set('Escolha uma foto (JPEG ou PNG) do letreiro do ônibus.');
+      return;
+    }
+    this.conferindo.set(true);
+    this.progresso.set('Conferindo a foto enviada…');
+    try {
+      const foto = await this.reduzir(arquivo);
+      if (!foto) throw new ErroApi(-1, 'Não consegui abrir essa imagem. Use uma foto JPEG ou PNG.');
+      this.trocarPrevia(this.doc.defaultView?.URL?.createObjectURL?.(foto) ?? null);
+      const r = await firstValueFrom(this.api.conferirLetreiro(foto, this.linha(), this.sessao()));
+      this.resultado.set(r);
+      this.store.dizer(r.frase_falada, true);
+    } catch (e) {
+      this.erro.set(e instanceof ErroApi ? e.message : 'Não consegui conferir agora. Confirme a linha com o motorista.');
+    } finally {
+      this.progresso.set('');
+      this.conferindo.set(false);
+    }
+  }
+
+  /** Decodifica a foto e devolve um JPEG de no máximo LADO_MAXIMO_PX (fotos de celular passam de 4000 px e 2 MB). */
+  protected async reduzir(arquivo: Blob): Promise<Blob | null> {
+    const janela = this.doc.defaultView as Livre;
+    let fonte: Livre = null;
+    try {
+      fonte = await janela.createImageBitmap(arquivo);
+    } catch {
+      return null;
+    }
+    const largura = fonte.width as number;
+    const altura = fonte.height as number;
+    if (!largura || !altura) return null;
+    const escala = Math.min(1, LADO_MAXIMO_PX / Math.max(largura, altura));
+    const canvas = this.doc.createElement('canvas');
+    canvas.width = Math.round(largura * escala);
+    canvas.height = Math.round(altura * escala);
+    canvas.getContext('2d')?.drawImage(fonte, 0, 0, canvas.width, canvas.height);
+    fonte.close?.();
+    return new Promise<Blob | null>((ok) => canvas.toBlob(ok, 'image/jpeg', 0.9));
+  }
+
+  private trocarPrevia(url: string | null): void {
+    const antiga = this.previa();
+    if (antiga) this.doc.defaultView?.URL?.revokeObjectURL?.(antiga);
+    this.previa.set(url);
   }
 
   /** Um quadro da câmera em JPEG, reduzido para no máximo LADO_MAXIMO_PX. */

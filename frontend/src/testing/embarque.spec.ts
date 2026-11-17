@@ -241,4 +241,54 @@ describe('tela de embarque', () => {
     expect(resultado.violations.map((v) => v.id)).toEqual([]);
     fixture.destroy();
   });
+  it('enviar uma foto: reduz no aparelho, confere uma vez só e recusa arquivo que não é imagem', async () => {
+    TestBed.configureTestingModule({ imports: [ConferirLetreiro], providers: providers() });
+    const fixture = TestBed.createComponent(ConferirLetreiro);
+    fixture.componentRef.setInput('linha', '647P-10');
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/embarque/visao').flush({ conectada: true, mensagem: 'ok' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    const botao = [...el.querySelectorAll('button')].find((b) => b.textContent?.includes('Enviar uma foto do letreiro'));
+    expect(botao).toBeTruthy();
+    expect(el.querySelector('input[type=file]')?.getAttribute('accept')).toContain('image/jpeg');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const c = fixture.componentInstance as any;
+    const falas: string[] = [];
+    TestBed.inject(EmbarqueStore).dizer = (t: string) => { falas.push(t); };
+
+    await c.conferirArquivo(new Blob(['%PDF'], { type: 'application/pdf' }));
+    fixture.detectChanges();
+    expect(el.textContent).toContain('Escolha uma foto');
+    http.expectNone('/api/embarque/visao/conferir');
+
+    const reduzidas: Blob[] = [];
+    c.reduzir = async (b: Blob) => { reduzidas.push(b); return new Blob(['jpeg'], { type: 'image/jpeg' }); };
+    const fim = c.conferirArquivo(new Blob(['png'], { type: 'image/png' }));
+    let enviadas = 0;
+    for (let i = 0; i < 20 && !enviadas; i++) {
+      const pend = http.match('/api/embarque/visao/conferir');
+      enviadas = pend.length;
+      if (enviadas) {
+        expect(pend[0].request.body instanceof FormData).toBe(true);
+        expect((pend[0].request.body as FormData).get('linha_esperada')).toBe('647P-10');
+        pend[0].flush({ resultado: 'INCONCLUSIVO', linha_esperada: '647P-10', linha_lida: null, confianca: null,
+          frase_falada: 'Não consegui ler o letreiro com segurança.', modelo: 'pf-visao 1.0.0', latencia_ms: 3200 });
+      } else {
+        await new Promise((ok) => setTimeout(ok, 0));
+      }
+    }
+    await fim;
+    fixture.detectChanges();
+    http.verify();
+    expect(enviadas).toBe(1);
+    expect(reduzidas.length).toBe(1);
+    expect(el.querySelector('.camera__resultado')?.getAttribute('data-resultado')).toBe('INCONCLUSIVO');
+    expect(falas).toEqual(['Não consegui ler o letreiro com segurança.']);
+    const resultado = await axe.run(el, axeOpcoes);
+    expect(resultado.violations.map((v) => v.id)).toEqual([]);
+    fixture.destroy();
+  });
 });
