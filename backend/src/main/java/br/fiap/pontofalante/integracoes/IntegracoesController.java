@@ -62,9 +62,12 @@ public class IntegracoesController {
     @PostMapping("/visao/deteccoes")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public RespostaDeteccao registrarDeteccao(@Valid @RequestBody DeteccaoVisaoDto d) {
-        DeteccaoVisao salvo = deteccoes.save(new DeteccaoVisao(d.ponto(), d.linhaReconhecida().strip(), d.confianca(),
+        String linha = d.linhaReconhecida() == null || d.linhaReconhecida().isBlank() ? null : d.linhaReconhecida().strip();
+        DeteccaoVisao salvo = deteccoes.save(new DeteccaoVisao(d.ponto(), linha, d.confianca(),
                 d.capturadoEm(), d.dispositivo().strip(), OffsetDateTime.now(relogio)));
-        return new RespostaDeteccao(salvo.id, "Ônibus " + salvo.linhaReconhecida + ", chegando.");
+        return new RespostaDeteccao(salvo.id, linha == null
+                ? "Ônibus chegando. Não consegui ler a linha; confirme com o motorista."
+                : "Ônibus " + linha + ", chegando.");
     }
 
     @GetMapping("/visao/deteccoes")

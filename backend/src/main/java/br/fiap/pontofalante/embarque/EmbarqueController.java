@@ -122,10 +122,13 @@ public class EmbarqueController {
 
     @GetMapping("/visao")
     public EstadoVisao estadoVisao() {
-        boolean conectada = service.visaoConectada();
-        return new EstadoVisao(conectada, conectada
+        if (!service.visaoConectada()) {
+            return new EstadoVisao(false, ReconhecedorLetreiro.MSG_NAO_CONECTADA);
+        }
+        boolean disponivel = service.visaoDisponivel();
+        return new EstadoVisao(disponivel, disponivel
                 ? "Aponte a câmera para o letreiro da frente do ônibus."
-                : ReconhecedorLetreiro.MSG_NAO_CONECTADA);
+                : ReconhecedorLetreiro.MSG_INDISPONIVEL);
     }
 
     @PostMapping(value = "/visao/conferir", consumes = "multipart/form-data")

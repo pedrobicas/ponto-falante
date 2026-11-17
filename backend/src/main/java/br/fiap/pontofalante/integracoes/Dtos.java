@@ -17,7 +17,7 @@ public final class Dtos {
 
     public record DeteccaoVisaoDto(
             @NotNull(message = "Informe o ponto.") Long ponto,
-            @NotBlank(message = "Informe a linha reconhecida.")
+            /** null = chegou um ônibus, mas o modelo não leu a linha com segurança. */
             @Size(max = 20, message = "A linha reconhecida pode ter no máximo 20 caracteres.") String linhaReconhecida,
             @NotNull(message = "Informe a confiança.")
             @DecimalMin(value = "0.0", message = "A confiança deve estar entre 0 e 1.")

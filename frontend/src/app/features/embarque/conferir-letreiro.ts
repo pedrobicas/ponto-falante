@@ -12,11 +12,13 @@ type Livre = any;
 
 /** Lado máximo do quadro enviado ao modelo: suficiente para ler o letreiro, leve para o 4G. */
 export const LADO_MAXIMO_PX = 1280;
+/** Fotos por toque em "Conferir": o letreiro de SP alterna número e destino, então uma foto só costuma pegar o destino. */
+export const TENTATIVAS = 3;
 
 /**
- * Conferência do letreiro pela câmera. A interface, a captura e o contrato com o backend são reais; o modelo de
- * visão é da equipe de Computer Vision. Sem o modelo conectado, a tela diz isso e NÃO abre a câmera nem mostra
- * resultado algum.
+ * Conferência do letreiro pela câmera. A foto vai ao backend, que a repassa ao modelo de visão da equipe (YOLO11n
+ * treinado com ônibus de São Paulo + OCR, pasta visao/). Sem o modelo ligado, a tela diz isso e NÃO abre a câmera nem
+ * mostra resultado algum. Quando a foto não dá leitura segura, tira outra sozinha (até TENTATIVAS) antes de responder.
  */
 @Component({
   selector: 'pf-conferir-letreiro',
@@ -34,12 +36,12 @@ export const LADO_MAXIMO_PX = 1280;
         <div class="camera__indisponivel" role="status">
           <pf-icone nome="info" />
           <div>
-            <p><strong>Ainda não disponível.</strong> {{ estado()!.mensagem }}</p>
-            <p class="ajuda">Quando o modelo de visão for conectado, esta tela vai ler o letreiro da frente do ônibus e comparar com a linha {{ linha() }}. Nenhuma foto é guardada.</p>
+            <p><strong>Indisponível agora.</strong> {{ estado()!.mensagem }}</p>
+            <p class="ajuda">Com o reconhecimento ligado, esta tela lê o letreiro da frente do ônibus com o modelo de visão da equipe e compara com a linha {{ linha() }}. Nenhuma foto é guardada.</p>
           </div>
         </div>
       } @else {
-        <p class="ajuda">Aponte a câmera para o letreiro da frente do ônibus e toque em Conferir. A foto é usada só nesta conferência e não é guardada.</p>
+        <p class="ajuda">Aponte a câmera para o letreiro da frente do ônibus e toque em Conferir. Se a primeira foto não der para ler, o aplicativo tira até {{ tentativas }} fotos seguidas; mantenha a câmera apontada. As fotos são usadas só nesta conferência e não são guardadas.</p>
         @if (!aberta()) {
           <button type="button" class="botao botao--primario botao--grande" (click)="abrir()"><pf-icone nome="busca" /> Abrir a câmera</button>
         }
@@ -52,6 +54,7 @@ export const LADO_MAXIMO_PX = 1280;
             <button type="button" class="botao botao--contorno" (click)="pararCamera()">Fechar a câmera</button>
           </div>
         }
+        <p class="ajuda" role="status">{{ progresso() }}</p>
         @if (resultado(); as r) {
           <div class="camera__resultado" [attr.data-resultado]="r.resultado" role="alert">
             <p class="camera__veredito">{{ rotulo(r) }}</p>
@@ -79,6 +82,10 @@ export class ConferirLetreiro {
   protected readonly conferindo = signal(false);
   protected readonly resultado = signal<ConferenciaLetreiro | null>(null);
   protected readonly erro = signal('');
+  protected readonly progresso = signal('');
+  protected readonly tentativas = TENTATIVAS;
+  /** Intervalo entre as fotos de uma conferência (o letreiro troca de número para destino a cada poucos segundos). */
+  esperaEntreFotosMs = 1200;
   private readonly video = viewChild<ElementRef<HTMLVideoElement>>('video');
   private readonly titulo = viewChild<ElementRef<HTMLElement>>('titulo');
   private stream: Livre = null;
@@ -130,29 +137,48 @@ export class ConferirLetreiro {
   }
 
   protected async conferir(): Promise<void> {
-    const v = this.video()?.nativeElement;
-    if (!v || !v.videoWidth) {
+    if (!this.video()?.nativeElement?.videoWidth) {
       this.erro.set('A câmera ainda está abrindo. Tente de novo em um instante.');
       return;
     }
     this.conferindo.set(true);
     this.erro.set('');
+    this.resultado.set(null);
     try {
-      const escala = Math.min(1, LADO_MAXIMO_PX / Math.max(v.videoWidth, v.videoHeight));
-      const canvas = this.doc.createElement('canvas');
-      canvas.width = Math.round(v.videoWidth * escala);
-      canvas.height = Math.round(v.videoHeight * escala);
-      canvas.getContext('2d')?.drawImage(v, 0, 0, canvas.width, canvas.height);
-      const foto = await new Promise<Blob | null>((ok) => canvas.toBlob(ok, 'image/jpeg', 0.85));
-      if (!foto) throw new ErroApi(-1, 'Não consegui capturar a imagem. Tente de novo.');
-      const r = await firstValueFrom(this.api.conferirLetreiro(foto, this.linha(), this.sessao()));
-      this.resultado.set(r);
-      this.store.dizer(r.frase_falada, true);
+      let r: ConferenciaLetreiro | null = null;
+      for (let i = 1; i <= TENTATIVAS && this.aberta(); i++) {
+        if (i > 1) {
+          this.progresso.set(`Não deu para ler ainda. Tirando outra foto, ${i} de ${TENTATIVAS}. Mantenha a câmera apontada.`);
+          await new Promise((ok) => setTimeout(ok, this.esperaEntreFotosMs));
+          if (!this.aberta()) break;
+        }
+        const foto = await this.capturar();
+        if (!foto) throw new ErroApi(-1, 'Não consegui capturar a imagem. Tente de novo.');
+        r = await firstValueFrom(this.api.conferirLetreiro(foto, this.linha(), this.sessao()));
+        if (r.resultado !== 'INCONCLUSIVO') break;
+      }
+      if (r) {
+        this.resultado.set(r);
+        this.store.dizer(r.frase_falada, true);
+      }
     } catch (e) {
       this.erro.set(e instanceof ErroApi ? e.message : 'Não consegui conferir agora. Confirme a linha com o motorista.');
     } finally {
+      this.progresso.set('');
       this.conferindo.set(false);
     }
+  }
+
+  /** Um quadro da câmera em JPEG, reduzido para no máximo LADO_MAXIMO_PX. */
+  protected async capturar(): Promise<Blob | null> {
+    const v = this.video()?.nativeElement;
+    if (!v || !v.videoWidth) return null;
+    const escala = Math.min(1, LADO_MAXIMO_PX / Math.max(v.videoWidth, v.videoHeight));
+    const canvas = this.doc.createElement('canvas');
+    canvas.width = Math.round(v.videoWidth * escala);
+    canvas.height = Math.round(v.videoHeight * escala);
+    canvas.getContext('2d')?.drawImage(v, 0, 0, canvas.width, canvas.height);
+    return new Promise<Blob | null>((ok) => canvas.toBlob(ok, 'image/jpeg', 0.85));
   }
 
   protected rotulo(r: ConferenciaLetreiro): string {

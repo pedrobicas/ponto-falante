@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * o backend envia a imagem no formato combinado e interpreta a resposta; não é um resultado do modelo real.
  */
 @SpringBootTest(properties = {"PF_SPTRANS_MODO=demo", "pf.sptrans-token=", "pf.genai-url=", "pf.rpa-api-key=chave-local",
-        "pf.visao-servico-chave=chave-visao-teste"})
+        "pf.visao-servico-chave=chave-visao-teste", "pf.visao-api-key=chave-camera-teste"})
 @AutoConfigureMockMvc
 class VisaoContratoPostgresTest {
     static final EmbeddedPostgres POSTGRES = iniciar();
@@ -44,6 +44,13 @@ class VisaoContratoPostgresTest {
     static HttpServer servidor() {
         try {
             HttpServer s = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+            s.createContext("/health", troca -> {
+                byte[] r = "{\"status\":\"ok\"}".getBytes(StandardCharsets.UTF_8);
+                troca.getResponseHeaders().add("Content-Type", "application/json");
+                troca.sendResponseHeaders(200, r.length);
+                troca.getResponseBody().write(r);
+                troca.close();
+            });
             s.createContext("/v1/letreiro", troca -> {
                 String tipo = String.valueOf(troca.getRequestHeaders().getFirst("Content-Type"));
                 String chave = String.valueOf(troca.getRequestHeaders().getFirst("X-API-Key"));
@@ -104,6 +111,36 @@ class VisaoContratoPostgresTest {
         mvc.perform(multipart("/api/embarque/visao/conferir").file(JPEG).param("linha_esperada", "875A-10")
                         .header("X-PF-Dispositivo", "c".repeat(32)))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.resultado").value("NAO_CONFERE"));
+    }
+
+    @Test
+    void cameraFixaPodeAvisarOnibusSemLinhaLida() throws Exception {
+        String corpo = "{\"ponto\":70016916,\"linha_reconhecida\":null,\"confianca\":0.7,"
+                + "\"capturado_em\":\"2026-11-17T12:00:00Z\",\"dispositivo\":\"camera-ponto\"}";
+        mvc.perform(post("/api/integracoes/visao/deteccoes").header("X-API-Key", "chave-camera-teste")
+                        .contentType("application/json").content(corpo))
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.frase_falada").value(org.hamcrest.Matchers.containsString("Não consegui ler a linha")));
+        mvc.perform(get("/api/integracoes/visao/deteccoes").param("ponto", "70016916"))
+                .andExpect(jsonPath("$[0].linha_reconhecida").doesNotExist());
+    }
+
+    @Test
+    void registroDoTunelExigeAChaveDoServicoEEnderecoPermitido() throws Exception {
+        mvc.perform(put("/api/visao/endereco").contentType("application/json").content("{\"url\":\"https://a-b.trycloudflare.com\"}"))
+                .andExpect(status().isUnauthorized());
+        mvc.perform(put("/api/visao/endereco").header("X-API-Key", "chave-visao-teste").contentType("application/json")
+                .content("{\"url\":\"https://evil.com\"}")).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void semLeituraOrientaAApontarParaOLetreiro() throws Exception {
+        RESPOSTA.set("{\"modelo\":\"pf-visao 1.0.0\",\"leituras\":[],\"deteccoes\":{\"onibus\":1,\"letreiros\":0}}");
+        mvc.perform(get("/api/embarque/visao")).andExpect(jsonPath("$.conectada").value(true));
+        mvc.perform(multipart("/api/embarque/visao/conferir").file(JPEG).param("linha_esperada", "875A-10")
+                        .header("X-PF-Dispositivo", "c".repeat(32)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.resultado").value("INCONCLUSIVO"))
+                .andExpect(jsonPath("$.frase_falada").value(org.hamcrest.Matchers.containsString("mais para cima")));
     }
 
     @Test

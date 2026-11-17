@@ -45,8 +45,9 @@ não representam impacto já medido com passageiros.
 | Boletim de espera prevista (RPA) | O coletor consulta pontos públicos da SPTrans em 8 janelas diárias; o robô diário está agendado para 6h (Brasília). O boletim declara **ESTIMADO**, **SIMULADO** ou **INDISPONIVEL**, data e cobertura. GitHub Actions pode atrasar ou pular janelas; previsão não mede atraso observado. |
 | Assistente (GenAI) | Implementado e avaliado; roda no PC da equipe (Ollama + FastAPI) e só fica disponível no site quando o túnel Cloudflare estiver ligado. Sem ele, o chat avisa que está indisponível e o resto funciona. |
 | Embarque assistido | Implementado: trajetos favoritos, ponto por GPS ou busca com confirmação, acompanhamento das previsões a cada 20 s com avisos por voz que não se repetem, assistente que executa as ações (com confirmação) e funciona sem a GenAI. [Detalhes](docs/EMBARQUE_ASSISTIDO.md) |
-| Conferência do letreiro pela câmera | Interface e contrato prontos ([contrato](contratos/openapi-visao-letreiro.yaml)); fica **não conectada** até o modelo de visão ser publicado e `PF_VISAO_URL` configurado. Nenhum resultado é simulado. |
-| Integrações visão computacional, Big Data e ESP32 | Endpoints e contratos prontos, protegidos por chave ([contrato](contratos/openapi-mvp.yaml)) |
+| Visão computacional (conferência do letreiro) | **Integrada**: o celular fotografa o letreiro e o modelo da equipe (YOLO11n treinado com ônibus de SP + EasyOCR, [pasta `visao/`](visao/README.md)) confere se é a linha esperada. O modelo precisa de ~1,5 GB de memória, então roda no PC da equipe (GPU) e entra no site pelo túnel, como a GenAI; com o PC desligado a tela diz "indisponível agora" e não abre a câmera. Nenhum resultado é simulado. [Detalhes](visao/INTEGRACAO.md) |
+| Câmera fixa do ponto (visão) | `visao/src/demo.py --contrato mvp` envia ao MVP o que a câmera viu (`POST /api/integracoes/visao/deteccoes`, inclusive "ônibus sem linha lida"); a câmera do ponto é simulada com vídeo/fotos |
+| Integrações Big Data e ESP32 | Endpoints e contratos prontos, protegidos por chave ([contrato](contratos/openapi-mvp.yaml)) |
 
 Regras do produto: dado simulado nunca aparece como real; previsão nunca aparece como chegada observada.
 
@@ -67,7 +68,9 @@ flowchart LR
   G --> O[Ollama qwen2.5<br/>local]
   G --> F[(FAISS e5-large<br/>8 docs, 244 trechos)]
   A[GitHub Actions cron] -->|RPA Python| R
-  E[ESP32 / visão / Big Data] -->|chaves próprias| R
+  R -->|foto do letreiro, X-API-Key, túnel| V[FastAPI Visão<br/>PC da equipe]
+  V --> Y[YOLO11n letreiro<br/>+ EasyOCR]
+  E[ESP32 / câmera fixa / Big Data] -->|chaves próprias| R
 ```
 
 O navegador só fala com o Spring. As chaves (RPA, GenAI, dispositivos) ficam em variáveis de ambiente; nada sensível vai para o
@@ -81,6 +84,7 @@ repositório (Gitleaks na CI).
 | `backend/` | Spring Boot 3.5, Flyway, cliente Olho Vivo, chat, boletim, integrações, Actuator |
 | `genai/` | Base de conhecimento, índice FAISS, RAG, agente v1/v2, avaliação e [relatório](genai/RELATORIO.md) |
 | `rpa/` | Robô do boletim (Python), BPMN, testes, logs e [documentação](rpa/README.md) |
+| `visao/` | Visão computacional: dataset, treino YOLO11n, OCR, métricas, [relatório](visao/resultados/Relatorio_Visao_Ponto_Falante.pdf) e o serviço HTTP usado pelo MVP ([integração](visao/INTEGRACAO.md)) |
 | `contratos/` | OpenAPI público do MVP e contrato da API GenAI |
 | `scripts/` | Execução local, testes de integração, SPTrans e scripts PowerShell do GenAI/túnel |
 | `docs/` | Arquitetura, revisão dos critérios, integração, deploy e diagnóstico SPTrans |
@@ -120,6 +124,7 @@ docker compose --profile rpa run --rm rpa                    # publica um boleti
 ```
 
 Assistente real: [scripts/genai/README.md](scripts/genai/README.md) (Ollama + API local + túnel; a mesma `GENAI_API_KEY` no Spring).
+Visão real: [visao/INTEGRACAO.md](visao/INTEGRACAO.md) (`scripts/visao/instalar.ps1` uma vez, depois `scripts/visao/iniciar.ps1 -TunelRapido`).
 
 ## Testes
 
@@ -128,9 +133,11 @@ Push-Location backend; .\mvnw.cmd -B verify; Pop-Location                 # 225 
 Push-Location frontend; npm.cmd ci; npm.cmd test -- --watch=false; Pop-Location   # 79 testes (axe)
 Push-Location genai; ..\.venv\Scripts\python.exe -m pytest -q tests; Pop-Location # 155 testes
 Push-Location rpa; ..\.venv\Scripts\python.exe -m pytest -q; Pop-Location         # 53 testes
+Push-Location visao; ..\.venv-visao\Scripts\python.exe -m pytest -q; Pop-Location # visão (PF_VISAO_TESTE_REAL=1 inclui o modelo real)
 .\.venv\Scripts\python.exe -m pytest -q tests/integracao                          # 26 testes
 .\.venv\Scripts\python.exe scripts/integracao/testar_mvp.py --url https://ponto-falante.onrender.com
 .\.venv\Scripts\python.exe scripts/integracao/validar_embarque.py   # E2E do embarque (Playwright, desktop e celular)
+.\.venv-visao\Scripts\python.exe scripts/integracao/validar_visao.py # E2E da conferência pela câmera com o modelo real
 ```
 
 ## CI/CD e segurança

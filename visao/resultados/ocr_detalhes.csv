@@ -1,0 +1,42 @@
+imagem,split,tipo,correta,lida,confianca,status,texto_ocr
+sp_0009_A2_Transportes_6_8449_Flickr_Rafael_Delazari.jpg,test,codigo,5018-10,-,0.0,nao_leu,9 4 1 | 5 0 1 0
+sp_0010_A2_Transportes_6_8811_Flickr_Rafael_Delazari.jpg,test,codigo,5128-10,-,0.0,nao_leu,771728 | 771728
+sp_0046_Area_7_Term_Santo_Amaro.jpg,test,codigo,695H-10,695H-10,0.499,acerto,695H-10 | 695H-10 | 695H-10M
+sp_0110_Cidade_Dutra_6_1021_Flickr_Rafael_Delazari.jpg,test,codigo,695X-10,-,0.0,nao_leu,5552-40 | 5557-19 | 5352-2
+sp_0203_Mobibrasil_6_3736_Flickr_Rafael_Delazari.jpg,test,codigo,576C-10,576C-10,0.341,acerto,57EC-10 | 576C-10 6 | 5765-10
+sp_0311_Transkuba_7_7876_Flickr_Rafael_Delazari.jpg,test,codigo,647P-10,647P-10,0.573,acerto,647P-10 | 647P-10 | 647P210
+sp_0340_Tr_lebus_de_SP_nos_anos_90.jpg,test,codigo,2100-10,-,0.0,nao_leu,PCADA SE | PCA DA SE | PCALDA SE
+sp_0001_1_Balsa_Ilha_do_Boror_panoramio.jpg,val,codigo,6L11-10,-,0.0,nao_leu,5 E1 | 6 L 1 | 551
+sp_0015_Area_1_Term_Jd_Britania.jpg,val,codigo,8013-10,-,0,nao_leu,
+sp_0037_Area_7_Term_Agua_Espraiada.jpg,val,codigo,5701-10,-,0,nao_leu,
+sp_0087_Bus_at_Avenida_Paulista.jpg,val,codigo,175P-10,175P-10,0.3,acerto,USREOU CHAVES | I7SF- EDU CHAVES | DSP-EDU CHAVES
+sp_0113_Cidade_Dutra_6_1201_Flickr_Rafael_Delazari.jpg,val,codigo,695X-10,-,0.0,nao_leu,E4
+sp_0144_Fenix_2_5220_Flickr_Rafael_Delazari.jpg,val,codigo,177X-10,-,0,nao_leu,
+sp_0172_MARSILAC10.jpg,val,codigo,6L01-10,-,0,nao_leu,
+sp_0174_MASP_33_graus.jpg,val,codigo,917H-10,-,0.0,nao_leu,MVAM | SVAL | EUAL1
+sp_0189_Metra_7220_Flickr_Rafael_Delazari.jpg,val,codigo,290,-,0.0,nao_leu,VABA0A6R | ABRQVARA | VBMWAR
+sp_0190_Metra_8161_Flickr_Rafael_Delazari_cropped.jpg,val,codigo,288,288,0.662,acerto,288 | JABAQUARA | 288 | JABAQUARA | 288 | ABAQUARA
+sp_0213_Parada_Dian_polis_Expresso_Tiradentes.jpg,val,codigo,5109-10,5109-10,0.727,acerto,5109-10 | ESFC CAYAAY | S2O  LEERTOLS | 5109 -10 | 07519619 | 626 | MUOU | 5109- 10 | ESFC CAYA8 | S O ELEERTOLK
+sp_0268_S_o_Paulo_Marcopolo_Volvo_trolleybus_1949_in_2009.jpg,val,codigo,4113-10,-,0.0,nao_leu,AIS | KAMR | AIS | KAME | AIS | MA
+sp_0326_Transwolff_7_8742.jpg,val,codigo,7005-51,7005-51,0.058,acerto,7 0 0 5 251 | 7 0 0 5251 | 700 625
+sp_0330_Trolebus8000nalinha2100MarcosElias.jpg,val,codigo,2100-10,2100-10,0.66,acerto,A0 | VIL | CARRZ | TFRM | 2100 | VIL | CARRAO | TFRM | 2100 | VIL | CARRAO | TFRM | 2100
+sp_0339_Tr_lebus_S.jpg,val,codigo,4113-10,-,0.0,nao_leu,416 | GGKOFHNR | H416 | GNAOTAU  | HI8 | GHAOTAUR  
+sp_0347_Tupi_6_2138_Flickr_Rafael_Delazari.jpg,val,codigo,574A-21,574A-21,0.4,acerto,574M-21 | 5746-21 | 5740-21
+sp_0350_Tupi_Transportes_6_2060_Flickr_Rafael_Delazari.jpg,val,codigo,574A-21,574A-21,0.389,acerto,5748-21 | 5748-21
+sp_0355_Via_Sul_5_1941_Flickr_Rafael_Delazari.jpg,val,destino,-,-,0.0,absteve,SHOP PLAZA SUL | SHOF FLIZA SUL | SHDP PLAZM
+sp_0377_nibus_a_bateria_S_o_Paulo_frente.jpg,val,codigo,6030-10,6030-10,0.144,acerto,6131 -10 | 6131 -11 | 6130-10
+sp_0008_A2_Transportes_6_8173_Flickr_Rafael_Delazari.jpg,test,destino,-,-,0.0,absteve,SA0 JVMR5 | SA0 JUDAS | SA | WA5
+sp_0069_Av_Rangel_Pestana_S_S_o_Paulo_Brasil_31_panoramio.jpg,test,destino,-,-,0.0,absteve,CAUA2 | FCAUA | FCAUA
+sp_0112_Cidade_Dutra_6_1160_Flickr_Rafael_Delazari.jpg,test,destino,-,-,0.0,absteve,TERIV | TERI | UFFGN
+sp_0114_Cidade_Dutra_6_1203_Flickr_Rafael_Delazari.jpg,test,destino,-,-,0.0,absteve,BRBRA
+sp_0124_Corredor_verde_9_de_Julho.jpg,test,destino,-,-,0.0,absteve,TERI PRINC ISABEL | TERI PRINC ISABEL | TERI PRINC ISABEL
+sp_0241_Santa_Brigida_11058.jpg,test,destino,-,-,0.0,absteve,PNSSHHDU | PNSSHNDU | PNSSHNDU
+sp_0323_Transppass_8_1861_Flickr_Rafael_Delazari.jpg,test,destino,-,-,0.0,absteve,SHANGABA | ANGABAV | AMABAV
+sp_0357_Viasul_5_1756_Flickr_Rafael_Delazari.jpg,test,destino,-,-,0.0,absteve,SAEOMA | SACON6
+sp_0073_Avenida_Paulista_2025_01.jpg,val,destino,-,-,0.0,absteve,PERDIZES | PERDIZES | FERDIZES
+sp_0088_Bus_for_Terminal_Pinheiros_at_the_Terminal_Parque_Dom_Pedro.jpg,val,destino,-,-,0.0,absteve,T | PINHETRO5 | T | PINHEIR0S | T | BIWRDS
+sp_0102_Campo_Belo_7_2061_Flickr_Rafael_Delazari.jpg,val,destino,-,-,0.0,absteve,TM6 | TER CFOLIFI
+sp_0111_Cidade_Dutra_6_1135_Flickr_Rafael_Delazari.jpg,val,destino,-,-,0.0,absteve,GHOP MTERLAGOS | SHOF MTERACOS | EHMF MTERLAGO5
+sp_0182_Marcopolo_Viale_Volkswagen_EOT_17_260_EOT_da_Transppass_serv.jpg,val,destino,-,-,0.0,absteve,SONES | S | LA GMES
+sp_0310_Transcooper_1_6113_Flickr_Rafael_Delazari.jpg,val,destino,-,-,0.0,absteve,VE | AAPVA | ARA | 4
+sp_0346_Tupi_6_2128_Flickr_Rafael_Delazari.jpg,val,destino,-,-,0.0,absteve,ELDORRDO

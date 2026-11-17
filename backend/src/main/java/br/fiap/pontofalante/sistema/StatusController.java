@@ -21,7 +21,8 @@ import java.time.OffsetDateTime;
 public class StatusController {
     private static final Logger log = LoggerFactory.getLogger(StatusController.class);
 
-    /** visao: CONECTADA quando o modelo que lê o letreiro está configurado (PF_VISAO_URL); senão NAO_CONECTADA.
+    /** visao: CONECTADA quando o modelo que lê o letreiro responde /health; INDISPONIVEL quando há endereço mas o PC
+     *  está desligado; NAO_CONECTADA sem endereço (PF_VISAO_URL vazio e nenhum registro do PC).
      *  assistenteTempoReal: o assistente responde perguntas de horário pelo backend mesmo com a GenAI fora. */
     public record Status(String versao, String sptrans, String assistente, LocalDate ultimoBoletim,
                          OffsetDateTime horarioServidor, boolean assistenteTempoReal, String visao) {
@@ -59,6 +60,6 @@ public class StatusController {
         }
         return new Status(versao, sptrans, saudeGenai.disponivel() ? "DISPONIVEL" : "INDISPONIVEL", ultimo,
                 OffsetDateTime.now(relogio), !"INDISPONIVEL".equals(sptrans),
-                visao.conectado() ? "CONECTADA" : "NAO_CONECTADA");
+                !visao.conectado() ? "NAO_CONECTADA" : visao.disponivel() ? "CONECTADA" : "INDISPONIVEL");
     }
 }
