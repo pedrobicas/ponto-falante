@@ -1,0 +1,19 @@
+{
+  "data": "2026-11-17",
+  "ambiente": "https://ponto-falante.onrender.com/embarque (produção), serviço visao/servico na CPU do PC da equipe via Cloudflare Quick Tunnel",
+  "ponto": "3407210 - Av. Brig. Faria Lima, 3015 (GTFS SPTrans, 21 linhas)",
+  "descricao": "Conferências feitas em 17/11/2026 no MVP publicado, no ponto real 3407210 (Av. Brig. Faria Lima, 3015, cadastro GTFS da SPTrans, 21 linhas), com sessão de embarque e envio de foto pelo botão \"Enviar uma foto do letreiro\". O tempo vai do envio da foto até a resposta na tela e inclui o túnel; o modelo roda na CPU (placa AMD, sem CUDA) do computador da equipe. A frase exibida também é falada pelo aplicativo.",
+  "casos": [
+    {"foto": "01_647P-10.jpg", "linha_esperada": "647P-10", "resultado": "CONFERE",
+     "resposta": "CONFERE: \"Parece ser a linha 647P-10\", a que a pessoa espera", "confianca": 0.781, "tempo_s": 9.1,
+     "imagem": "mvp_confere.png"},
+    {"foto": "01_647P-10.jpg", "linha_esperada": "477P-10", "resultado": "NAO_CONFERE",
+     "resposta": "NÃO CONFERE: \"Atenção: parece ser outra linha (647P-10)\", pede confirmação com o motorista", "confianca": 0.781, "tempo_s": 9.3,
+     "imagem": "mvp_outra_linha.png"},
+    {"foto": "03_destino_sacoma.jpg", "linha_esperada": "647P-10", "resultado": "INCONCLUSIVO",
+     "resposta": "INCONCLUSIVO: \"Não deu para ler o letreiro\" (letreiro só com o destino); nenhuma linha afirmada", "confianca": null, "tempo_s": 7.9,
+     "imagem": "mvp_inconclusivo.png"}
+  ],
+  "nota": "Medições de uma execução de cada caso (17/11/2026). Nenhum resultado é simulado: com o computador da equipe desligado, a tela informa que a conferência está indisponível.",
+  "legenda": "Telas do MVP publicado: linha confere, outra linha e letreiro só com destino (inconclusivo)."
+}

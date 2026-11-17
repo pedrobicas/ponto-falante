@@ -9,14 +9,23 @@ deficiência visual ou baixa visão.
 ## Integrantes
 | Nome | RM |
 |---|---|
+| Pedro Henrique Bicas Couto | RM99534 |
 | Bryan Willian | RM551305 |
-| Felipe Terra | RM99405 |
-| Gabriel Doms | RM98630 |
+| Felipe Masera Terra | RM99405 |
+| Gabriel Fernandes Doms | RM98630 |
 | Lucas Vassão Braga | RM98607 |
-| Pedro Bicas | RM99534 |
 
-- Vídeo de demonstração: [link do YouTube (não listado)]
-- Relatório: [`resultados/Relatorio_Visao_Ponto_Falante.pdf`](resultados/Relatorio_Visao_Ponto_Falante.pdf)
+Turma 4ES · Engenharia de Software · FIAP
+
+## Entregáveis (PDF oficial da GS, p. 44)
+| Exigência | Onde está |
+|---|---|
+| Repositório com documentação e código completo | esta pasta (`visao/`) do monorepo [pedrobicas/ponto-falante](https://github.com/pedrobicas/ponto-falante) |
+| Documento PDF (título, integrantes, resumo, introdução, objetivo, ferramentas, metodologia, resultados, conclusão) | [`resultados/Relatorio_Visao_Ponto_Falante.pdf`](resultados/Relatorio_Visao_Ponto_Falante.pdf) |
+| Vídeo de demonstração da solução funcionando | link do YouTube (não listado): *a inserir após a publicação* · roteiro e narração em [`docs/roteiro_video.md`](docs/roteiro_video.md) |
+| Treino customizado de uma arquitetura de visão | YOLO11n com as classes `onibus` e `letreiro` ([dataset](#dataset), [`ferramentas/treinar.py`](ferramentas/treinar.py), [`modelos/best.pt`](modelos/best.pt)) |
+
+- MVP publicado (conferência do letreiro pelo celular): https://ponto-falante.onrender.com/embarque
 - Demo gravada pelo sistema: [`resultados/demo.mp4`](resultados/demo.mp4)
 - **Integração com a plataforma:** [`INTEGRACAO.md`](INTEGRACAO.md)
 
@@ -139,7 +148,8 @@ pytest -q
 ```bash
 python relatorio/gerar_relatorio.py --resultados resultados --saida resultados/Relatorio_Visao_Ponto_Falante.pdf
 ```
-Preencha antes `relatorio/info.txt` (integrantes, links).
+Os integrantes e os links ficam em `relatorio/info.txt`; depois de publicar o vídeo, preencha `VIDEO:` e gere o PDF de novo.
+A seção de integração com o MVP vem de `resultados/integracao_mvp.json` (conferências reais no site publicado).
 
 ## Integração com o MVP
 O modelo está integrado ao Ponto Falante publicado: a tela de Embarque Assistido usa a câmera do celular para
