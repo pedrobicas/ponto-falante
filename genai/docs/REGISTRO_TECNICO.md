@@ -447,12 +447,12 @@ acurácia geral.
 
 - Repositório: https://github.com/pedrobicas/ponto-falante
 - MVP publicado: https://ponto-falante.onrender.com
-- Vídeo de demonstração (2min22s): [INSERIR LINK DO VÍDEO GENAI]
+- Vídeo de demonstração (2min23s): https://youtu.be/8b0Vu1Txdq4
 - Notebooks com saídas: `notebooks/01_base_conhecimento.ipynb`, `02_indice_recall_limiar.ipynb`, `03_geracao_fundamentada.ipynb`, `04_agente_e_placar.ipynb`
 
 ### Demonstração gravada em 14 e 15/11/2026 (versão 3)
 
-O vídeo foi gravado diretamente no site publicado, em 1920 x 1080, e mostra uma conversa contínua em produção, regravada em 15/11: rota para o Centro pelo cadastro oficial (resposta em
+O vídeo foi gravado diretamente no site publicado e mostra uma conversa contínua em produção, regravada em 15/11: rota para o Centro pelo cadastro oficial (resposta em
 cerca de 1,6 s), "quanto falta" e "no sentido contrário" com previsão em tempo real da SPTrans (cerca de 1,5 s cada),
 gratuidade para pessoa de 66 anos com duas fontes citadas (cerca de 7 s), leitura em voz alta, pergunta sobre outra
 cidade (Curitiba) e letra grande com alto contraste, com a conversa preservada. Seguem os diagramas de arquitetura do
@@ -476,7 +476,7 @@ endereço do túnel propagava. Registro em `docs/evidencias/genai_operacao_20261
 Limites registrados: com o modelo frio, a pergunta de gratuidade já excedeu o timeout de **40 s** da API em 14/11; o
 diagnóstico está em `docs/evidencias/timeout_genai_20261114.md` (40.014 ms e 40.006 ms, várias chamadas ao Ollama por
 pergunta). Não foi alterado modelo, limiar ou timeout. O agente v1 mantém a recusa alta medida no teste: perguntas como
-"qual o valor da tarifa" podem receber "não encontrei", sempre com indicação para confirmar no 156. O vídeo é silencioso:
+"qual o valor da tarifa" podem receber "não encontrei", sempre com indicação para confirmar no 156. O vídeo é narrado e
 mostra o acionamento da Web Speech API, sem comprovar a reprodução audível em todos os aparelhos.
 
 Nenhuma avaliação final fechada foi aberta ou reexecutada para a gravação.

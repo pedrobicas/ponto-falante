@@ -335,8 +335,8 @@ decomposição de perguntas compostas e um novo conjunto de teste inédito para 
 
 ## 13. Reprodutibilidade e links
 
-- Repositório público: **https://github.com/pedrobicas/ponto-falante**
-- Vídeo de demonstração: **[INSERIR LINK DO VÍDEO GENAI]**
+- Repositório público: https://github.com/pedrobicas/ponto-falante
+- Vídeo de demonstração: https://youtu.be/8b0Vu1Txdq4
 - MVP publicado: https://ponto-falante.onrender.com
 - Notebooks com as saídas salvas, na pasta `genai/notebooks/`: montagem da base, índice com recall e limiar, geração
   fundamentada, e agente com placar.

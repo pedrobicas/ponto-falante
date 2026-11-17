@@ -175,6 +175,6 @@ saídas em `tests/EVIDENCIAS.md`; a suíte também roda na CI a cada push.
 
 - Repositório GitHub: https://github.com/pedrobicas/ponto-falante (pasta `rpa/`)
 - MVP publicado: https://ponto-falante.onrender.com/boletim
-- Vídeo demonstrativo (2 min 12 s, abaixo do limite de 3 min): [INSERIR LINK DO VÍDEO RPA]
+- Vídeo demonstrativo (2 min 26 s, abaixo do limite de 3 min): https://youtu.be/NPmEduM5GCY
 
-O vídeo mostra a execução ponta a ponta do robô de boletim no MVP local, do comando à publicação com código 0, entre 01:00 e 01:21. A coleta real, o agendamento e o boletim publicado são trechos de produção identificados pelo selo DADOS REAIS ou ESTIMADO. Entre 01:21 e 01:44 aparecem a falha, a recuperação e a auditoria.
+O vídeo mostra a execução ponta a ponta do robô de boletim no MVP local, do comando à publicação com código 0. A coleta real, o agendamento e o boletim publicado são trechos de produção identificados pelo selo DADOS REAIS ou ESTIMADO. Em seguida aparecem a falha, a recuperação e a auditoria.
