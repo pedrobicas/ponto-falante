@@ -1,5 +1,92 @@
 # Guia de integração: componente Visão do Ponto Falante
 
+> **Estado em 17/11/2026: integrado ao MVP publicado.** A conferência do letreiro pelo celular no Embarque Assistido
+> (https://ponto-falante.onrender.com/embarque) usa este modelo. As seções 0 a 0.5 descrevem essa integração; as
+> seções 1 a 7 são o guia original da equipe (câmera fixa e API falsa), que continua valendo.
+
+## 0. Como a visão entra no MVP
+
+```mermaid
+flowchart LR
+    C[Celular<br/>tela Embarque Assistido] -->|foto do letreiro| S[Spring Boot no Render<br/>/api/embarque/visao/conferir]
+    S -->|foto + linhas do ponto<br/>X-API-Key, Quick Tunnel| V[visao/servico<br/>FastAPI no PC da equipe]
+    V --> Y[YOLO11n best.pt<br/>onibus + letreiro]
+    Y -->|recorte| O[EasyOCR<br/>3 versões]
+    O -->|leitura validada| S
+    S -->|CONFERE / NÃO CONFERE /<br/>INCONCLUSIVO + frase| C
+    F[Câmera fixa simulada<br/>src/demo.py --contrato mvp] -->|POST /api/integracoes/visao/deteccoes| S
+```
+
+Dois usos do mesmo modelo:
+
+| Uso | Quem chama | Contrato |
+|---|---|---|
+| **Conferência pelo celular** (principal) | O backend, quando a pessoa toca em "Conferir letreiro" | `POST /v1/letreiro` deste serviço ([contrato](../contratos/openapi-visao-letreiro.yaml)) |
+| **Câmera fixa do ponto** (simulada com vídeo/fotos) | `src/demo.py --contrato mvp` | `POST /api/integracoes/visao/deteccoes` do MVP ([contrato](../contratos/openapi-mvp.yaml)) |
+
+### 0.1 Onde o modelo roda (e por quê)
+
+| Opção | Medição / limite | Decisão |
+|---|---|---|
+| No servidor do Render (plano gratuito) | O modelo carregado ocupa **~1,5 GB de RAM** na CPU (medido em 17/11 com as 6 fotos de demonstração); o Render gratuito tem 512 MB, já usados pelo Spring | Não cabe |
+| No navegador (ONNX/WebAssembly) | O YOLO caberia, mas o EasyOCR (CRAFT + reconhecedor) não tem versão web; trocar o OCR invalidaria as métricas do relatório | Não adotado |
+| **Serviço local no PC da equipe, publicado por túnel** | GPU RTX 4060 Ti; ~1 s por foto na CPU, bem menos na GPU; mesmo caminho já usado pela GenAI | **Adotado** |
+
+Fallback: sem o PC ligado, `GET /api/status` mostra `visao: INDISPONIVEL` (ou `NAO_CONECTADA` se nunca foi
+registrado), a tela diz "indisponível agora" e não abre a câmera. Nenhum resultado é simulado.
+
+### 0.2 Ligar no PC (Windows)
+
+```powershell
+# uma vez: cria .venv-visao com PyTorch (CUDA se houver NVIDIA), YOLO, EasyOCR e FastAPI
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/visao/instalar.ps1
+# sempre que for usar pelo site: sobe o serviço em 127.0.0.1:8090, abre o túnel e registra no Render
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/visao/iniciar.ps1 -TunelRapido
+powershell.exe -NoProfile -File scripts/visao/status.ps1
+powershell.exe -NoProfile -File scripts/visao/parar.ps1
+```
+
+Chave: o Render usa `PF_VISAO_SERVICO_CHAVE` e, se ela estiver vazia, a `GENAI_API_KEY` (o PC já tem essa chave em
+`scripts/genai/.env.local`). Para separar as chaves, defina `PF_VISAO_SERVICO_CHAVE` no Render e em
+`scripts/visao/.env.local` com o mesmo valor.
+
+Uso local, sem Render: `iniciar.ps1` sem `-TunelRapido` e `PF_VISAO_URL=http://127.0.0.1:8090` no Spring.
+
+### 0.3 O que muda na leitura para o celular
+
+O pipeline é o mesmo do relatório (`DetectorOnibus` + `ler_linha`). O serviço liga três regras a mais, só nesse uso:
+
+1. **Casamento exato com as linhas do ponto** (depois de normalizar O/0, I/1, S/5, B/8, G/6...). No teste ponta a
+   ponta de 17/11, a foto de um 647P-10 conferida no ponto da Av. Paulista (que não tem essa linha) "casava" com
+   478P-10 no limiar original de 0,75. Com o casamento exato, um código legível que não está na lista volta como
+   leitura **não validada**, com a confiança reduzida em 40%, e o backend compara o texto exato.
+2. **Ambiguidade**: se duas linhas de número diferente ficam quase empatadas, nenhuma é afirmada.
+3. **Sem sufixo inventado**: se o letreiro mostrou só "2100", o serviço devolve "2100" e o backend responde
+   "número confere, confirme o destino", em vez de afirmar "2100-10".
+
+O backend afirma algo a partir de confiança 0,45, o mesmo limiar por quadro do `Anunciador`. Na avaliação do
+relatório, as leituras validadas tiveram 0 linha errada em qualquer confiança.
+
+### 0.4 Segurança e privacidade
+
+- `POST /v1/letreiro` exige `X-API-Key` (comparação em tempo constante); só o backend conhece a chave.
+- O backend só aceita registrar `https://*.trycloudflare.com` e antes confere `/health` (modelo carregado) e um
+  desafio HMAC em `/identidade` (prefixo `pf-visao-identidade:`), sem a chave trafegar.
+- Imagem só JPEG/PNG (conferido pelo conteúdo), até 2 MB e 4096 px; uma inferência por vez (503 se ocupado).
+- Nenhuma foto é gravada (nem pelo serviço, nem pelo backend). O log tem só tempos e contagens.
+
+### 0.5 Testes
+
+| Teste | O que prova |
+|---|---|
+| `tests/test_servico.py` (CI) | Contrato HTTP: chave, limites, formato da resposta, casamento exato, linha fora da lista, ambiguidade, sufixo |
+| `tests/test_servico_modelo_real.py` (`PF_VISAO_TESTE_REAL=1`) | Modelo real pelo HTTP nas 6 fotos: 5 linhas certas, 0 afirmação no letreiro só com destino, 647P-10 não vira 478P-10 |
+| `tests/test_cliente_api_mvp.py` (CI) | Câmera fixa no contrato do MVP, inclusive "sem linha lida" e fila quando a chave falha |
+| `backend/.../VisaoContratoPostgresTest`, `EnderecoVisaoTest`, `ConferirLinhasDoPontoTest` | Backend: envio da foto, registro do túnel, linhas enviadas ao modelo, frases de orientação |
+| `scripts/integracao/validar_visao.py` | Navegador: câmera (alimentada por foto real) -> Spring -> modelo real -> resultado falado, com axe |
+
+---
+
 Este pacote é a parte de **visão computacional** do Ponto Falante. Ele recebe imagens de uma câmera
 (vídeo, webcam ou pasta de fotos), detecta o ônibus, lê a linha no letreiro e **envia o resultado para a
 API da plataforma**. A plataforma usa esse resultado para mostrar e falar o anúncio ao passageiro.

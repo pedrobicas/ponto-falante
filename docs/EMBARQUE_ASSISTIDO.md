@@ -51,12 +51,25 @@ assistente geral (`/api/chat`) com o ponto e a linha atuais como contexto; horá
 
 ## Conferência do letreiro pela câmera
 
-A interface (câmera traseira, captura reduzida a 1280 px, resultado falado) e o adaptador no backend estão prontos. A
-leitura do letreiro depende do modelo de visão computacional da equipe, que deve seguir o contrato
-[`contratos/openapi-visao-letreiro.yaml`](../contratos/openapi-visao-letreiro.yaml). Para conectar basta configurar
-`PF_VISAO_URL` e `PF_VISAO_SERVICO_CHAVE`; até lá a tela diz que a conferência ainda não está disponível e não abre a
-câmera. O backend compara o texto lido com a linha esperada (confiança mínima 0,6) e responde CONFERE, NUMERO_CONFERE
-(número igual, variante não lida), NAO_CONFERE ou INCONCLUSIVO. Toda resposta pede para confirmar com o motorista.
+A pessoa aponta o celular para a frente do ônibus e toca em Conferir. A foto (reduzida a 1280 px) vai para o backend,
+que a repassa ao **modelo de visão da equipe** (pasta [`visao/`](../visao/README.md): YOLO11n treinado com ônibus de
+São Paulo para achar o letreiro + EasyOCR para ler a linha) pelo contrato
+[`contratos/openapi-visao-letreiro.yaml`](../contratos/openapi-visao-letreiro.yaml). Junto com a foto, o backend manda
+as linhas que a pessoa acompanha e as que param no ponto segundo o cadastro GTFS: o modelo só confirma uma linha que
+casa exatamente com uma delas (tolerando O/0, I/1, S/5, B/8). Uma linha legível fora da lista volta como leitura não
+validada, com confiança menor, e nunca é trocada pela linha "mais parecida".
+
+O backend decide (classe `ConferenciaLetreiro`, confiança mínima 0,45, o mesmo limiar por quadro do anunciador da
+equipe): CONFERE, NUMERO_CONFERE (número igual, variante não lida), NAO_CONFERE ou INCONCLUSIVO. No INCONCLUSIVO a frase
+orienta a apontar melhor com base no que o detector viu ("não encontrei ônibus", "vi o ônibus, mas não o letreiro",
+"o letreiro pode estar mostrando só o destino"). Se a primeira foto não der leitura segura, o aplicativo tira até 3
+fotos seguidas, com 1,2 s de intervalo, porque o letreiro de SP alterna entre número e destino. Toda resposta pede para
+confirmar com o motorista.
+
+Onde o modelo roda: precisa de ~1,5 GB de memória (medido na CPU), acima dos 512 MB do Render gratuito. Ele roda no PC
+da equipe (GPU NVIDIA, cerca de 0,25 s por foto segundo a medição da equipe) e é publicado como a GenAI: Quick Tunnel da Cloudflare e registro automático no
+backend (`PUT /api/visao/endereco`, com `/health` e desafio HMAC). Com o PC desligado, `GET /api/embarque/visao`
+responde "indisponível agora" e a tela não abre a câmera. Nada é simulado. Como ligar: [`visao/INTEGRACAO.md`](../visao/INTEGRACAO.md).
 
 ## Privacidade e segurança
 
@@ -84,10 +97,14 @@ embarques confirmados pela pessoa, taxa de confirmação, espera prevista média
 
 - Backend: regras de conferência do letreiro e validação do contrato do modelo; API completa com PostgreSQL embutido
   (favoritos por aparelho, filtro por linha e sentido, retomada, encerramento, exclusão de dados, câmera não conectada);
-  contrato da visão contra um servidor de teste que imita o modelo.
+  contrato da visão contra um servidor de teste que imita o modelo; registro do túnel da visão; linhas enviadas ao modelo.
+- Visão: `visao/tests` (contrato HTTP com detector simulado na CI; com `PF_VISAO_TESTE_REAL=1`, o modelo real nas 6
+  fotos de demonstração).
 - Frontend: política de avisos, interpretação de comandos, fluxos da assistente e telas com auditoria axe.
 - Ponta a ponta: `scripts/integracao/validar_embarque.py` percorre o fluxo inteiro no navegador em desktop e celular
   (Pixel 7), com axe (WCAG 2.1 AA) em cada etapa e verificação de rolagem horizontal.
+  `scripts/integracao/validar_visao.py` faz a conferência com a câmera do navegador alimentada por uma foto real e o
+  modelo real respondendo.
 
 ## Limites conhecidos
 

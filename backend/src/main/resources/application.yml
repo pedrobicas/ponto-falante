@@ -71,9 +71,13 @@ pf:
   salt: ${PF_SALT:troque-este-sal-em-producao}
   rpa-api-key: ${RPA_API_KEY:}
   visao-api-key: ${VISAO_API_KEY:}
-  # Modelo de visão do letreiro (Applied Computer Vision). Vazio: a conferência pela câmera responde 503.
+  # Modelo de visão do letreiro (Applied Computer Vision, pasta visao/). Roda no PC da equipe (precisa de ~1,5 GB de
+  # RAM, acima do plano gratuito do Render) e se registra por PUT /api/visao/endereco. Sem endereço: a conferência
+  # pela câmera responde 503 e a tela diz que não está disponível.
   visao-url: ${PF_VISAO_URL:}
-  visao-servico-chave: ${PF_VISAO_SERVICO_CHAVE:}
+  # Chave entre o backend e o serviço de visão. Sem PF_VISAO_SERVICO_CHAVE, usa a GENAI_API_KEY: os dois serviços
+  # rodam no mesmo PC da equipe e as provas de identidade usam prefixos diferentes.
+  visao-servico-chave: ${PF_VISAO_SERVICO_CHAVE:${GENAI_API_KEY:}}
   dispositivo-api-key: ${DISPOSITIVO_API_KEY:}
   dados-api-key: ${DADOS_API_KEY:}
   dev-origin: ${PF_DEV_ORIGIN:http://localhost:4200}

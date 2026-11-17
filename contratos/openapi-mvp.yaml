@@ -202,6 +202,33 @@ paths:
         "429": {description: Tentativas seguidas em menos de 5 segundos}
         "503": {description: GENAI_API_KEY não configurada no servidor}
 
+  /api/visao/endereco:
+    put:
+      tags: [embarque]
+      summary: O PC que roda o modelo de visão informa o endereço atual do túnel
+      description: |
+        Mesma regra da GenAI: só HTTPS em `*.trycloudflare.com` ou no host de PF_VISAO_URL. Antes de trocar, o
+        backend exige `{url}/health` com o modelo carregado e o desafio HMAC de `{url}/identidade`
+        (contratos/openapi-visao-letreiro.yaml). Registro só em memória (o script do PC renova a cada 10 minutos).
+      parameters:
+        - {name: X-API-Key, in: header, required: true, schema: {type: string}, description: "PF_VISAO_SERVICO_CHAVE (vazia: GENAI_API_KEY)"}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              properties:
+                url: {type: string, example: "https://exemplo-de-tunel.trycloudflare.com"}
+      responses:
+        "200": {description: Endereço trocado}
+        "400": {description: Endereço fora da regra}
+        "401": {description: Chave ausente ou inválida}
+        "422": {description: "/health sem o modelo carregado ou desafio de identidade falhou; endereço anterior mantido"}
+        "429": {description: Tentativas seguidas em menos de 5 segundos}
+        "503": {description: Chave do serviço de visão não configurada no servidor}
+
   /api/historico:
     get:
       tags: [rpa]
@@ -532,7 +559,7 @@ components:
         ultimo_boletim: {type: string, format: date, nullable: true}
         horario_servidor: {type: string, format: date-time}
         assistente_tempo_real: {type: boolean, description: "true = o assistente responde horários/linhas pelo backend mesmo com a GenAI fora"}
-        visao: {type: string, enum: [CONECTADA, NAO_CONECTADA], description: "Conferência do letreiro pela câmera (PF_VISAO_URL configurado)"}
+        visao: {type: string, enum: [CONECTADA, INDISPONIVEL, NAO_CONECTADA], description: "Conferência do letreiro pela câmera: CONECTADA (modelo respondendo), INDISPONIVEL (endereço conhecido, PC desligado), NAO_CONECTADA (sem endereço)"}
 
     Ponto:
       type: object
@@ -794,10 +821,10 @@ components:
 
     DeteccaoVisao:
       type: object
-      required: [ponto, linha_reconhecida, confianca, capturado_em, dispositivo]
+      required: [ponto, confianca, capturado_em, dispositivo]
       properties:
         ponto: {type: integer, format: int64}
-        linha_reconhecida: {type: string, maxLength: 20, example: "8000-10"}
+        linha_reconhecida: {type: string, nullable: true, maxLength: 20, example: "8000-10", description: "null = chegou um ônibus, mas o modelo não leu a linha com segurança"}
         confianca: {type: number, minimum: 0, maximum: 1}
         capturado_em: {type: string, format: date-time}
         dispositivo: {type: string, maxLength: 64}

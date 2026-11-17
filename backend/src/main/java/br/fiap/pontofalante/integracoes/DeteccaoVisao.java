@@ -19,7 +19,7 @@ public class DeteccaoVisao {
     @Column(name = "ponto", nullable = false)
     public long ponto;
 
-    @Column(name = "linha_reconhecida", nullable = false)
+    @Column(name = "linha_reconhecida")
     public String linhaReconhecida;
 
     @Column(name = "confianca", nullable = false)

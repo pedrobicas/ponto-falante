@@ -250,19 +250,52 @@ public class EmbarqueService {
         return visao.conectado();
     }
 
+    public boolean visaoDisponivel() {
+        return visao.disponivel();
+    }
+
     @Transactional
     public Conferencia conferir(String dispositivo, byte[] imagem, String tipo, String linhaEsperada, UUID sessao) {
         String esperada = letreiro(linhaEsperada);
+        Set<String> esperadas = new LinkedHashSet<>(List.of(esperada));
+        Set<String> doPonto = new LinkedHashSet<>();
         if (sessao != null) {
-            sessoes.findByIdAndDispositivo(sessao, dispositivo)
+            SessaoEmbarque s = sessoes.findByIdAndDispositivo(sessao, dispositivo)
                     .orElseThrow(() -> ErroApi.naoEncontrado("Não encontrei este acompanhamento."));
+            // Quem acompanha mais de uma linha pode pegar qualquer uma delas.
+            s.escolhas().forEach(e -> esperadas.add(e.letreiro()));
+            doPonto.addAll(linhasDoPonto(s.ponto));
         }
-        ReconhecedorLetreiro.Leitura leitura = visao.ler(imagem, tipo);
-        ConferenciaLetreiro.Resultado r = ConferenciaLetreiro.comparar(esperada, leitura.leituras());
+        // O serviço só aceita leitura que case com uma destas linhas. Sem a lista completa do ponto, não envia lista
+        // nenhuma: uma lista só com a linha esperada faria uma linha parecida (875C x 875A) "casar" com ela.
+        List<String> validacao = new ArrayList<>();
+        if (!doPonto.isEmpty()) {
+            validacao.addAll(esperadas);
+            doPonto.stream().filter(l -> !esperadas.contains(l)).forEach(validacao::add);
+        }
+        ReconhecedorLetreiro.Leitura leitura = visao.ler(imagem, tipo, validacao);
+        ConferenciaLetreiro.Resultado r = ConferenciaLetreiro.comparar(new ArrayList<>(esperadas), leitura.leituras(),
+                leitura.onibus(), leitura.letreiros());
         conferencias.save(new ConferenciaVisao(sessao, dispositivo, esperada, r.linhaLida(), r.confianca(),
                 r.resultado().name(), leitura.modelo(), OffsetDateTime.now(relogio)));
         return new Conferencia(r.resultado(), esperada, r.linhaLida(), r.confianca(), r.frase(), leitura.modelo(),
                 leitura.latenciaMs());
+    }
+
+    /**
+     * Linhas que param no ponto segundo o cadastro oficial (GTFS empacotado no backend). O cadastro é real mesmo no
+     * modo demonstração das previsões; vazio se o índice não carregou ou o ponto não está no cadastro.
+     */
+    private List<String> linhasDoPonto(long ponto) {
+        try {
+            RedeGtfs rede = transporte.rede();
+            if (rede == null || !rede.disponivel()) return List.of();
+            return rede.viagensDaParada(ponto).stream()
+                    .map(v -> v.letreiro() == null ? "" : v.letreiro().strip().toUpperCase(Locale.ROOT))
+                    .filter(l -> l.matches(EmbarqueDtos.LETREIRO)).distinct().sorted().limit(250).toList();
+        } catch (RuntimeException e) {
+            return List.of();
+        }
     }
 
     // ---------- auxiliares ----------

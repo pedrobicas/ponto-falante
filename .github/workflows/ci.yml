@@ -39,7 +39,7 @@ jobs:
             --exclude '.worktrees' --exclude 'genai/notebooks' --metrics off
 
   python:
-    name: Testes Python (GenAI e RPA)
+    name: Testes Python (GenAI, RPA e Visão)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -50,6 +50,7 @@ jobs:
           cache-dependency-path: |
             rpa/requirements.txt
             genai/requirements-ci.txt
+            visao/requirements-ci.txt
       - name: RPA
         working-directory: rpa
         run: |
@@ -57,6 +58,11 @@ jobs:
           python -m pytest -q
       - name: GenAI (testes que não precisam do Ollama)
         working-directory: genai
+        run: |
+          pip install -r requirements-ci.txt
+          python -m pytest -q tests
+      - name: Visão (contrato do serviço e cliente do MVP, sem YOLO/GPU)
+        working-directory: visao
         run: |
           pip install -r requirements-ci.txt
           python -m pytest -q tests
