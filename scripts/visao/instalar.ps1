@@ -1,9 +1,9 @@
-# Cria .venv-visao na raiz do repositorio com o que o servico de visao precisa (YOLO, EasyOCR, FastAPI).
+# Cria .venv-visao na raiz do checkout principal (worktrees reaproveitam o mesmo ambiente) com o que o servico de visao precisa (YOLO, EasyOCR, FastAPI).
 # Com placa NVIDIA, instala o PyTorch com CUDA (inferencia ~10x mais rapida); sem ela, o PyTorch de CPU.
 # Execute: powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/visao/instalar.ps1 [-Cpu]
 param([switch]$Cpu)
 . (Join-Path $PSScriptRoot 'comum.ps1')
-$venv = Join-Path $script:GenAIRoot '.venv-visao'
+$venv = Get-VisaoVenv
 if (-not (Test-Path -LiteralPath (Join-Path $venv 'Scripts/python.exe'))) {
     $py = Get-Command py.exe -ErrorAction SilentlyContinue
     if ($null -ne $py) { & $py.Source -3.11 -m venv $venv; if ($LASTEXITCODE -ne 0) { & $py.Source -3 -m venv $venv } }
