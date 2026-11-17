@@ -60,7 +60,9 @@ public class ReconhecedorLetreiro {
     public ReconhecedorLetreiro(PfProps props, EnderecoVisao endereco) {
         this.endereco = endereco;
         this.chave = props.visaoServicoChave();
-        this.rest = RestClient.builder().requestFactory(fabrica(3000, 8000)).build();
+        // Na CPU do PC da equipe uma foto leva de 3 a 6,5 s (medido em 17/11), mais o envio pelo túnel; o serviço
+        // espera no máximo 6 s pela vez antes de responder 503. 15 s cobre os dois sem prender o celular demais.
+        this.rest = RestClient.builder().requestFactory(fabrica(3000, 15000)).build();
         this.restSaude = RestClient.builder().requestFactory(fabrica(2000, 3000)).build();
     }
 
