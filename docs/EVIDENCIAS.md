@@ -1,7 +1,6 @@
 # Evidências da entrega
 
-Este documento reúne as provas de que cada parte foi executada e testada, e não apenas escrita. Cada item aponta
-para o arquivo ou a execução correspondente.
+Registro das execuções e testes de cada parte do projeto, com o arquivo ou a execução correspondente.
 
 ## 1. Testes automatizados (execução local de 14/11/2026, repetida na CI)
 
@@ -44,8 +43,8 @@ Trivy (dependências e imagem) e um teste de fumaça da imagem.
   O roteiro atual em `scripts/integracao/conversar.py` usa exemplos públicos da Avenida Paulista.
 - Busca: os exemplos públicos atuais "Av. Paulista, 1374" e código 70016916 devolvem o mesmo ponto;
   regressão em `backend/src/test/java/br/fiap/pontofalante/transporte/BuscaRedeTest.java`.
-- Assistente no site (13/11/2026): [evidencias/assistente_producao_20261113.txt](evidencias/assistente_producao_20261113.txt),
-  gerado por `scripts/integracao/coletar_evidencias_producao.py`. Perguntas de horário respondidas pelo backend com a
+- Assistente no site (13/11/2026): [evidencias/assistente_producao_20261113.txt](evidencias/assistente_producao_20261113.txt).
+  Perguntas de horário respondidas pelo backend com a
   SPTrans (`origem=TEMPO_REAL`); perguntas de regras respondidas pela GenAI no PC da equipe, pelo Quick Tunnel gratuito
   (`origem=BASE_OFICIAL`, com fontes); pergunta fora da base recusada com indicação do 156.
 
@@ -87,9 +86,9 @@ Em [evidencias/telas](evidencias/telas): início, ponto, assistente, boletim e a
   `adjudicacao_julgamento.jsonl` (julgamento) e `adjudicacao_chave.json` (chave para desembaralhar).
 - O resultado original da v1 está preservado na tag `experimento-original-genai-v1`.
 
-## 7. Revisões independentes de código
+## 7. Revisões de código
 
-Foram feitas quatro revisões de código entre 11/11 e 13/11/2026 (limite de chamadas do chat, login
+O código passou por quatro rodadas de revisão entre 11/11 e 13/11/2026 (limite de chamadas do chat, login
 SPTrans concorrente, proveniência do boletim, cota da GenAI, gateway, registro do túnel e poda da v3). Todos os achados
 foram corrigidos com testes de regressão, entre eles o desafio HMAC de identidade no registro, o registro serializado, o
 disjuntor por geração do endereço e a poda desligada no padrão.

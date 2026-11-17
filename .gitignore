@@ -46,7 +46,7 @@ cloudflared/*.json
 .DS_Store
 Thumbs.db
 
-# Worktrees de trabalho paralelo
+# Worktrees locais do Git
 .worktrees/
 
 # Copias descartaveis para validar componentes de outros agentes

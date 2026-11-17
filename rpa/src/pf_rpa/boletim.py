@@ -341,7 +341,7 @@ def marcar_desatualizado(boletim: dict[str, Any], motivo: str, agora: datetime) 
 
 
 def boletim_vazio_desatualizado(data_ref: str, motivo: str, agora: datetime) -> dict[str, Any]:
-    """Quando não há nenhum boletim anterior: publica um aviso honesto em vez de nada."""
+    """Quando não há nenhum boletim anterior: publica um aviso claro em vez de nada."""
     b = {
         "data_referencia": data_ref, "gerado_em": agora.isoformat(timespec="seconds"),
         "desatualizado": True, "motivo_desatualizado": motivo,

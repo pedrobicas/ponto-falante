@@ -1,6 +1,6 @@
 """
 API falsa do Ponto Falante, só para testar a Visão sem depender do MVP do grupo.
-Implementa o mesmo contrato do contrato comum (partes usadas pela Visão). Sem dependências.
+Implementa o mesmo contrato comum do grupo (partes usadas pela Visão). Sem dependências.
 
   python src/api_fake.py            # sobe em http://localhost:8000
   python src/api_fake.py --porta 8010

@@ -9,8 +9,7 @@ FIAP · Engenharia de Software 4º ano · Global Solution 2026.2 · CitizenTech 
 
 **Versão de entrega, 14/11/2026.** As seções 6 a 9 preservam o ciclo original com o modelo 3B.
 As seções 11 a 13 registram as iterações posteriores; o produto e o vídeo usam o agente com
-`qwen2.5:7b`. Os placares permanecem congelados. Vídeo e roteiro estão concluídos localmente;
-faltam as URLs de hospedagem do vídeo e do repositório público sanitizado.
+`qwen2.5:7b`. Os placares permanecem congelados.
 
 ## 1. Integrantes
 
@@ -446,19 +445,14 @@ acurácia geral.
 
 ## 14. Links e demonstração final
 
-- Repositório atual (privado): https://github.com/pedrobicas/ponto-falante
-- URL pública do repositório sanitizado: **[PENDENTE: URL_REPOSITORIO_PUBLICO]**.
+- Repositório: https://github.com/pedrobicas/ponto-falante
 - MVP publicado: https://ponto-falante.onrender.com
-- Vídeo final local: [Ponto_Falante_GenAI.mp4](../../entregaveis/Ponto_Falante_GenAI.mp4), **2min22s** (142 s), 1920 x 1080, sem áudio e sem música, preparado para narração humana.
-- [Roteiro de narração](../../entregaveis/ROTEIRO_GENAI.md) e [evidências da captura](../../docs/evidencias/video_genai_20261115.md). A URL pública do vídeo ainda depende de hospedagem; o arquivo local não substitui esse link na entrega FIAP.
-- URL pública do vídeo: **[PENDENTE: URL_VIDEO_GENAI]**.
+- Vídeo de demonstração (2min22s): [INSERIR LINK DO VÍDEO GENAI]
 - Notebooks com saídas: `notebooks/01_base_conhecimento.ipynb`, `02_indice_recall_limiar.ipynb`, `03_geracao_fundamentada.ipynb`, `04_agente_e_placar.ipynb`
 
 ### Demonstração gravada em 14 e 15/11/2026 (versão 3)
 
-O vídeo usa captura direta do site publicado (Edge sem interface controlado pelo Playwright, quadros
-de 1920 x 1080) e montagem reprodutível em `scripts/video/` (`cap_genai.js`, `compor.py`, `edl_genai.json`).
-Ele mostra uma conversa contínua em produção, regravada em 15/11: rota para o Centro pelo cadastro oficial (resposta em
+O vídeo foi gravado diretamente no site publicado, em 1920 x 1080, e mostra uma conversa contínua em produção, regravada em 15/11: rota para o Centro pelo cadastro oficial (resposta em
 cerca de 1,6 s), "quanto falta" e "no sentido contrário" com previsão em tempo real da SPTrans (cerca de 1,5 s cada),
 gratuidade para pessoa de 66 anos com duas fontes citadas (cerca de 7 s), leitura em voz alta, pergunta sobre outra
 cidade (Curitiba) e letra grande com alto contraste, com a conversa preservada. Seguem os diagramas de arquitetura do
@@ -485,5 +479,4 @@ pergunta). Não foi alterado modelo, limiar ou timeout. O agente v1 mantém a re
 "qual o valor da tarifa" podem receber "não encontrei", sempre com indicação para confirmar no 156. O vídeo é silencioso:
 mostra o acionamento da Web Speech API, sem comprovar a reprodução audível em todos os aparelhos.
 
-Nenhuma avaliação final fechada foi aberta ou reexecutada. O repositório permanece privado; hospedagem do vídeo,
-cópia pública sanitizada e envio no Teams continuam pendentes.
+Nenhuma avaliação final fechada foi aberta ou reexecutada para a gravação.

@@ -97,7 +97,7 @@ public class BoletimService {
     static final Set<String> NATUREZAS = Set.of("ESTIMADO", "SIMULADO", "INDISPONIVEL");
 
     /**
-     * Categorias de honestidade (opcionais, para manter compatível o boletim antigo): natureza_dados no boletim e
+     * Categorias de transparência (opcionais, para manter compatível o boletim antigo): natureza_dados no boletim e
      * classificacao em cada linha. ESTIMADO = calculado a partir de amostras reais de previsão da SPTrans; SIMULADO =
      * histórico de demonstração; INDISPONIVEL = sem dados suficientes. Uma previsão não é evidência de atraso, então
      * linha ESTIMADO não pode trazer atraso_medio_min.

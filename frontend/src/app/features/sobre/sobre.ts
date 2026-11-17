@@ -26,8 +26,8 @@ import { Origem } from '../../shared/origem';
           </ol>
         </section>
 
-        <section class="artigo__secao" id="dados" aria-labelledby="honestidade">
-          <h2 id="honestidade">Dados com honestidade</h2>
+        <section class="artigo__secao" id="dados" aria-labelledby="transparencia">
+          <h2 id="transparencia">Transparência dos dados</h2>
           <p>Todo dado vem com um selo dizendo de onde veio. Os selos têm forma própria, então não dependem só da cor.</p>
           <dl class="legenda__lista legenda__lista--sobre">
             <div><dt><pf-origem tipo="real" semDescricao /></dt><dd>Previsões em tempo real da SPTrans. São estimativas: o ônibus pode adiantar, atrasar ou não passar.</dd></div>

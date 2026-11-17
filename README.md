@@ -23,7 +23,7 @@ não representam impacto já medido com passageiros.
 | Arquitetura | Angular, Spring Boot, PostgreSQL; GenAI local via FastAPI/Ollama; robôs Python em GitHub Actions |
 | Fontes de dados | Cadastro GTFS e previsões Olho Vivo da SPTrans; documentos oficiais identificados em `genai/base/fontes.csv` |
 | Modelos de IA | Produção: agente com `qwen2.5:7b` local; recuperação FAISS com embeddings multilíngues. Comparações e versões anteriores no relatório GenAI |
-| URL e repositório | Links acima; o repositório será tornado público para a correção |
+| URL e repositório | Links acima |
 | Indicadores de impacto propostos | Proporção de consultas concluídas por voz; tempo para obter uma previsão; sucesso de uso com leitor de tela; compreensão da origem/data do boletim |
 | ODS conectados | ODS 10 (redução das desigualdades) e ODS 11 (cidades e comunidades sustentáveis), pelo acesso à informação de mobilidade |
 
@@ -52,10 +52,7 @@ não representam impacto já medido com passageiros.
 Regras do produto: dado simulado nunca aparece como real; previsão nunca aparece como chegada observada.
 
 Exemplos públicos: Avenida Paulista, 1374 (ponto `70016916`) e linha `875A-10`, conferidos no GTFS empacotado.
-O cadastro oficial completo permanece intacto; exemplos, testes e roteiros usam apenas locais públicos.
-
-Entrega FIAP: [checklist atual e sequência de envio](docs/ENTREGA_FIAP.md), [matriz de critérios](docs/MATRIZ_CRITERIOS_FIAP.md), [roteiro GenAI](genai/ROTEIRO_VIDEO.md)
-e [roteiro RPA](rpa/docs/roteiro_video.md). Não repetir os conjuntos finais fechados para gravar uma demonstração.
+O cadastro oficial completo permanece intacto; exemplos e testes usam apenas locais públicos.
 
 ## Arquitetura
 
@@ -87,7 +84,7 @@ repositório (Gitleaks na CI).
 | `visao/` | Visão computacional: dataset, treino YOLO11n, OCR, métricas, [relatório](visao/resultados/Relatorio_Visao_Ponto_Falante.pdf) e o serviço HTTP usado pelo MVP ([integração](visao/INTEGRACAO.md)) |
 | `contratos/` | OpenAPI público do MVP e contrato da API GenAI |
 | `scripts/` | Execução local, testes de integração, SPTrans e scripts PowerShell do GenAI/túnel |
-| `docs/` | Arquitetura, revisão dos critérios, integração, deploy e diagnóstico SPTrans |
+| `docs/` | Arquitetura, embarque assistido, SPTrans e evidências de testes em produção |
 
 ## GenAI em uma tabela
 
@@ -157,6 +154,5 @@ expira 30 dias após a criação. A configuração do serviço está em [render.
 
 ## Documentos
 
-[Arquitetura](docs/ANALISE_E_ARQUITETURA.md) · [Matriz de critérios FIAP](docs/MATRIZ_CRITERIOS_FIAP.md) ·
-[SPTrans](docs/SPTRANS.md) · [Relatório GenAI](genai/RELATORIO.md) ·
-[RPA](rpa/README.md) · [Contrato público](contratos/openapi-mvp.yaml) · [Evidências](docs/EVIDENCIAS.md)
+[Arquitetura](docs/ARQUITETURA.md) · [SPTrans](docs/SPTRANS.md) · [Relatório GenAI](genai/RELATORIO.md) ·
+[RPA](rpa/README.md) · [Visão](visao/README.md) · [Contrato público](contratos/openapi-mvp.yaml) · [Evidências](docs/EVIDENCIAS.md)

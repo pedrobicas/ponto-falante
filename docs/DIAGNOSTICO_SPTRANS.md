@@ -151,6 +151,6 @@ vindo da chamada interna dele à SPTrans) em cerca de 20% das requisições (4 d
 são `GET` idempotentes, o `OlhoVivoProvider` repete até 3 vezes com espera curta; se persistir, o site informa
 indisponibilidade como antes. Dois testes de contrato cobrem o caso.
 
-Correção de segurança (12/11/2026, apontada pela revisão independente): a primeira versão da matriz incluía variações
+Correção de segurança (12/11/2026, apontada na revisão de código): a primeira versão da matriz incluía variações
 por HTTP, o que enviou a chave da Olho Vivo direta em texto claro. As variações HTTP foram removidas; o script só usa
 HTTPS. A chave direta não é usada pelo produto (o gateway usa OAuth), mas recomenda-se excluí-la ou gerar outra no portal.

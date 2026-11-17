@@ -56,8 +56,8 @@ class ConfigV3:
     checagens: bool = True
     tentativas: int = 2
     # Fonte listada em trechos_usados sem citação literal sai da resposta (em vez de recusar tudo).
-    # Números continuam auditados só contra as evidências que sobraram. DESLIGADA no padrão desde a revisão
-    # adversarial de 13/11: a poda não confere afirmações sem número (ex.: "é gratuito") da fonte podada.
+    # Números continuam auditados só contra as evidências que sobraram. DESLIGADA no padrão desde a revisão de
+    # código de 13/11: a poda não confere afirmações sem número (ex.: "é gratuito") da fonte podada.
     # Fica disponível só para reproduzir a v3_final do teste (scripts/rodar_v3.py).
     podar_sem_evidencia: bool = False
     extras: dict = field(default_factory=dict)

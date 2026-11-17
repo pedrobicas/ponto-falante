@@ -36,7 +36,7 @@ O **Ponto Falante** é uma plataforma de acessibilidade para usuários de ônibu
 
 ![Fluxo BPMN](fluxo.png)
 
-Arquivo editável: `docs/fluxo.bpmn` (BPMN 2.0, gerado por `docs/gerar_fluxo_bpmn.py`). São dois robôs, cada um com o seu agendamento.
+Arquivo editável: `docs/fluxo.bpmn` (BPMN 2.0, abre no Camunda Modeler ou em https://demo.bpmn.io). São dois robôs, cada um com o seu agendamento.
 
 | Etapa | Entrada | Processamento | Saída |
 |---|---|---|---|
@@ -161,7 +161,7 @@ saídas em `tests/EVIDENCIAS.md`; a suíte também roda na CI a cada push.
 | Falha | MVP fora, chave recusada, publicação fora, retry | Boletim anterior marcado como desatualizado; lote pendente reenviado; 3 tentativas com esperas de 2 s e 4 s |
 | Segurança | Chave no log | Mascarada |
 
-**Evidência do vídeo (gravado em 14/11/2026, das 23:08 às 23:19):** todos os comandos rodaram durante a gravação. A coleta real em modo somente leitura consultou 6 pontos pela API publicada e encontrou 27 ônibus previstos, sem gravar nada. O histórico do GitHub Actions mostra as coletas e os boletins agendados. A execução completa contra o MVP local, rotulada **SIMULADO**, recebeu 349 registros: 330 válidos, 9 inválidos e 10 duplicados. Ela classificou 1 linha como CRÍTICA, 2 em ATENÇÃO e 2 OK, gerou JSON e HTML e publicou com código 0. A falha foi provocada no mesmo MVP local: HTTP 503, 3 tentativas com esperas observadas de 2 s e 4 s, boletim anterior republicado como **desatualizado**, código 2 e registro na auditoria. A produção foi só lida: boletim de 13/11 com 17 consultas, 35,4% de cobertura, 24 linhas e 6 em atenção, também citado pela assistente. Registro: `docs/evidencias/video_rpa_20261115.md`. A gravação não incluiu a suíte de testes, executada à parte.
+**Evidência do vídeo (gravado em 14/11/2026, das 23:08 às 23:19):** todos os comandos rodaram durante a gravação. A coleta real em modo somente leitura consultou 6 pontos pela API publicada e encontrou 27 ônibus previstos, sem gravar nada. O histórico do GitHub Actions mostra as coletas e os boletins agendados. A execução completa contra o MVP local, rotulada **SIMULADO**, recebeu 349 registros: 330 válidos, 9 inválidos e 10 duplicados. Ela classificou 1 linha como CRÍTICA, 2 em ATENÇÃO e 2 OK, gerou JSON e HTML e publicou com código 0. A falha foi provocada no mesmo MVP local: HTTP 503, 3 tentativas com esperas observadas de 2 s e 4 s, boletim anterior republicado como **desatualizado**, código 2 e registro na auditoria. A produção foi só lida: boletim de 13/11 com 17 consultas, 35,4% de cobertura, 24 linhas e 6 em atenção, também citado pela assistente. A gravação não incluiu a suíte de testes, executada à parte.
 
 ## 11. Segurança e LGPD
 
@@ -173,11 +173,8 @@ saídas em `tests/EVIDENCIAS.md`; a suíte também roda na CI a cada push.
 
 ## 12. Links
 
-- Repositório GitHub: https://github.com/pedrobicas/ponto-falante (privado, pasta `rpa/`)
-- URL pública do repositório sanitizado: **[PENDENTE: URL_REPOSITORIO_PUBLICO]**.
+- Repositório GitHub: https://github.com/pedrobicas/ponto-falante (pasta `rpa/`)
 - MVP publicado: https://ponto-falante.onrender.com/boletim
-- Vídeo local: `entregaveis/Ponto_Falante_RPA.mp4`, **2 min 12 s (132 s, abaixo do limite de 180 s)**, 1920 x 1080, sem áudio e sem música, pronto para narração.
-- Roteiro final: `entregaveis/ROTEIRO_RPA.md`.
-- URL pública do vídeo: **[PENDENTE: URL_VIDEO_RPA]**. O repositório segue privado; nenhuma entrega no Teams foi realizada.
+- Vídeo demonstrativo (2 min 12 s, abaixo do limite de 3 min): [INSERIR LINK DO VÍDEO RPA]
 
-O vídeo mostra a execução ponta a ponta do robô de boletim no MVP local, do comando à publicação com código 0, entre 01:00 e 01:21. A coleta real, o agendamento e o boletim publicado são trechos de produção identificados pelo selo DADOS REAIS ou ESTIMADO. Entre 01:21 e 01:44 aparecem a falha, a recuperação e a auditoria. O material atende ao conteúdo demonstrativo das pp. 46-50 do enunciado; a aceitação e a nota cabem à avaliação docente.
+O vídeo mostra a execução ponta a ponta do robô de boletim no MVP local, do comando à publicação com código 0, entre 01:00 e 01:21. A coleta real, o agendamento e o boletim publicado são trechos de produção identificados pelo selo DADOS REAIS ou ESTIMADO. Entre 01:21 e 01:44 aparecem a falha, a recuperação e a auditoria.

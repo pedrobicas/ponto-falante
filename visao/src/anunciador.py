@@ -71,7 +71,7 @@ class Anunciador:
                 self.ultimo_anuncio[linha] = agora
                 return Anuncio(f"Ônibus da linha {linha} chegando.", linha, round(conf, 3))
 
-        # Ônibus presente na janela toda, sem linha confiável: aviso honesto, uma vez.
+        # Ônibus presente na janela toda, sem linha confiável: aviso claro, uma vez.
         if (len(frames_com_onibus) >= self.janela and not self.anunciou_sem_linha
                 and not self._ja_anunciado(None, agora)):
             self.anunciou_sem_linha = True

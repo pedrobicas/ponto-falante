@@ -57,7 +57,7 @@ genai/
                exploratorio_descartado/ (1ª rodada que usou o teste; descartada, mantida por transparência)
   src/pf_genai/ trechos · indice · llm · gerador (sem contexto e RAG) · agente · esquemas (pydantic) · avaliacao
   api/app.py   FastAPI: POST /chat, GET /health
-  scripts/     baixar_leis.py · rodar_placar.py · gerar_notebooks.py
+  scripts/     baixar_leis.py · rodar_placar.py
   tests/       test_unidades.py (contrato, validação, métricas, degradação da API)
 ```
 
@@ -139,7 +139,7 @@ use as instruções de serviço em [`scripts/genai/README.md`](../scripts/genai/
 - `GET /health` informa o estado do LLM e do índice.
 - Ao exceder 40 s, a API retorna 504; o backend apresenta indisponibilidade ao usuário.
   Diagnóstico da gravação: [`timeout_genai_20261114.md`](../docs/evidencias/timeout_genai_20261114.md).
-- Contrato completo: `../contratos/openapi-integracao.yaml`. Exemplo em Java: `../contratos/GUIA_BACKEND_SPRING.md`.
+- Contrato completo: `../contratos/openapi-integracao.yaml`. Implementação no backend: `../backend/src/main/java/br/fiap/pontofalante/assistente/`.
 
 ## Por que agente e não LoRA
 
@@ -163,8 +163,7 @@ use as instruções de serviço em [`scripts/genai/README.md`](../scripts/genai/
 
 ## Links
 
-- Repositório: <!--link:repositorio-->[INSERIR LINK DO REPOSITÓRIO PÚBLICO]<!--/link-->
-- Vídeo da GenAI integrada ao produto (2min22s): <!--link:video_genai-->[INSERIR LINK DO VÍDEO GENAI]<!--/link-->
+- Repositório: https://github.com/pedrobicas/ponto-falante
+- Vídeo da GenAI integrada ao produto (2min22s): [INSERIR LINK DO VÍDEO GENAI]
 - Relatório: [RELATORIO.md](RELATORIO.md) · Registro técnico detalhado: [docs/REGISTRO_TECNICO.md](docs/REGISTRO_TECNICO.md)
-- Evidências e limites observados no vídeo: [video_genai_20261115.md](../docs/evidencias/video_genai_20261115.md)
 - MVP publicado: https://ponto-falante.onrender.com/assistente
