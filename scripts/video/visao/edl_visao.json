@@ -91,7 +91,7 @@
    "nota": "bloco 6: vídeo anotado (resultados/demo.mp4)"
   },
   {
-   "cena": "visao_confere",
+   "cena": "visao_confere_borrada",
    "de": 22.5,
    "ate": 39.0,
    "capitulo": "No MVP publicado · embarque assistido",
@@ -99,7 +99,7 @@
    "nota": "bloco 7: marcar a linha esperada e abrir a conferência"
   },
   {
-   "cena": "visao_confere",
+   "cena": "visao_confere_borrada",
    "de": 39.0,
    "ate": 60.5,
    "capitulo": "No MVP publicado · linha esperada 647P-10",
@@ -107,7 +107,7 @@
    "nota": "bloco 7: foto enviada -> CONFERE"
   },
   {
-   "cena": "visao_outra_linha",
+   "cena": "visao_outra_linha_borrada",
    "de": 44.0,
    "ate": 63.3,
    "capitulo": "Linha esperada 477P-10 · foto de um 647P-10",
@@ -115,7 +115,7 @@
    "nota": "bloco 8: outra linha"
   },
   {
-   "cena": "visao_inconclusivo",
+   "cena": "visao_inconclusivo_borrada",
    "de": 43.0,
    "ate": 60.5,
    "capitulo": "Letreiro só com o destino",
