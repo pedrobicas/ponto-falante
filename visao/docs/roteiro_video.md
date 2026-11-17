@@ -1,32 +1,40 @@
-# Roteiro do vídeo de demonstração (até ~4 min)
+# Roteiro de narração do vídeo de demonstração (Visão Computacional)
 
-**Gravação:** gravador de tela do Windows (Win+Alt+R) ou OBS Studio. Microfone próximo, sem música alta.
-**Antes de gravar:** abra dois terminais na pasta do projeto, já com o `.venv` ativado
-(`.venv\Scripts\activate`), e deixe abertos o README, a pasta `resultados/` e `dados/revisao/folha_05.jpg`.
-**Publicação:** YouTube como **não listado**. Teste o link numa janela anônima e cole-o no README e em
-`relatorio/info.txt`.
+Vídeo: `entregaveis/visao/Ponto_Falante_Visao_demo.mp4` (fora do Git), **cerca de 1 min 22 s**, 1920 x 1080, 30 fps,
+sem áudio. Montado com `scripts/video/compor.py` a partir de `scripts/video/visao/edl_visao_demo.json`, só com capturas
+reais de 17/11/2026: o `src/demo.py` rodando na CPU e três conferências no site publicado (placa borrada na miniatura).
+As esperas do modelo aparecem aceleradas, com o selo "acelerada" na tela. Os tempos abaixo são do vídeo final.
 
-| Tempo | Na tela | Fala (pode adaptar) |
-|---|---|---|
-| 0:00–0:20 | README no GitHub (título + integrantes) | "Somos o grupo do Ponto Falante. Esta é a parte de visão computacional: o componente que enxerga o ônibus chegando ao ponto e lê a linha no letreiro." |
-| 0:20–0:40 | Uma foto de ônibus de SP com o letreiro | "Para quem é cego ou tem baixa visão, saber qual ônibus está chegando depende do letreiro, que é só visual. Nosso objetivo é transformar essa imagem num anúncio de voz." |
-| 0:40–1:30 | `docs/creditos_imagens.csv` e uma folha de revisão (`dados/revisao/folha_05.jpg`) | "Não existe dataset de letreiros de ônibus de São Paulo, então montamos o nosso. Baixamos 342 fotos de ônibus da capital com licença livre do Wikimedia Commons, com autor e licença registrados. Dois modelos grandes, o YOLO11x e o Grounding DINO, marcaram ônibus e letreiros automaticamente, e nós revisamos tudo nessas folhas, descartando maquetes, fotos antigas e marcações erradas." |
-| 1:30–2:10 | `resultados/results.png`, `confusion_matrix_normalized.png` e a tabela de resultados do README | "Com isso treinamos um YOLO nano com duas classes, ônibus e letreiro, sem espelhar as imagens, porque letreiro espelhado não existe. No teste, com fotos que o modelo nunca viu, tivemos mAP50 de 0,87: 0,91 para ônibus e 0,83 para letreiro, a classe mais difícil. Cada imagem leva 8 milissegundos." |
-| 2:10–3:10 | **Demo ao vivo**: terminal 1 com a API falsa, terminal 2 rodando `src/demo.py` (comandos abaixo); depois abra `resultados/demo.mp4` | "Aqui as fotos simulam a câmera do ponto. O sistema detecta o ônibus, recorta o letreiro e lê com OCR em três versões da imagem. A leitura só vale se a linha passa naquele ponto, e o anúncio só sai quando vários quadros concordam. Vejam que a API recebeu cada detecção. Nesse ônibus o letreiro mostrava só o destino, Sacomã: em vez de chutar, ele avisou 'não consegui ler a linha'." |
-| 3:10–3:30 | Tabela do OCR no README | "Na leitura, acertamos 44% dos letreiros num único quadro e não anunciamos nenhuma linha errada. Para uma pessoa cega, anunciar a linha errada é pior do que dizer que não conseguiu ler." |
-| 3:30–3:45 | Terminal 1: Ctrl+C na API; rode a demo de novo e mostre o aviso "guardada na fila" | "Se a API cair, nada trava: a detecção vai para uma fila local e é reenviada depois." |
-| 3:45–4:00 | Um quadro do `demo.mp4` com a placa borrada | "Nenhuma imagem é enviada nem guardada, só o resultado. O que aparece na tela tem rostos e placa borrados, por causa da LGPD. Obrigado!" |
+Uma versão longa (4 min 07 s, com slides de dataset, treino e métricas) pode ser montada com
+`scripts/video/visao/edl_visao.json`; a entrega usa a curta.
 
-**Comandos da demo**
+| # | Tempo | Na tela | Fala |
+|---|---|---|---|
+| 1 | 0:00 – 0:05 | Título e integrantes | "Ponto Falante: a visão computacional que lê a linha do ônibus para quem não enxerga." |
+| 2 | 0:05 – 0:31 | Terminal: `demo.py` com fotos fazendo o papel da câmera do ponto; anúncios 647P-10, "não consegui ler" e as detecções recebidas pela API | "Aqui o nosso YOLO11 nano, treinado com fotos de ônibus de São Paulo, roda na CPU. Ele encontra o ônibus e o letreiro, o OCR lê a linha, e só anuncia se a linha passa naquele ponto. Quando o letreiro mostra só o destino, ele avisa que não conseguiu ler. Cada anúncio vai para a API." |
+| 3 | 0:31 – 0:43 | Vídeo anotado: caixas do ônibus e do letreiro | "Esta é a saída do detector, com rostos e placas borrados por causa da LGPD." |
+| 4 | 0:43 – 0:58 | Site publicado: a pessoa marca a linha 647P-10, envia a foto e recebe **CONFERE** | "No aplicativo publicado, a pessoa marca a linha que espera e envia a foto do letreiro. O modelo responde que a linha confere, e o aplicativo fala o resultado." |
+| 5 | 0:58 – 1:07 | Mesma foto, esperando a 477P-10: **"parece ser outra linha"** | "Se for outra linha, ele alerta e pede para confirmar com o motorista." |
+| 6 | 1:07 – 1:16 | Letreiro só com o destino: **"Não deu para ler o letreiro"** | "E se não der para ler, ele diz isso, em vez de arriscar uma linha errada." |
+| 7 | 1:16 – 1:22 | Repositório | "Código, modelo e relatório estão no repositório. Obrigado!" |
 
-```bash
-# terminal 1 — API falsa com as linhas que passam no ponto
-python src/api_fake.py --linhas "647P-10,5109-10,2100-10,288,695H-10,576C-10,574A-21,8000-10,875A-10"
+Total de fala: cerca de 1 min 5 s.
 
-# terminal 2 — câmera simulada
-python src/demo.py --fonte amostras/imagens/demo --ponto 260015039 --repetir-imagem 30 --gpu --saida resultados/demo_ao_vivo.mp4
+## Como gravar e juntar a voz
+
+1. Grave numa sala silenciosa, com o microfone perto (celular serve), assistindo ao vídeo, de uma vez ou um arquivo
+   por bloco.
+2. Junte ao vídeo sem recodificar a imagem (o script normaliza o volume e nunca sobrescreve o original):
+
+```powershell
+# gravação única, começando 0,3 s depois do início
+.\.venv\Scripts\python.exe scripts/video/narrar.py entregaveis/visao/Ponto_Falante_Visao_demo.mp4 --audio minha_voz.m4a --atraso 0.3
+
+# ou um arquivo por bloco: falas.json = [{"inicio": 0.3, "arquivo": "falas/01.m4a"}, {"inicio": 5.0, "arquivo": "falas/02.m4a"}, ...]
+.\.venv\Scripts\python.exe scripts/video/narrar.py entregaveis/visao/Ponto_Falante_Visao_demo.mp4 --trechos falas.json
 ```
 
-O `demo.py` não abre janela neste ambiente (o OpenCV instalado é "headless"). Por isso, depois de rodar,
-mostre no vídeo o arquivo `resultados/demo.mp4`, que já está pronto, enquanto o terminal 1 exibe as linhas
-`Detecção recebida`.
+Inícios por bloco para o `falas.json`: 0,3 · 5,0 · 31,2 · 43,0 · 58,4 · 67,5 · 76,1.
+
+3. Publique no YouTube como **não listado**, teste o link numa janela anônima e preencha `VIDEO:` em
+   `relatorio/info.txt`; depois gere o PDF de novo (`python relatorio/gerar_relatorio.py`) e cole o link no README.
