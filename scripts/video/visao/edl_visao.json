@@ -1,0 +1,132 @@
+{
+ "fps": 30,
+ "cauda": 0.8,
+ "planos": [
+  {
+   "imagem": "scripts/video/visao/01_abertura.jpg",
+   "fundo": "#F7F5F0",
+   "dur": 14,
+   "transicao": 0,
+   "nota": "bloco 1: abertura"
+  },
+  {
+   "imagem": "scripts/video/visao/02_problema.jpg",
+   "fundo": "#F7F5F0",
+   "dur": 18,
+   "nota": "bloco 2: problema"
+  },
+  {
+   "imagem": "scripts/video/visao/03_dataset.jpg",
+   "fundo": "#F7F5F0",
+   "dur": 25,
+   "nota": "bloco 3: dataset"
+  },
+  {
+   "imagem": "scripts/video/visao/04_treino.jpg",
+   "fundo": "#F7F5F0",
+   "dur": 16,
+   "nota": "bloco 4: treino"
+  },
+  {
+   "imagem": "scripts/video/visao/05_metricas.jpg",
+   "fundo": "#F7F5F0",
+   "dur": 23,
+   "nota": "bloco 5: métricas"
+  },
+  {
+   "cena": "visao_terminal",
+   "de": 0.5,
+   "ate": 12.0,
+   "capitulo": "Modelo rodando · src/demo.py",
+   "selo": "modelo",
+   "nota": "bloco 6: comando"
+  },
+  {
+   "cena": "visao_terminal",
+   "de": 90.5,
+   "ate": 97.0,
+   "capitulo": "Modelo rodando · src/demo.py",
+   "selo": "modelo",
+   "nota": "bloco 6: 1º anúncio 647P-10"
+  },
+  {
+   "cena": "visao_terminal",
+   "de": 97.0,
+   "ate": 365.0,
+   "vel": 40,
+   "capitulo": "Modelo rodando · src/demo.py",
+   "selo": "modelo",
+   "nota": "bloco 6: 5109-10 (acelerado)"
+  },
+  {
+   "cena": "visao_terminal",
+   "de": 365.0,
+   "ate": 372.0,
+   "capitulo": "Modelo rodando · src/demo.py",
+   "selo": "modelo",
+   "nota": "bloco 6: não consegui ler"
+  },
+  {
+   "cena": "visao_terminal",
+   "de": 372.0,
+   "ate": 519.0,
+   "vel": 30,
+   "capitulo": "Modelo rodando · src/demo.py",
+   "selo": "modelo",
+   "nota": "bloco 6: 2100-10, 288, 695H-10 (acelerado)"
+  },
+  {
+   "cena": "visao_terminal",
+   "de": 519.0,
+   "ate": 532.0,
+   "capitulo": "Modelo rodando · src/demo.py",
+   "selo": "modelo",
+   "nota": "bloco 6: detecções recebidas pela API"
+  },
+  {
+   "cena": "demo_equipe",
+   "de": "inicio",
+   "ate": "fim",
+   "selo": "saida",
+   "nota": "bloco 6: vídeo anotado (resultados/demo.mp4)"
+  },
+  {
+   "cena": "visao_confere",
+   "de": 22.5,
+   "ate": 39.0,
+   "capitulo": "No MVP publicado · embarque assistido",
+   "selo": "site",
+   "nota": "bloco 7: marcar a linha esperada e abrir a conferência"
+  },
+  {
+   "cena": "visao_confere",
+   "de": 39.0,
+   "ate": 60.5,
+   "capitulo": "No MVP publicado · linha esperada 647P-10",
+   "selo": "site",
+   "nota": "bloco 7: foto enviada -> CONFERE"
+  },
+  {
+   "cena": "visao_outra_linha",
+   "de": 44.0,
+   "ate": 63.3,
+   "capitulo": "Linha esperada 477P-10 · foto de um 647P-10",
+   "selo": "site",
+   "nota": "bloco 8: outra linha"
+  },
+  {
+   "cena": "visao_inconclusivo",
+   "de": 43.0,
+   "ate": 60.5,
+   "capitulo": "Letreiro só com o destino",
+   "selo": "site",
+   "nota": "bloco 9: inconclusivo"
+  },
+  {
+   "imagem": "scripts/video/visao/10_conclusao.jpg",
+   "fundo": "#F7F5F0",
+   "dur": 20,
+   "nota": "bloco 10: conclusão"
+  }
+ ]
+}

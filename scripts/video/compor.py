@@ -25,6 +25,9 @@ W, H = 1920, 1080
 FFMPEG = os.environ.get("FFMPEG") or shutil.which("ffmpeg") or "ffmpeg"  # defina FFMPEG se não estiver no PATH
 FONTE = r"C:\Windows\Fonts\seguisb.ttf"
 FONTE_N = r"C:\Windows\Fonts\segoeuib.ttf"
+if not Path(FONTE).exists():  # fora do Windows: Inter, se instalada
+    FONTE = "/usr/share/fonts/opentype/inter/Inter-SemiBold.otf"
+    FONTE_N = "/usr/share/fonts/opentype/inter/Inter-Bold.otf"
 SELOS = {
     "real": ("DADOS REAIS", "SPTrans · produção", (22, 120, 72)),
     "estimado": ("ESTIMADO", "previsões reais, não chegadas", (24, 92, 160)),
@@ -34,6 +37,9 @@ SELOS = {
     "fora": ("FORA DA ÁREA", "regra do backend · sem GenAI", (70, 74, 84)),
     "codigo": ("REPOSITÓRIO", "arquivos reais do projeto", (70, 74, 84)),
     "avaliacao": ("AVALIAÇÃO", "resultados já registrados", (70, 74, 84)),
+    "site": ("SITE PUBLICADO", "ponto real · cadastro GTFS da SPTrans", (22, 120, 72)),
+    "modelo": ("MODELO REAL", "YOLO11n + EasyOCR · CPU", (88, 64, 160)),
+    "saida": ("SAÍDA DO DEMO.PY", "fotos simulam a câmera · rostos e placas borrados", (88, 64, 160)),
 }
 
 

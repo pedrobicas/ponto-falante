@@ -20,7 +20,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
-from reportlab.platypus import (Image, KeepTogether, PageBreak, Paragraph, SimpleDocTemplate,
+from reportlab.platypus import (CondPageBreak, Image, KeepTogether, PageBreak, Paragraph, SimpleDocTemplate,
                                 Spacer, Table, TableStyle)
 
 AQUI = Path(__file__).parent
@@ -185,7 +185,10 @@ def gerar(resultados: Path, saida: Path, info_path: Path):
         m["dataset"] = json.loads((resultados / "dataset.json").read_text(encoding="utf-8"))
     tx = textos(m)
     story = []
-    P = lambda t, s="p": story.append(Paragraph(t, st[s]))
+    def P(t, s="p"):
+        if s in ("h1", "h2"):
+            story.append(CondPageBreak(3.5 * cm if s == "h1" else 2.5 * cm))  # título nunca sozinho no pé da página
+        story.append(Paragraph(t, st[s]))
     LI = lambda itens: [story.append(Paragraph(i, st["li"], bulletText="•")) for i in itens]
 
     # Título e integrantes
@@ -385,6 +388,7 @@ def gerar(resultados: Path, saida: Path, info_path: Path):
     integ_path = resultados / "integracao_mvp.json"
     if integ_path.exists():
         integ = json.loads(integ_path.read_text(encoding="utf-8"))
+        story.append(CondPageBreak(9 * cm))  # título, texto e tabela juntos
         P("Integração com o MVP: conferência do letreiro pelo celular", "h2")
         P(integ.get("descricao", ""))
         linhas = [["Foto enviada", "Linha esperada", "Resposta do MVP", "Confiança", "Tempo"]]
@@ -393,7 +397,7 @@ def gerar(resultados: Path, saida: Path, info_path: Path):
             linhas.append([c["foto"], c["linha_esperada"], c["resposta"],
                            "—" if conf is None else f"{conf * 100:.0f}%",
                            "—" if c.get("tempo_s") is None else f"{c['tempo_s']:.1f} s".replace(".", ",")])
-        story.append(tabela(linhas, [3.6 * cm, 2.6 * cm, 6.4 * cm, 2 * cm, 2.4 * cm]))
+        story.append(tabela(linhas, [4.2 * cm, 2.4 * cm, 6.4 * cm, 2 * cm, 2 * cm]))
         if integ.get("nota"):
             P(integ["nota"], "nota")
         imgs = [resultados / c["imagem"] for c in integ.get("casos", []) if c.get("imagem")]
