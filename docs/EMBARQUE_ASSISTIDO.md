@@ -67,7 +67,7 @@ fotos seguidas, com 1,2 s de intervalo, porque o letreiro de SP alterna entre n�
 confirmar com o motorista.
 
 Onde o modelo roda: precisa de ~1,5 GB de memória (medido na CPU), acima dos 512 MB do Render gratuito. Ele roda no PC
-da equipe (GPU NVIDIA, cerca de 0,25 s por foto segundo a medição da equipe) e é publicado como a GenAI: Quick Tunnel da Cloudflare e registro automático no
+da equipe (na CPU, de 2,8 a 6,4 s por foto medidos em 17/11; com placa NVIDIA o instalador usa CUDA) e é publicado como a GenAI: Quick Tunnel da Cloudflare e registro automático no
 backend (`PUT /api/visao/endereco`, com `/health` e desafio HMAC). Com o PC desligado, `GET /api/embarque/visao`
 responde "indisponível agora" e a tela não abre a câmera. Nada é simulado. Como ligar: [`visao/INTEGRACAO.md`](../visao/INTEGRACAO.md).
 

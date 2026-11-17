@@ -23,5 +23,8 @@ if ($temGpu) {
 if ($LASTEXITCODE -ne 0) { throw 'Falha ao instalar o PyTorch.' }
 & $python -m pip install -r (Join-Path $script:VisaoDir 'requirements-servico.txt')
 if ($LASTEXITCODE -ne 0) { throw 'Falha ao instalar requirements-servico.txt.' }
+# Para rodar os testes da visao (inclusive com o modelo real: PF_VISAO_TESTE_REAL=1).
+& $python -m pip install pytest httpx
+if ($LASTEXITCODE -ne 0) { throw 'Falha ao instalar pytest e httpx.' }
 & $python -c "import torch, ultralytics, easyocr, fastapi; print('torch', torch.__version__, 'cuda', torch.cuda.is_available())"
 Write-Host 'Pronto. Inicie com: powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/visao/iniciar.ps1 -TunelRapido'

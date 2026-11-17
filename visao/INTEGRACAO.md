@@ -30,7 +30,7 @@ Dois usos do mesmo modelo:
 |---|---|---|
 | No servidor do Render (plano gratuito) | O modelo carregado ocupa **~1,5 GB de RAM** na CPU (medido em 17/11 com as 6 fotos de demonstração); o Render gratuito tem 512 MB, já usados pelo Spring | Não cabe |
 | No navegador (ONNX/WebAssembly) | O YOLO caberia, mas o EasyOCR (CRAFT + reconhecedor) não tem versão web; trocar o OCR invalidaria as métricas do relatório | Não adotado |
-| **Serviço local no PC da equipe, publicado por túnel** | GPU RTX 4060 Ti; ~1 s por foto na CPU, bem menos na GPU; mesmo caminho já usado pela GenAI | **Adotado** |
+| **Serviço local no PC da equipe, publicado por túnel** | O PC da apresentação tem placa AMD (sem CUDA), então roda na CPU: **2,8 a 6,4 s por foto** (medido em 17/11 com as 6 fotos de demonstração; 53 testes com o modelo real passando). Com placa NVIDIA, o `instalar.ps1` usa CUDA sozinho e fica bem mais rápido. Mesmo caminho já usado pela GenAI | **Adotado** |
 
 Fallback: sem o PC ligado, `GET /api/status` mostra `visao: INDISPONIVEL` (ou `NAO_CONECTADA` se nunca foi
 registrado), a tela diz "indisponível agora" e não abre a câmera. Nenhum resultado é simulado.
