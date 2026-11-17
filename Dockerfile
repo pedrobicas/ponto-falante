@@ -14,7 +14,8 @@ FROM eclipse-temurin:21-jdk-alpine AS backend
 WORKDIR /src/backend
 COPY backend/.mvn/ .mvn/
 COPY backend/mvnw backend/pom.xml ./
-RUN chmod +x mvnw && ./mvnw -q -B dependency:go-offline
+# O Maven Central às vezes responde 429 aos runners compartilhados: até 3 tentativas com espera.
+RUN chmod +x mvnw && for i in 1 2 3; do ./mvnw -q -B dependency:go-offline && exit 0; echo "Maven: tentativa $i falhou"; sleep $((i * 20)); done; exit 1
 COPY backend/src/ src/
 # O build do Angular substitui o placeholder de static/
 RUN rm -rf src/main/resources/static
