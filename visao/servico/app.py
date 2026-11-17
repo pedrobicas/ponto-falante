@@ -51,7 +51,7 @@ NOME_MODELO = f"pf-visao {VERSAO} (YOLO11n letreiro + EasyOCR)"
 MAX_BYTES = 2 * 1024 * 1024          # mesmo limite do backend
 MAX_LADO_PX = 4096
 MAX_LINHAS = 300
-ESPERA_MAX_S = 6.0                   # o backend desiste em 8 s; melhor responder 503 antes disso
+ESPERA_MAX_S = 6.0                   # espera pela vez; com a inferência na CPU (até ~6,5 s) fica abaixo dos 15 s do backend
 LINHA = re.compile(r"^[0-9A-Z]{2,6}(-[0-9]{1,2})?$")
 DESAFIO = re.compile(r"^[0-9a-f]{16,128}$")
 
