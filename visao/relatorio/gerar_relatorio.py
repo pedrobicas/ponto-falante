@@ -43,7 +43,7 @@ st = {
 
 # ----------------------------------------------------------------- dados
 def ler_info(caminho: Path) -> dict:
-    info = {"integrantes": [], "turma": "", "repositorio": "", "video": ""}
+    info = {"integrantes": [], "turma": "", "repositorio": "", "aplicacao": "", "video": ""}
     for linha in caminho.read_text(encoding="utf-8").splitlines():
         if not linha.strip() or linha.lstrip().startswith("#") or ":" not in linha:
             continue
@@ -75,24 +75,24 @@ def textos(m: dict) -> dict:
     resumo = (
         "Pessoas com deficiência visual e idosos enfrentam uma barreira cotidiana no transporte público de São Paulo: "
         "identificar qual ônibus está chegando ao ponto, informação que o letreiro transmite de forma puramente visual. "
-        "Este trabalho apresenta o componente de visão computacional do Ponto Falante, protótipo CitizenTech que anuncia "
-        "em voz alta os ônibus que se aproximam. Como não existe um conjunto público de letreiros de ônibus paulistanos "
-        "rotulados, montamos um dataset próprio: reutilizamos fotos de ônibus da capital com licença livre do Wikimedia "
-        "Commons, geramos as caixas automaticamente com dois modelos professores (YOLO11x para ônibus e Grounding DINO "
-        "para letreiro, com filtros geométricos) e revisamos tudo manualmente, descartando imagens inadequadas. Com esses "
-        "dados treinamos um detector YOLO nano customizado com duas classes, ônibus e letreiro. O letreiro detectado é "
+        "Este trabalho apresenta o componente de visão computacional do Ponto Falante, MVP CitizenTech que anuncia em voz "
+        "alta os ônibus que se aproximam. Como não existe um conjunto público de letreiros de ônibus paulistanos "
+        "rotulados, montamos um dataset próprio com fotos de licença livre do Wikimedia Commons, pré-rotuladas por dois "
+        "modelos professores (YOLO11x para ônibus e Grounding DINO para letreiro) e revisadas manualmente. Com esses "
+        "dados treinamos um detector YOLO11 nano customizado com duas classes, ônibus e letreiro. O letreiro detectado é "
         "recortado e lido por OCR em três versões da imagem; o texto só vira linha se coincidir com uma linha que atende "
-        "o ponto, informada pela API do MVP, e uma votação entre quadros decide o anúncio. No conjunto de teste, o modelo "
-        f"obteve mAP50 de {v['map50']} e mAP50-95 de {v['map50_95']}. A leitura acertou {v['ocr_taxa']} dos letreiros "
-        "que exibiam o código da linha, sem nenhum anúncio de linha errada; nos letreiros que mostravam só o destino, o "
-        "sistema corretamente avisou que não conseguiu ler. Os resultados são enviados à API central, e as imagens "
-        "exibidas têm rostos e placas borrados, conforme a LGPD. A câmera do ponto foi simulada com imagens de teste."
+        f"o ponto. No conjunto de teste, o modelo obteve mAP50 de {v['map50']} e mAP50-95 de {v['map50_95']}. A leitura "
+        f"acertou {v['ocr_taxa']} dos letreiros que exibiam o código da linha, sem nenhum anúncio de linha errada; nos "
+        "letreiros que mostravam só o destino, o sistema corretamente avisou que não conseguiu ler. O modelo foi "
+        "integrado ao MVP publicado: na tela de embarque assistido, a pessoa envia a foto do letreiro e recebe, por texto "
+        "e voz, a resposta se aquele é o ônibus esperado. Nenhuma imagem é armazenada, e as imagens exibidas têm rostos "
+        "e placas borrados, conforme a LGPD."
     )
 
     objetivo = (
-        "Treinar e integrar um detector YOLO customizado que localize ônibus e seus letreiros em imagens de pontos de "
-        "parada, leia o número da linha por OCR validado pelas linhas do ponto e envie o resultado à API do Ponto Falante, "
-        "permitindo anunciar em voz alta qual ônibus está chegando."
+        "Treinar e integrar ao Ponto Falante um detector YOLO customizado que localize ônibus e letreiros em imagens, "
+        "leia a linha por OCR validado pelas linhas do ponto e informe ao passageiro, por voz, qual ônibus está chegando "
+        "ou se o letreiro confere com a linha esperada."
     )
 
     # Conclusão construída a partir dos números reais.
@@ -122,9 +122,14 @@ def textos(m: dict) -> dict:
         "anunciar a linha errada é pior do que avisar que não foi possível ler, e nossos testes não tiveram nenhum "
         "anúncio errado. O sistema também segue funcionando quando a API está fora do ar, guardando as detecções numa "
         "fila local para reenvio.",
+        "O componente não ficou isolado: está integrado ao MVP publicado, onde a pessoa confere pelo celular se o "
+        "ônibus à frente é o que espera. Como o modelo precisa de cerca de 1,5 GB de memória, ele roda no computador "
+        "da equipe, na CPU, e chega ao site por um túnel; cada conferência leva poucos segundos e, com o computador "
+        "desligado, a tela informa que a conferência está indisponível em vez de simular um resultado.",
         "Limitações: o dataset é pequeno (cerca de 200 imagens) e o conjunto de teste tem só 21 fotos, então as métricas "
         "têm margem de incerteza; parte dos letreiros apagados ficou sem rótulo na pré-rotulagem; o OCR genérico tem "
-        "dificuldade com LED de matriz de pontos; e a câmera do ponto foi simulada. Próximos passos: completar os "
+        "dificuldade com LED de matriz de pontos; a câmera fixa do ponto foi simulada; e o serviço depende de um "
+        "computador ligado. Próximos passos: completar os "
         "rótulos faltantes, ampliar as fotos com noite e chuva, treinar um reconhecedor de caracteres específico para "
         "letreiros de LED e testar com uma câmera real em um ponto piloto, sempre com anonimização na borda e sem "
         "armazenar imagens.",
@@ -191,8 +196,15 @@ def gerar(resultados: Path, saida: Path, info_path: Path):
     LI(info["integrantes"] or [FALTA])
     if info.get("turma"):
         P(f"Turma: {info['turma']}")
-    P(f"Repositório: <link href=\"{info['repositorio']}\" color=\"blue\">{info['repositorio']}</link><br/>"
-      f"Vídeo de demonstração: <link href=\"{info['video']}\" color=\"blue\">{info['video']}</link>")
+    def link(url):
+        if not url:
+            return '<font color="#C62828">[link a inserir]</font>'
+        return f'<link href="{url}" color="blue">{url}</link>'
+    linhas_links = [f"Repositório (código e documentação): {link(info['repositorio'])}"]
+    if info.get("aplicacao"):
+        linhas_links.append(f"MVP publicado (conferência do letreiro): {link(info['aplicacao'])}")
+    linhas_links.append(f"Vídeo de demonstração: {link(info['video'])}")
+    P("<br/>".join(linhas_links))
 
     # Resumo
     P("Resumo", "h1")
@@ -241,6 +253,14 @@ def gerar(resultados: Path, saida: Path, info_path: Path):
          "borramento de rostos (detector YuNet) e da região da placa.", "Biblioteca padrão de visão, leve."],
         ["Python + requests", "Integração com a API do MVP (GET das linhas do ponto, POST /deteccoes), com timeout, "
          "novas tentativas e fila local.", "Simples e segue o contrato comum da equipe."],
+        ["FastAPI (serviço <i>visao/servico</i>)", "Expõe o modelo como <i>POST /v1/letreiro</i>: recebe a foto e as "
+         "linhas do ponto e devolve a leitura validada, protegido por chave de API.",
+         "Leve, tipado e com testes de contrato; o mesmo padrão do serviço de GenAI da equipe."],
+        ["Spring Boot + Angular (MVP)", "Tela de embarque assistido: a pessoa envia a foto do letreiro; o backend "
+         "repassa ao serviço de visão e devolve CONFERE, OUTRA LINHA ou INCONCLUSIVO, com frase falada.",
+         "É a plataforma central da equipe, publicada no Render."],
+        ["Cloudflare Quick Tunnel", "Liga o serviço de visão, que roda no PC da equipe, ao backend publicado.",
+         "Gratuito; o modelo usa ~1,5 GB de RAM e não cabe no plano gratuito do Render (512 MB)."],
     ]
     story.append(tabela(ferramentas, [3.6 * cm, 7.2 * cm, 6.2 * cm]))
     P("Métricas usadas", "h2")
@@ -292,6 +312,17 @@ def gerar(resultados: Path, saida: Path, info_path: Path):
         "exibido ou salvo passa por borramento de rostos (YuNet) e da faixa da placa do ônibus.",
         "<b>Demonstração.</b> A câmera do ponto foi simulada com imagens de teste processadas quadro a quadro pelo script "
         "<i>src/demo.py</i>, conversando com uma API falsa que segue o mesmo contrato do MVP.",
+        "<b>Serviço do modelo.</b> O mesmo pipeline (detector + leitura) foi empacotado em <i>servico/app.py</i> "
+        "(FastAPI, <i>POST /v1/letreiro</i>). Para o uso pelo celular foram acrescentadas três regras de segurança: "
+        "casamento exato com as linhas do ponto (um 647P-10 não pode virar 478P-10), nenhuma linha afirmada quando duas "
+        "ficam quase empatadas e nenhum sufixo inventado (\"2100\" não vira \"2100-10\").",
+        "<b>Integração com o MVP publicado.</b> Na tela de embarque assistido, a pessoa escolhe o ponto e a linha que "
+        "espera e envia a foto do letreiro. O Spring Boot repassa a foto e as linhas do ponto ao serviço de visão pelo "
+        "túnel, com chave de API e verificação de identidade do serviço, e responde CONFERE, OUTRA LINHA ou "
+        "INCONCLUSIVO, com frase falada. O backend só afirma algo a partir de confiança 0,45. A foto não é gravada em "
+        "nenhum ponto do caminho.",
+        "<b>Testes.</b> 46 testes automatizados na CI (contrato do serviço, leitor de linha, votação, cliente da API, "
+        "anonimização) e 7 testes com o modelo real (<i>PF_VISAO_TESTE_REAL=1</i>), executados no PC da equipe.",
     ]
     for i, p in enumerate(passos, 1):
         story.append(Paragraph(p, st["li"], bulletText=f"{i}."))
@@ -349,6 +380,26 @@ def gerar(resultados: Path, saida: Path, info_path: Path):
     story += grade_imagens(sorted(resultados.glob("falha_*.jpg")),
                            "Casos em que a linha não foi lida: LED de matriz de pontos fraco ou apagado, letreiro pequeno "
                            "ou não detectado. Nesses casos o sistema avisa que não conseguiu ler, sem arriscar uma linha.")
+
+    # Integração com o MVP
+    integ_path = resultados / "integracao_mvp.json"
+    if integ_path.exists():
+        integ = json.loads(integ_path.read_text(encoding="utf-8"))
+        P("Integração com o MVP: conferência do letreiro pelo celular", "h2")
+        P(integ.get("descricao", ""))
+        linhas = [["Foto enviada", "Linha esperada", "Resposta do MVP", "Confiança", "Tempo"]]
+        for c in integ.get("casos", []):
+            conf = c.get("confianca")
+            linhas.append([c["foto"], c["linha_esperada"], c["resposta"],
+                           "—" if conf is None else f"{conf * 100:.0f}%",
+                           "—" if c.get("tempo_s") is None else f"{c['tempo_s']:.1f} s".replace(".", ",")])
+        story.append(tabela(linhas, [3.6 * cm, 2.6 * cm, 6.4 * cm, 2 * cm, 2.4 * cm]))
+        if integ.get("nota"):
+            P(integ["nota"], "nota")
+        imgs = [resultados / c["imagem"] for c in integ.get("casos", []) if c.get("imagem")]
+        imgs = [f for f in imgs if f.exists()]
+        if imgs:
+            story.extend(grade_imagens(imgs, integ.get("legenda", "Telas do MVP publicado.")))
 
     # Conclusão
     P("Conclusão", "h1")
