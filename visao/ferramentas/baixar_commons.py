@@ -45,7 +45,8 @@ def chamar_api(**params) -> dict:
     url = API + "?" + urllib.parse.urlencode(params)
     for tentativa in range(6):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers=CABECALHO), timeout=40) as r:
+            # URL fixa da API do Commons (https) + parâmetros codificados por urlencode.
+            with urllib.request.urlopen(urllib.request.Request(url, headers=CABECALHO), timeout=40) as r:  # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
                 return json.load(r)
         except urllib.error.HTTPError as e:
             if e.code == 429:  # limite de requisições: espera e tenta de novo
@@ -94,9 +95,12 @@ def metadados(titulos: list[str]) -> dict[str, dict]:
 def baixar(url: str, destino: Path) -> bool:
     """Baixa respeitando o limite do Commons: pausa entre arquivos e espera
     crescente quando o servidor responde 429 (muitas requisições)."""
+    # Só https: os endereços vêm da própria API do Commons (upload.wikimedia.org); file:// e http:// são recusados.
+    if urllib.parse.urlparse(url).scheme != "https":
+        return False
     for tentativa in range(5):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers=CABECALHO), timeout=60) as r:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=CABECALHO), timeout=60) as r:  # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
                 dados = r.read()
             # Segurança: só grava se o conteúdo for realmente JPEG ou PNG (assinatura do arquivo).
             if not (dados[:3] == b"\xff\xd8\xff" or dados[:8] == b"\x89PNG\r\n\x1a\n"):
