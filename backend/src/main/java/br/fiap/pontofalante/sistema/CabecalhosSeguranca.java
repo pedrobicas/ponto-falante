@@ -11,11 +11,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-/** Cabeçalhos de segurança em todas as respostas (inclusive erros). O microfone é liberado só para a própria origem. */
+/** Cabeçalhos de segurança em todas as respostas (inclusive erros). O microfone é liberado só para a própria origem.
+ *  img-src aceita blob: para a prévia local da foto do letreiro (URL.createObjectURL); a foto não sai do navegador por aí. */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CabecalhosSeguranca extends OncePerRequestFilter {
-    static final String CSP = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
+    static final String CSP = "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; "
             + "script-src 'self'; connect-src 'self'; frame-ancestors 'none'";
 
     @Override
