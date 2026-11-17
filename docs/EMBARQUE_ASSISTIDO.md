@@ -66,6 +66,11 @@ orienta a apontar melhor com base no que o detector viu ("não encontrei ônibus
 fotos seguidas, com 1,2 s de intervalo, porque o letreiro de SP alterna entre número e destino. Toda resposta pede para
 confirmar com o motorista.
 
+O botão **Enviar uma foto do letreiro** aceita uma foto já tirada (galeria do celular ou arquivo do computador), útil
+para testar e para quem fotografou o ônibus antes. A foto é reduzida no próprio aparelho para no máximo 1280 px em JPEG
+(fotos de celular passam de 4000 px e dos 2 MB aceitos) e segue pelo mesmo caminho, uma conferência só. A tela mostra a
+miniatura da foto enviada; nada é guardado.
+
 Onde o modelo roda: precisa de ~1,5 GB de memória (medido na CPU), acima dos 512 MB do Render gratuito. Ele roda no PC
 da equipe (na CPU, de 2,8 a 6,4 s por foto medidos em 17/11; com placa NVIDIA o instalador usa CUDA) e é publicado como a GenAI: Quick Tunnel da Cloudflare e registro automático no
 backend (`PUT /api/visao/endereco`, com `/health` e desafio HMAC). Com o PC desligado, `GET /api/embarque/visao`

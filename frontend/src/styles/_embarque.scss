@@ -143,6 +143,7 @@
 .camera__video { width: 100%; max-height: 60vh; border-radius: var(--raio); background: #000; object-fit: cover; }
 .camera__video--oculto { display: none; }
 .camera__acoes { display: flex; flex-wrap: wrap; gap: .65rem; }
+.camera__previa { max-width: 100%; max-height: 40vh; justify-self: start; border-radius: var(--raio); border: 1px solid var(--traco); }
 .camera__resultado { padding: 1rem 1.1rem; border-radius: var(--raio); border: 2px solid var(--traco-forte); }
 .camera__resultado[data-resultado='CONFERE'] { border-color: var(--ok); background: var(--ok-fundo); }
 .camera__resultado[data-resultado='NAO_CONFERE'] { border-color: var(--critico); background: var(--critico-fundo); }
