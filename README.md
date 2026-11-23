@@ -103,6 +103,16 @@ O contexto multiplicou o acerto e reduziu os erros factuais em relação ao mesm
 com o RAG em acerto e errou menos, por isso é o padrão do produto: quem ouve a resposta nem sempre consegue conferi-la.
 Variações testadas depois e a análise completa estão no [registro técnico da GenAI](genai/docs/REGISTRO_TECNICO.md).
 
+## Ligar o site publicado com um clique (PC da equipe)
+
+O site em https://ponto-falante.onrender.com fica sempre no ar, mas o assistente (LLM local) e a conferência do
+letreiro pela câmera rodam no PC da equipe e chegam ao Render por túneis gratuitos da Cloudflare. No Windows, dê dois
+cliques em **`INICIAR_PONTO_FALANTE.bat`** (raiz do repositório): ele confere as dependências, acorda o Render, sobe
+Ollama + modelo, a API da GenAI, o serviço de visão, os dois túneis, registra os endereços no site, roda o robô RPA e
+mostra o estado de cada peça. **`STATUS_PONTO_FALANTE.bat`** repete a conferência com um teste de ponta a ponta pelo
+site, e **`PARAR_PONTO_FALANTE.bat`** desliga tudo. O PC precisa ficar ligado e conectado durante a avaliação; detalhes
+em [scripts/ponto_falante/README.md](scripts/ponto_falante/README.md).
+
 ## Executar localmente
 
 Sem Docker (JDK 21, Node 22+, Python 3.11+):
